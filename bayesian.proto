@@ -1,0 +1,31 @@
+syntax = "proto2";
+
+package bayes;
+
+message BayesianNetwork{
+
+  message DiscreteDistribution{
+    required string name = 1;
+		
+    message Variable{
+      required string name = 1;
+      required float probability = 2; //probabilities of the variables within a discrete distribution sum to 1.0
+    }
+    repeated Variable variables = 2;
+  }
+  repeated DiscreteDistribution discreteDistributions = 1;
+  
+  message ConditionalProbabilityTable{
+    required string name = 1;
+    repeated string randomVariables = 2;
+	
+	message ConditionalProbabilityRow {
+	
+	  repeated string randomVariableValues= 1;
+	  required float probability = 2;  //probabilities of the conditional probability rows within a conditional probability table sum to 1.0
+	}
+	repeated ConditionalProbabilityRow conditionalProbabilityRows = 3;
+  }
+  repeated ConditionalProbabilityTable conditionalProbabilityTables = 2;
+}
+
