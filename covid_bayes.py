@@ -6,7 +6,7 @@ bayesianNetwork = bayesian_pb2.BayesianNetwork()
 
 #probabilities within distributions must sum to 1.0
 #questions left blank or "prefer not to answer" will be computed
-#make all 
+
 
 
 #basics/init
@@ -1358,7 +1358,7 @@ cpt["other_comorbidities"] = bayes.any(
 },
 ["significant_other_comorbidities","some__other_comorbidities","no__other_comorbidities"]
 
-}
+)
 
 
 cpt["covid_symptoms"] = bayes.avg(
@@ -1392,7 +1392,7 @@ cpt["social_distancing"]= bayes.avg(
 "wash_hands_per_day":{"wash_hands_zero_per_day","wash_hands_once_or_twice_per_day"}
 },
 ["no_social_distancing","some_social_distancing","safe_social_distancing"]
-}
+)
 
 cpt["wearables"] = bayes.avg(
 {
@@ -1416,14 +1416,14 @@ cpt["possible_dehydration"] = bayes.any(
 cpt["possible_meningitis"] = bayes.all(
 	{"neck stiffness":{"neck stiffness"}, 
 	"severe_neck_pain":{"severe_neck_pain"},
-	"body_temperature":{"body_temperature_above_102F","body_temperature_above_99F"},
+	"body_temperature":{"body_temperature_above_102F","body_temperature_above_99F"}},
 	["possible_meningitis","no_meningitis"]
 	)
 	
 	
 cpt["serious_shortness_of_breath"] = bayes.all(
 	{"shortness_of_breath":{"new_or_worse_painful_shortness_of_breath","new_or_worse_shortness_of_breath"}, 
-	"other_comorbidities":{"significant_other_comorbidities","some__other_comorbidities"},
+	"other_comorbidities":{"significant_other_comorbidities","some__other_comorbidities"}},
 	["serious_shortness_of_breath","no_serious_shortness_of_breath"]
 	)
 	
@@ -1432,7 +1432,7 @@ cpt["covid_vulnerabilities"] = bayes.avg(
 	{
 	"covid_symptoms":{"significant_covid_symptoms","mild_covid_symptoms"},
 	"socially_disadvantaged":{"very_socially_disadvantaged","somewhat_socially_disadvantaged"},
-	"social_distancing":{"no_social_distancing","some_social_distancing"}
+	"social_distancing":{"no_social_distancing","some_social_distancing"},
 	"wearables":{"anomalous","slight_anomaly"}
 	},
 	["severe_covid_vulnerabilities", "moderate_covid_vulnerabilites","some_covid_vulnerabilites", "insignificant_covid_vulnerabilities"]
@@ -1548,7 +1548,7 @@ cpt["covid_severity"] = bayes.avg(
 	{
 	"bmi":{"morbidly_obese", "obese"},
 	"metabolic_disease":{"severe_metabolic_disease","high_metabolic_disease", "medium_metabolic_disease"},
-	"other_comorbidities":{"significant_other_comorbidities","some__other_comorbidities"}
+	"other_comorbidities":{"significant_other_comorbidities","some__other_comorbidities"},
 	"socially_disadvantaged":{"very_socially_disadvantaged"}
 	},
 	["high_covid_severity","medium_covid_severity","low_covid_severity","no_covid_severity"]
