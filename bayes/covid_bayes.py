@@ -1,4 +1,3 @@
-import bayesian_pb2
 import bayes
 
 bayesianNetwork = bayes.BayesianNetwork()
