@@ -1,7 +1,7 @@
 import bayesian_pb2
 import bayes
 
-bayesianNetwork = bayesian_pb2.BayesianNetwork()
+bayesianNetwork = bayes.BayesianNetwork()
 
 
 #probabilities within distributions must sum to 1.0
