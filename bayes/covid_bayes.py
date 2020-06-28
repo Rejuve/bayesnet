@@ -13,10 +13,10 @@ bayesianNetwork = bayesian_pb2.BayesianNetwork()
 
 discreteDistribution = bayesianNetwork.discreteDistributions.add()
 discreteDistribution.name = "acute_medical_condition"
-variable = discreteDistributon.variables.add()
+variable = discreteDistribution.variables.add()
 variable.name = "acute_medical_condition"
 variable.probability = 0.02
-variable = discreteDistributon.variables.add()
+variable = discreteDistribution.variables.add()
 variable.name = "no_acute_medical_condition"
 variable.probability = 0.98
 
@@ -25,19 +25,19 @@ variable.probability = 0.98
 
 discreteDistribution = bayesianNetwork.discreteDistributions.add()
 discreteDistribution.name = "age"
-variable = discreteDistributon.variables.add()
+variable = discreteDistribution.variables.add()
 variable.name = "elderly"
 variable.probability = 0.1
-variable = discreteDistributon.variables.add()
+variable = discreteDistribution.variables.add()
 variable.name = "adult"
 variable.probability = 0.3
-variable = discreteDistributon.variables.add()
+variable = discreteDistribution.variables.add()
 variable.name = "young_adult"
 variable.probability = 0.2
-variable = discreteDistributon.variables.add()
+variable = discreteDistribution.variables.add()
 variable.name = "teen"
 variable.probability = 0.1
-variable = discreteDistributon.variables.add()
+variable = discreteDistribution.variables.add()
 variable.name = "child"
 variable.probability = 0.1
 
