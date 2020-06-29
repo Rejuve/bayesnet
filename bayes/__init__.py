@@ -1,2 +1,2 @@
-from bayes import bayes
+from bayes import utils
 
