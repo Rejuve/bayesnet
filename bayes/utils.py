@@ -54,10 +54,10 @@ def addCpt(bayesianNetwork, cpt):
 
 def bayesInitialize(bayesianNetwork):
     print("bayesianNetwork")
-    for dist in bayesianNetwork:
+    for dist in bayesianNetwork.discreteDistributions:
         print ("dist.name")
         print (dist.name)
-        for var in dist:
+        for var in dist.variables:
             print ("var.name")
             print (var.name)
             print ("var.probability")
