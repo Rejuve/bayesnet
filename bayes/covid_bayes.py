@@ -1,3 +1,4 @@
+import bayes
 from .bayes import any
 from .bayes import all
 from .bayes import avg
