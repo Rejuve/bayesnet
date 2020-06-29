@@ -1,10 +1,10 @@
 import bayes
-from bayes.bayes import addCpt
-from bayes.bayes import bayesInitialize
 from bayes.bayes import any
 from bayes.bayes import all
 from bayes.bayes import avg
 from bayes.bayes import if_then_else
+from bayes.bayes import bayesInitialize
+from bayes.bayes import addCpt
 
 import bayesian_pb2
 
