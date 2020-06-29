@@ -1,4 +1,5 @@
-from pomegranate import *
+from pomegranate import ConditionalProbabilityTable
+from pomegranate import DiscrieteDistribution
 
 def any(bayesianNetwork, cpt, invars, outvars):
     print("bayesianNetwork")
