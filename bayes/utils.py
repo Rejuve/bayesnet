@@ -1,4 +1,4 @@
-from pomegranate import *
+
 
 def any(bayesianNetwork, cpt, invars, outvars):
     print("bayesianNetwork")
