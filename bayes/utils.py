@@ -1,4 +1,6 @@
 from pomegranate import DiscreteDistribution
+from pomegranate import BayesianNetwork
+from pomegranate import Node
 
 def any(bayesianNetwork, cpt, invars, outvars):
     #print("bayesianNetwork")
@@ -52,15 +54,22 @@ def addCpt(bayesianNetwork, cpt):
     pass
 
 
-def bayesInitialize(bayesianNetwork):
+def bayesInitialize(bayesianNetwork,name):
+    model = BayesianNetwork(name)
     print("bayesianNetwork")
     for dist in bayesianNetwork.discreteDistributions:
         print ("dist.name")
         print (dist.name)
+        distribution ={}
         for var in dist.variables:
             print ("var.name")
             print (var.name)
             print ("var.probability")
             print (var.probability)
-
-    return None
+            distribution[var.name]= var.probability
+        discreteDistribution = DiscreteDistribution(distribution)
+        state = Node(discreteDistribution, dist.name)
+        model.add_state(state)
+    print("model")
+    print(model)
+    return model
