@@ -6,7 +6,6 @@ bayesianNetwork = bayesian_pb2.BayesianNetwork()
 
 #probabilities within distributions must sum to 1.0
 #questions left blank or "prefer not to answer" will be computed
-#make all 
 
 
 #basics/init
