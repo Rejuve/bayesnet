@@ -1564,4 +1564,4 @@ cpt["covid_severity"] = avg(bayesianNetwork,cpt,
 	
 	
 addCpt(bayesianNetwork,cpt)
-id = bayesInitialize(bayesianNetwork, "covid")
+covid = bayesInitialize(bayesianNetwork, "covid")
