@@ -112,20 +112,11 @@ def addCpt(bayesianNetwork, cpt):
 
 def bayesInitialize(bayesianNetwork,name):
     model = BayesianNetwork(name)
-    print("bayesianNetwork")
     for dist in bayesianNetwork.discreteDistributions:
-        print ("dist.name")
-        print (dist.name)
         distribution ={}
         for var in dist.variables:
-            print ("var.name")
-            print (var.name)
-            print ("var.probability")
-            print (var.probability)
             distribution[var.name]= var.probability
         discreteDistribution = DiscreteDistribution(distribution)
         state = Node(discreteDistribution, dist.name)
         model.add_state(state)
-    print("model")
-    print(model)
     return model
