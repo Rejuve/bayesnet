@@ -22,7 +22,7 @@ def any(bayesianNetwork, cpt, invars, outvars):
     vdict = dictVarsAndValues(bayesianNetwork, cpt)
     vlist = [vdict[v] for v in invars.keys()]
     cartesian = list(itertools.product(*vlist))
-    klist = list(invars.values())
+    klist = [a[0] for a in invars.values()]
     cpt_rows = []
     for c in cartesian:
         qany=False
@@ -46,7 +46,7 @@ def all(bayesianNetwork, cpt, invars, outvars):
     vdict = dictVarsAndValues(bayesianNetwork, cpt)
     vlist = [vdict[v] for v in invars.keys()]
     cartesian = list(itertools.product(*vlist))
-    klist = list(invars.values())
+    klist = [a[0] for a in invars.values()]
     cpt_rows = []
     for c in cartesian:
         qall=True
@@ -69,7 +69,7 @@ def avg(bayesianNetwork, cpt, invars, outvars):
     vdict = dictVarsAndValues(bayesianNetwork, cpt)
     vlist = [vdict[v] for v in invars.keys()]
     cartesian = list(itertools.product(*vlist))
-    klist = list(invars.values())
+    klist = [a[0] for a in invars.values()]
     cpt_rows = []
     for c in cartesian:
         qany=False
@@ -91,7 +91,7 @@ def if_then_else(bayesianNetwork, cpt, invars, outvars):
     vdict = dictVarsAndValues(bayesianNetwork, cpt)
     vlist = [vdict[v] for v in invars.keys()]
     cartesian = list(itertools.product(*vlist))
-    klist = list(invars.values())
+    klist = [a[0] for a in invars.values()]
     cpt_rows = []
     for c in cartesian:
         qany=False
@@ -109,11 +109,24 @@ def if_then_else(bayesianNetwork, cpt, invars, outvars):
 
 
 def addCpt(bayesianNetwork, cpt):
-    #print("bayesianNetwork")
-    #print(bayesianNetwork)
-    #print("cpt")
-    #print(cpt)
-    pass
+
+    for name, cpt_tuple in cpt.items():
+        conditionalProbabilityTable = bayesianNetwork.conditionalProbabilityTables.add()
+        conditionalProbabilityTable.name = name
+        for rv in cpt_tuple[1]:
+            randomVariable = conditionalProbabilityTable.randomVariables.add()
+            randomVariable.name = rv
+        for row in cpt_tuple[0]:  
+            conditonalProbabilityRow = conditionalProbabilityTable.conditionalProbabilityRows.add()
+            for i,var in enumerate(row):
+              randomVariableValue = conditionalProbabilityRow.randomVariableValues.add()
+              nvars = len(row)-1
+              if i < nvars:
+                randomVariableValue.name = var
+              else:
+                conditinalProbabilityRow.probability = var
+                    
+        
 
 
 def bayesInitialize(bayesianNetwork,name):
