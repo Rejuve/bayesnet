@@ -49,15 +49,15 @@ def all(bayesianNetwork, cpt, invars, outvars):
     klist = list(invars.values())
     cpt_rows = []
     for c in cartesian:
-        qany=False
+        qall=True
         for i,vset in enumerate(klist):
-                if c[i] in vset:
-                    qany = True
+                if c[i] not in vset:
+                    qall = False
         for i,o in enumerate(outvars):
             cpt_row = []
             cpt_row.extend(c)
             cpt_row.append(o)
-            val = 1.0 if (i == 0 and qany) or (i == 1 and not qany) else 0.0
+            val = 1.0 if (i == 0 and qall) or (i == 1 and not qall) else 0.0
             cpt_row.append(val)
             cpt_rows.append(cpt_row)
     return (cpt_rows,klist,outvars)
