@@ -34,7 +34,7 @@ def any(bayesianNetwork, cpt, invars, outvars):
             cpt_row.append(o)
             val = 1.0 if (i == 0 and qany) or (i == 1 and not qany) else 0.0
             cpt_row.append(val)
-        cpt_rows.append(cpt_row)
+            cpt_rows.append(cpt_row)
     return (cpt_rows,klist,outvars)
 
 
@@ -57,7 +57,7 @@ def all(bayesianNetwork, cpt, invars, outvars):
             cpt_row.append(o)
             val = 1.0 if (i == 0 and qany) or (i == 1 and not qany) else 0.0
             cpt_row.append(val)
-        cpt_rows.append(cpt_row)
+            cpt_rows.append(cpt_row)
     return (cpt_rows,klist,outvars)
 
 def avg(bayesianNetwork, cpt, invars, outvars):
@@ -78,7 +78,7 @@ def avg(bayesianNetwork, cpt, invars, outvars):
             cpt_row.append(o)
             val = 1.0 if (i == 0 and qany) or (i == 1 and not qany) else 0.0
             cpt_row.append(val)
-        cpt_rows.append(cpt_row)
+            cpt_rows.append(cpt_row)
     return (cpt_rows,klist,outvars)
 
 def if_then_else(bayesianNetwork, cpt, invars, outvars):
@@ -99,7 +99,7 @@ def if_then_else(bayesianNetwork, cpt, invars, outvars):
             cpt_row.append(o)
             val = 1.0 if (i == 0 and qany) or (i == 1 and not qany) else 0.0
             cpt_row.append(val)
-        cpt_rows.append(cpt_row)
+            cpt_rows.append(cpt_row)
     return (cpt_rows,klist,outvars)
 
 def addCpt(bayesianNetwork, cpt):
