@@ -22,9 +22,10 @@ def any(bayesianNetwork, cpt, invars, outvars):
     vdict = dictVarsAndValues(bayesianNetwork, cpt)
     vlist = [vdict[v] for v in invars.keys()]
     cartesian = list(itertools.product(*vlist))
-    klist = invars.values()
+    klist = list(invars.values())
     cpt_rows = []
     for c in cartesian:
+        qany=False
         for i,vset in enumerate(klist):
                 if c[i] in vset:
                     qany = True
@@ -45,9 +46,10 @@ def all(bayesianNetwork, cpt, invars, outvars):
     vdict = dictVarsAndValues(bayesianNetwork, cpt)
     vlist = [vdict[v] for v in invars.keys()]
     cartesian = list(itertools.product(*vlist))
-    klist = invars.values()
+    klist = list(invars.values())
     cpt_rows = []
     for c in cartesian:
+        qany=False
         for i,vset in enumerate(klist):
                 if c[i] in vset:
                     qany = True
@@ -60,15 +62,17 @@ def all(bayesianNetwork, cpt, invars, outvars):
             cpt_rows.append(cpt_row)
     return (cpt_rows,klist,outvars)
 
+
 def avg(bayesianNetwork, cpt, invars, outvars):
     import itertools
 
     vdict = dictVarsAndValues(bayesianNetwork, cpt)
     vlist = [vdict[v] for v in invars.keys()]
     cartesian = list(itertools.product(*vlist))
-    klist = invars.values()
+    klist = list(invars.values())
     cpt_rows = []
     for c in cartesian:
+        qany=False
         for i,vset in enumerate(klist):
                 if c[i] in vset:
                     qany = True
@@ -87,9 +91,10 @@ def if_then_else(bayesianNetwork, cpt, invars, outvars):
     vdict = dictVarsAndValues(bayesianNetwork, cpt)
     vlist = [vdict[v] for v in invars.keys()]
     cartesian = list(itertools.product(*vlist))
-    klist = invars.values()
+    klist = list(invars.values())
     cpt_rows = []
     for c in cartesian:
+        qany=False
         for i,vset in enumerate(klist):
                 if c[i] in vset:
                     qany = True
@@ -101,6 +106,7 @@ def if_then_else(bayesianNetwork, cpt, invars, outvars):
             cpt_row.append(val)
             cpt_rows.append(cpt_row)
     return (cpt_rows,klist,outvars)
+
 
 def addCpt(bayesianNetwork, cpt):
     #print("bayesianNetwork")
