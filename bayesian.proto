@@ -17,7 +17,11 @@ message BayesianNetwork{
   
   message ConditionalProbabilityTable{
     required string name = 1;
-    repeated string randomVariables = 2;
+    
+    message RandomVariable {
+    	required string name = 1
+    }
+    repeated RandomVariable randomVariables = 2;
 	
 	message ConditionalProbabilityRow {
 	
