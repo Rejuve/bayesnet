@@ -1294,6 +1294,25 @@ cpt["possible_dehydration"] = any(bayesianNetwork,cpt,
 )
 
 
+
+cpt["possible_meningitis"] = all(bayesianNetwork,cpt,
+{"neck_stiffness":{"neck_stiffness"}, 
+"severe_neck_pain":{"severe_neck_pain"},
+"body_temperature":{"body_temperature_above_102F","body_temperature_above_99F"}},
+["possible_meningitis","no_meningitis"]
+)
+	
+	
+
+cpt["emergency_treatment"] = any(bayesianNetwork,cpt,
+{
+"possible_dehydration":{"possible_dehydration"},
+"possible_meningitis":{"possible_meningitis"},
+"acute_medical_condition":{"acute_medical_condition"}
+},
+["no_emergency_treatment","emergency_treatment"]
+)
+
 	
 addCpt(bayesianNetwork,cpt)
 covid = bayesInitialize(bayesianNetwork, "covid")
