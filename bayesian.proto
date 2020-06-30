@@ -19,14 +19,14 @@ message BayesianNetwork{
     required string name = 1;
     
     message RandomVariable {
-    	required string name = 1
+    	required string name = 1;
     }
     repeated RandomVariable randomVariables = 2;
 	
 	message ConditionalProbabilityRow {
 	
 	  message RandomVariableValue{
-	    required string name = 1
+	    required string name = 1;
 	    }
 	
 	  repeated RandomVariableValue randomVariableValues= 1;
