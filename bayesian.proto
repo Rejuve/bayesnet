@@ -25,7 +25,11 @@ message BayesianNetwork{
 	
 	message ConditionalProbabilityRow {
 	
-	  repeated string randomVariableValues= 1;
+	  message RandomVariableValue{
+	    required string name = 1
+	    }
+	
+	  repeated RandomVariableValue randomVariableValues= 1;
 	  required float probability = 2;  //probabilities of the conditional probability rows within a conditional probability table sum to 1.0
 	}
 	repeated ConditionalProbabilityRow conditionalProbabilityRows = 3;
