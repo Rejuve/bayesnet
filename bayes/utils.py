@@ -22,7 +22,7 @@ def any(bayesianNetwork, cpt, invars, outvars):
     vdict = dictVarsAndValues(bayesianNetwork, cpt)
     vlist = [vdict[v] for v in invars.keys()]
     cartesian = list(itertools.product(*vlist))
-    klist = [a[0] for a in invars.values()]
+    klist = [list(a)[0] for a in invars.values()]
     cpt_rows = []
     for c in cartesian:
         qany=False
@@ -46,7 +46,7 @@ def all(bayesianNetwork, cpt, invars, outvars):
     vdict = dictVarsAndValues(bayesianNetwork, cpt)
     vlist = [vdict[v] for v in invars.keys()]
     cartesian = list(itertools.product(*vlist))
-    klist = [a[0] for a in invars.values()]
+    klist = [list(a)[0] for a in invars.values()]
     cpt_rows = []
     for c in cartesian:
         qall=True
@@ -69,7 +69,7 @@ def avg(bayesianNetwork, cpt, invars, outvars):
     vdict = dictVarsAndValues(bayesianNetwork, cpt)
     vlist = [vdict[v] for v in invars.keys()]
     cartesian = list(itertools.product(*vlist))
-    klist = [a[0] for a in invars.values()]
+    klist = [list(a)[0] for a in invars.values()]
     cpt_rows = []
     for c in cartesian:
         qany=False
@@ -84,6 +84,9 @@ def avg(bayesianNetwork, cpt, invars, outvars):
             cpt_row.append(val)
             cpt_rows.append(cpt_row)
     return (cpt_rows,klist,outvars)
+
+
+
 
 def if_then_else(bayesianNetwork, cpt, invars, outvars):
     import itertools
@@ -91,7 +94,7 @@ def if_then_else(bayesianNetwork, cpt, invars, outvars):
     vdict = dictVarsAndValues(bayesianNetwork, cpt)
     vlist = [vdict[v] for v in invars.keys()]
     cartesian = list(itertools.product(*vlist))
-    klist = [a[0] for a in invars.values()]
+    klist = [list(a)[0] for a in invars.values()]
     cpt_rows = []
     for c in cartesian:
         qany=False
@@ -106,6 +109,9 @@ def if_then_else(bayesianNetwork, cpt, invars, outvars):
             cpt_row.append(val)
             cpt_rows.append(cpt_row)
     return (cpt_rows,klist,outvars)
+
+
+
 
 
 def addCpt(bayesianNetwork, cpt):
