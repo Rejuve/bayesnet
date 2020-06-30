@@ -11,7 +11,7 @@ def dictVarsAndValues(bayesianNetwork,cpt):
     for name,cpt_tuple in cpt.items():
         print('name')
         print(name)
-        print('cpt_tuple;)
+        print('cpt_tuple')
         print(cpt_tuple)
         varsAndValues[name]= cpt_tuple[2]
     return varsAndValues
