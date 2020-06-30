@@ -1422,7 +1422,7 @@ cpt["possible_dehydration"] = any(bayesianNetwork,cpt,
 
 
 cpt["possible_meningitis"] = all(bayesianNetwork,cpt,
-	{"neck stiffness":{"neck stiffness"}, 
+	{"neck_stiffness":{"neck_stiffness"}, 
 	"severe_neck_pain":{"severe_neck_pain"},
 	"body_temperature":{"body_temperature_above_102F","body_temperature_above_99F"}},
 	["possible_meningitis","no_meningitis"]
