@@ -123,14 +123,14 @@ def addCpt(bayesianNetwork, cpt):
             randomVariable = conditionalProbabilityTable.randomVariables.add()
             randomVariable.name = rv
         for row in cpt_tuple[0]:  
-            conditonalProbabilityRow = conditionalProbabilityTable.conditionalProbabilityRows.add()
+            conditionalProbabilityRow = conditionalProbabilityTable.conditionalProbabilityRows.add()
             for i,var in enumerate(row):
               randomVariableValue = conditionalProbabilityRow.randomVariableValues.add()
               nvars = len(row)-1
               if i < nvars:
                 randomVariableValue.name = var
               else:
-                conditinalProbabilityRow.probability = var
+                conditionalProbabilityRow.probability = var
                     
         
 
