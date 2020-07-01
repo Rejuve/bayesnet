@@ -102,15 +102,18 @@ def if_then_else(bayesianNetwork, cpt, invars, outvars):
     keylist = invars.keys()
     cpt_rows = []
     for c in cartesian:
-        qany=False
+        result = ""
         for i,vset in enumerate(klist):
-                if c[i] in vset:
-                    qany = True
+                if result == "" and c[i] in vset:
+                    result = outvars[i]
+        if result == "":
+            result = outvars[-1]
+        
         for i,o in enumerate(outvars):
             cpt_row = []
             cpt_row.extend(c)
             cpt_row.append(o)
-            val = 1.0 if (i == 0 and qany) or (i == 1 and not qany) else 0.0
+            val = 1.0 if (o == result) else 0.0
             cpt_row.append(val)
             cpt_rows.append(cpt_row)
     return (cpt_rows,keylist,outvars)
