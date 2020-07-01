@@ -143,11 +143,13 @@ def addCpt(bayesianNetwork, cpt):
 def bayesInitialize(bayesianNetwork,name):
     model = BayesianNetwork(name)
     state = {}
+    general_distribution = {}
     for dist in bayesianNetwork.discreteDistributions:
         distribution ={}
         for var in dist.variables:
             distribution[var.name]= var.probability
         discreteDistribution = DiscreteDistribution(distribution)
+        general_distribution[dist.name] = discreteDistribution
         state[dist.name] = Node(discreteDistribution, dist.name)
         model.add_state(state[dist.name])
     for table in bayesianNetwork.conditionalProbabilityTables:
@@ -160,7 +162,7 @@ def bayesInitialize(bayesianNetwork,name):
             tablelist.append(rowlist)
         varlist = []
         for var in table.randomVariables:
-            varlist.append(state[var.name])
+            varlist.append(general_distribution[var.name])
         print("table.name")
         print(table.name)
         print("tablelist")
@@ -170,5 +172,7 @@ def bayesInitialize(bayesianNetwork,name):
         conditionalProbabilityTable = ConditionalProbabilityTable(tablelist,varlist)
         state[table.name] = Node(conditionalProbabilityTable, table.name)
         model.add_state(state[table.name])
+        for var in varlist:
+            model.add_edge(state[var.name],state[table.name])
                 
     return model
