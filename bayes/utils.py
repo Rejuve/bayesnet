@@ -173,6 +173,8 @@ def bayesInitialize(bayesianNetwork,name):
         general_distribution[table.name] = conditionalProbabilityTable
         state[table.name] = Node(conditionalProbabilityTable, table.name)
         model.add_state(state[table.name])
+        print('state')
+        print(state)
         for var in varlist:
             model.add_edge(state[var.name],state[table.name])
                 
