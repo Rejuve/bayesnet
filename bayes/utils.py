@@ -176,6 +176,10 @@ def bayesInitialize(bayesianNetwork,name):
         print('state')
         print(state)
         for var in varlist:
+            print("var.name")
+            print(var.name)
+            print ("table.name")
+            print (table.name)
             model.add_edge(state[var.name],state[table.name])
                 
     return model
