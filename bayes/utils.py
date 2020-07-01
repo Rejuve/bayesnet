@@ -170,6 +170,7 @@ def bayesInitialize(bayesianNetwork,name):
         print("varlist")
         print(varlist)
         conditionalProbabilityTable = ConditionalProbabilityTable(tablelist,varlist)
+        general_distribution[table.name] = conditionalProbabilityTable
         state[table.name] = Node(conditionalProbabilityTable, table.name)
         model.add_state(state[table.name])
         for var in varlist:
