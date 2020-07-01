@@ -107,12 +107,15 @@ def if_then_else(bayesianNetwork, cpt, invars, outvars):
     print('klist')
     print(klist)
     keylist = invars.keys()
-    cpt_rows = []
+    cpt_rows = [] 
     for c in cartesian:
         result = ""
-        for i,vset in enumerate(klist):
-                if result == "" and c[i] in vset:
-                    result = outvars[i]
+        i=0
+        while (result == "") and i < len(klist):
+            vset = klist[i]
+            i += 1
+            if c[i] in vset:
+                result = outvars[i]
         if result == "":
             result = outvars[-1]
         
