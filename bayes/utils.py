@@ -28,9 +28,12 @@ def any(bayesianNetwork, cpt, invars, outvars):
     cpt_rows = []
     for c in cartesian:
         qany=False
-        for i,vset in enumerate(klist):
-                if c[i] in vset:
-                    qany = True
+        i=0
+        while (not qany) and i < len(klist):
+            vset = klist[i]
+            i += 1
+            if c[i] in vset:
+                qany = True
         for i,o in enumerate(outvars):
             cpt_row = []
             cpt_row.extend(c)
