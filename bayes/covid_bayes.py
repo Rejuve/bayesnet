@@ -1537,7 +1537,7 @@ cpt["emergency_treatment"] = any(bayesianNetwork,cpt,
 "possible_meningitis":{"possible_meningitis"},
 "acute_medical_condition":{"acute_medical_condition"}
 },
-["no_emergency_treatment","emergency_treatment"]
+["emergency_treatment","no_emergency_treatment"]
 )
 
 
