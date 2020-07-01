@@ -1301,6 +1301,36 @@ cpt["possible_meningitis"] = all(bayesianNetwork,cpt,
 "body_temperature":{"body_temperature_above_102F","body_temperature_above_99F"}},
 ["possible_meningitis","no_meningitis"]
 )
+
+cpt["untreated_blood_pressure"] = all(bayesianNetwork,cpt,
+	{
+	 "blood_pressure":{"very_high_blood_pressure","high_blood_pressure"},
+	 "blood_pressure_medication":{"not_taking_blood_pressure_medication"}
+	},
+	["untreated_blood_pressure", "other_blood_pressure"]
+	)
+	
+	
+cpt["untreated_diabetes"] = all(bayesianNetwork,cpt,
+	{
+	 "diabetes":{"has_diabetes"},
+	 "blood_pressure_medication":{"no_diabetes_medication"}
+	},
+	["untreated_diabetes", "other_diabetes"]
+	)
+	
+	
+cpt["metabolic_disease"] = if_then_else(bayesianNetwork,cpt,
+	{
+	"untreated_diabetes":{"untreated_diabetes"},
+	"diabetes_medication":{"insulin","oral_diabetes_medication"},
+	"untreated_blood_pressure":{"untreated_blood_pressure"},
+	"diabetes":{"prediabetes"}
+	},
+	["severe_metabolic_disease","high_metabolic_disease", "medium_metabolic_disease","low_metabolic_disease","no_metabolic_disease"]
+	) 
+
+
 	
 	
 
@@ -1312,6 +1342,8 @@ cpt["emergency_treatment"] = any(bayesianNetwork,cpt,
 },
 ["emergency_treatment","no_emergency_treatment"]
 )
+
+
 
 	
 addCpt(bayesianNetwork,cpt)
