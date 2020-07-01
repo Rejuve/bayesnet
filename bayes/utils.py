@@ -1,6 +1,7 @@
 from pomegranate import DiscreteDistribution
 from pomegranate import BayesianNetwork
 from pomegranate import Node
+from pomegranate import ConditionalProbabilityTable
 
 def dictVarsAndValues(bayesianNetwork,cpt):
     varsAndValues ={}
@@ -36,7 +37,7 @@ def any(bayesianNetwork, cpt, invars, outvars):
             val = 1.0 if (i == 0 and qany) or (i == 1 and not qany) else 0.0
             cpt_row.append(val)
             cpt_rows.append(cpt_row)
-    return (cpt_rows,klist,outvars)
+    return (cpt_rows,klist)
 
 
 
@@ -60,7 +61,7 @@ def all(bayesianNetwork, cpt, invars, outvars):
             val = 1.0 if (i == 0 and qall) or (i == 1 and not qall) else 0.0
             cpt_row.append(val)
             cpt_rows.append(cpt_row)
-    return (cpt_rows,klist,outvars)
+    return (cpt_rows,klist)
 
 
 def avg(bayesianNetwork, cpt, invars, outvars):
@@ -83,7 +84,7 @@ def avg(bayesianNetwork, cpt, invars, outvars):
             val = 1.0 if (i == 0 and qany) or (i == 1 and not qany) else 0.0
             cpt_row.append(val)
             cpt_rows.append(cpt_row)
-    return (cpt_rows,klist,outvars)
+    return (cpt_rows,klist)
 
 
 
@@ -108,7 +109,7 @@ def if_then_else(bayesianNetwork, cpt, invars, outvars):
             val = 1.0 if (i == 0 and qany) or (i == 1 and not qany) else 0.0
             cpt_row.append(val)
             cpt_rows.append(cpt_row)
-    return (cpt_rows,klist,outvars)
+    return (cpt_rows,klist)
 
 
 
@@ -137,11 +138,27 @@ def addCpt(bayesianNetwork, cpt):
 
 def bayesInitialize(bayesianNetwork,name):
     model = BayesianNetwork(name)
+    state = {}
     for dist in bayesianNetwork.discreteDistributions:
         distribution ={}
         for var in dist.variables:
             distribution[var.name]= var.probability
         discreteDistribution = DiscreteDistribution(distribution)
-        state = Node(discreteDistribution, dist.name)
-        model.add_state(state)
+        state[dist.name] = Node(discreteDistribution, dist.name)
+        model.add_state(state[dist.name])
+    for table in bayesianNetwork.conditionalProbabilityTables:
+        tablelist = []
+        for row in table.conditionalProbabilityRows:
+            rowlist = []
+            for var in row.randomVariableValues:
+                rowlist.append (var)
+            rowlist.append(row.probability)
+            tablelist.append(rowlist)
+        varlist = []
+        for var in table.randomVariables:
+            varlist.append(state[var.name])
+        conditionalProbabilityTable = ConditionalProbabilityTable(tablelist,varlist)
+        state[table.name] = Node(conditionalProbabilityTable, table.name)
+        model.add_state(state[table.name])
+                
     return model
