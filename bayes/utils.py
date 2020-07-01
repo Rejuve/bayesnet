@@ -175,7 +175,7 @@ def bayesInitialize(bayesianNetwork,name):
         model.add_state(state[table.name])
         print('state')
         print(state)
-        for var in varlist:
+        for var in table.randomVariables:
             print("var.name")
             print(var.name)
             print ("table.name")
