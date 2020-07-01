@@ -99,6 +99,10 @@ def if_then_else(bayesianNetwork, cpt, invars, outvars):
     vlist = [vdict[v] for v in invars.keys()]
     cartesian = list(itertools.product(*vlist))
     klist = [list(a)[0] for a in invars.values()]
+    print('cartesian')
+    print(cartesian)
+    print('klist')
+    print(klist)
     keylist = invars.keys()
     cpt_rows = []
     for c in cartesian:
