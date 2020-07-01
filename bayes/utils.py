@@ -24,6 +24,7 @@ def any(bayesianNetwork, cpt, invars, outvars):
     vlist = [vdict[v] for v in invars.keys()]
     cartesian = list(itertools.product(*vlist))
     klist = [list(a)[0] for a in invars.values()]
+    keylist = invars.keys()
     cpt_rows = []
     for c in cartesian:
         qany=False
@@ -37,7 +38,7 @@ def any(bayesianNetwork, cpt, invars, outvars):
             val = 1.0 if (i == 0 and qany) or (i == 1 and not qany) else 0.0
             cpt_row.append(val)
             cpt_rows.append(cpt_row)
-    return (cpt_rows,klist, outvars)
+    return (cpt_rows,keylist, outvars)
 
 
 
@@ -48,6 +49,7 @@ def all(bayesianNetwork, cpt, invars, outvars):
     vlist = [vdict[v] for v in invars.keys()]
     cartesian = list(itertools.product(*vlist))
     klist = [list(a)[0] for a in invars.values()]
+    keylist = invars.keys()
     cpt_rows = []
     for c in cartesian:
         qall=True
@@ -61,7 +63,7 @@ def all(bayesianNetwork, cpt, invars, outvars):
             val = 1.0 if (i == 0 and qall) or (i == 1 and not qall) else 0.0
             cpt_row.append(val)
             cpt_rows.append(cpt_row)
-    return (cpt_rows,klist,outvars)
+    return (cpt_rows,keylist,outvars)
 
 
 def avg(bayesianNetwork, cpt, invars, outvars):
@@ -71,6 +73,7 @@ def avg(bayesianNetwork, cpt, invars, outvars):
     vlist = [vdict[v] for v in invars.keys()]
     cartesian = list(itertools.product(*vlist))
     klist = [list(a)[0] for a in invars.values()]
+    keylist = invars.keys()
     cpt_rows = []
     for c in cartesian:
         qany=False
@@ -84,7 +87,7 @@ def avg(bayesianNetwork, cpt, invars, outvars):
             val = 1.0 if (i == 0 and qany) or (i == 1 and not qany) else 0.0
             cpt_row.append(val)
             cpt_rows.append(cpt_row)
-    return (cpt_rows,klist,outvars)
+    return (cpt_rows,keylist,outvars)
 
 
 
@@ -96,6 +99,7 @@ def if_then_else(bayesianNetwork, cpt, invars, outvars):
     vlist = [vdict[v] for v in invars.keys()]
     cartesian = list(itertools.product(*vlist))
     klist = [list(a)[0] for a in invars.values()]
+    keylist = invars.keys()
     cpt_rows = []
     for c in cartesian:
         qany=False
@@ -109,7 +113,7 @@ def if_then_else(bayesianNetwork, cpt, invars, outvars):
             val = 1.0 if (i == 0 and qany) or (i == 1 and not qany) else 0.0
             cpt_row.append(val)
             cpt_rows.append(cpt_row)
-    return (cpt_rows,klist,outvars)
+    return (cpt_rows,keylist,outvars)
 
 
 
