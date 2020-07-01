@@ -23,7 +23,7 @@ def any(bayesianNetwork, cpt, invars, outvars):
     vdict = dictVarsAndValues(bayesianNetwork, cpt)
     vlist = [vdict[v] for v in invars.keys()]
     cartesian = list(itertools.product(*vlist))
-    klist = [list(a)[0] for a in invars.values()]
+    klist = [a for a in invars.values()]
     keylist = invars.keys()
     cpt_rows = []
     for c in cartesian:
@@ -48,7 +48,7 @@ def all(bayesianNetwork, cpt, invars, outvars):
     vdict = dictVarsAndValues(bayesianNetwork, cpt)
     vlist = [vdict[v] for v in invars.keys()]
     cartesian = list(itertools.product(*vlist))
-    klist = [list(a)[0] for a in invars.values()]
+    klist = [a for a in invars.values()]
     keylist = invars.keys()
     cpt_rows = []
     for c in cartesian:
@@ -72,7 +72,7 @@ def avg(bayesianNetwork, cpt, invars, outvars):
     vdict = dictVarsAndValues(bayesianNetwork, cpt)
     vlist = [vdict[v] for v in invars.keys()]
     cartesian = list(itertools.product(*vlist))
-    klist = [list(a)[0] for a in invars.values()]
+    klist = [a for a in invars.values()]
     keylist = invars.keys()
     cpt_rows = []
     for c in cartesian:
