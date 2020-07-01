@@ -151,7 +151,7 @@ def bayesInitialize(bayesianNetwork,name):
         for row in table.conditionalProbabilityRows:
             rowlist = []
             for var in row.randomVariableValues:
-                rowlist.append (var)
+                rowlist.append (var.name)
             rowlist.append(row.probability)
             tablelist.append(rowlist)
         varlist = []
