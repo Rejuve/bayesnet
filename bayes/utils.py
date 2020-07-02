@@ -66,9 +66,9 @@ def any(bayesianNetwork, cpt, invars, outvars):
 		i=0
 		while (not qany) and i < len(klist):
 			vset = klist[i]
-			i += 1
 			if c[i] in vset:
 				qany = True
+			i += 1
 		for i,o in enumerate(outvars):
 			cpt_row = []
 			cpt_row.extend(c)
@@ -163,9 +163,9 @@ def if_then_else(bayesianNetwork, cpt, invars, outvars):
 		i=0
 		while (result == "") and i < len(klist):
 			vset = klist[i]
-			i += 1
 			if c[i] in vset:
 				result = outvars[i]
+			i += 1
 		if result == "":
 			result = outvars[-1]
 
