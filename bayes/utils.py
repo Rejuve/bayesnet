@@ -6,12 +6,29 @@ from pomegranate import ConditionalProbabilityTable
 class Bayesnet():
     
     varsAndValues = {}
+    nmap ={}
     
     def __init__(bayesianNetwork): 
         for dist in bayesianNetwork.discreteDistributions:
             varsAndValues [dist.name]= []
             for var in dist.variables:
                 varsAndValues[dist.name].append(var.name)
+        cutoffs = {}
+        for a in range(2,10):
+            if not a in cutoffs:
+                cutoffs[a] ={}
+            val = 1/a
+            for j in range (0,a):
+                cutoff[a][j] = j*val
+        for a in range(2,10):
+            if not a in nmap:
+                nmap[a]={}
+            for b in range(2,10):
+                if not b in nmap[a]:
+                    nmap[a][b] = {}
+                for i in range (0,a):
+                
+         
         
     
     def dictVarsAndValues(bayesianNetwork,cpt):
