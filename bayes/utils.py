@@ -5,15 +5,21 @@ from pomegranate import ConditionalProbabilityTable
 
 class Bayesnet():
     
-    def __init__():
-        pass()
+    varsAndValues = {}
     
-    def dictVarsAndValues(bayesianNetwork,cpt):
-        varsAndValues ={}
+    def __init__(bayesianNetwork): 
         for dist in bayesianNetwork.discreteDistributions:
             varsAndValues [dist.name]= []
             for var in dist.variables:
                 varsAndValues[dist.name].append(var.name)
+        
+    
+    def dictVarsAndValues(bayesianNetwork,cpt):
+        if len(varsandValues) ==0:
+            for dist in bayesianNetwork.discreteDistributions:
+                varsAndValues [dist.name]= []
+                for var in dist.variables:
+                    varsAndValues[dist.name].append(var.name)
         for name,cpt_tuple in cpt.items():
             print('name')
             print(name)
