@@ -27,6 +27,19 @@ class Bayesnet():
                 if not b in nmap[a]:
                     nmap[a][b] = {}
                 for i in range (0,a):
+                    lowercutoffi = cutoff[a][i]
+                    uppercutoffi = cutoff[a][i+1] if i+1 < a else 1
+                    k=0
+                    while k< len(cutoff[b]) and lowercutoffi < cutoff [b][k]:
+                        k += 1
+                    bucketnumLower = k-1
+                    k=0
+                    while k< len(cutoff[b]) and uppercuttoffi < cutoff [b][k]:
+                        k += 1
+                    bucketnumUpper = k
+                    coveredBuckets = [s in range(bucketnumLower, bucketnumUpper)]
+                    nmap[a][b][i] = set(coveredBuckets)
+                    
                 
          
         
@@ -106,17 +119,30 @@ class Bayesnet():
         klist = [a for a in invars.values()]
         keylist = invars.keys()
         cpt_rows = []
-        bins = {}
+        num_outvars = len(outvars)
         for c in cartesian:
-            qany=False
+            bins = {}
             for i,vset in enumerate(klist):
-                    if c[i] in vset:
-                        qany = True
+                for j , slot in enumerate(vlist[i]):
+                    if slot == c[i]:
+                        var_number = j
+                num_invars = len(vlist[i])
+                addset = nmap[num_invars][num_outvars][var_number]
+                for p in range(addset):
+                    if p not in bins:
+                        bins[p] = 0
+                    bins[p]+= 1
+            maxv = 0
+            maxk = 0
+            for k,v inn bins.items():
+                if v > maxv:
+                    maxv = v
+                    maxk = k
             for i,o in enumerate(outvars):
                 cpt_row = []
                 cpt_row.extend(c)
                 cpt_row.append(o)
-                val = 1.0 if (i == 0 and qany) or (i == 1 and not qany) else 0.0
+                val = 1.0 if (outvars[k]) else 0.0
                 cpt_row.append(val)
                 cpt_rows.append(cpt_row)
         return (cpt_rows,keylist,outvars)
