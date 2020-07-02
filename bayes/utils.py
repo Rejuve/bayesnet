@@ -6,11 +6,11 @@ from pomegranate import ConditionalProbabilityTable
 
 
 def make_nmap(): 
-	
-	cutoffs = {}
+	nmap = {}
+	cutoff = {}
 	for a in range(2,10):
-		if not a in cutoffs:
-			cutoffs[a] ={}
+		if not a in cutoff:
+			cutoff[a] ={}
 		val = 1/a
 		for j in range (0,a):
 			cutoff[a][j] = j*val
@@ -34,7 +34,7 @@ def make_nmap():
 				coveredBuckets = [s in range(bucketnumLower, bucketnumUpper)]
 				nmap[a][b][i] = set(coveredBuckets)
 				
-			
+	return(nmap)
 	 
 	
 
