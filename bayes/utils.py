@@ -45,10 +45,10 @@ def dictVarsAndValues(bayesianNetwork,cpt):
 		for var in dist.variables:
 			varsAndValues[dist.name].append(var.name)
 	for name,cpt_tuple in cpt.items():
-		print('name')
-		print(name)
-		print('cpt_tuple')
-		print(cpt_tuple)
+		#print('name')
+		#print(name)
+		#print('cpt_tuple')
+		#print(cpt_tuple)
 		varsAndValues[name]= cpt_tuple[2]
 	return varsAndValues
 
@@ -129,7 +129,7 @@ def avg(bayesianNetwork, cpt, invars, outvars):
 				bins[p]+= 1
 		maxv = 0
 		maxk = 0
-		for k,v inn bins.items():
+		for k,v in bins.items():
 			if v > maxv:
 				maxv = v
 				maxk = k
@@ -226,23 +226,23 @@ def bayesInitialize(bayesianNetwork,name):
 		varlist = []
 		for var in table.randomVariables:
 			varlist.append(general_distribution[var.name])
-		print("table.name")
-		print(table.name)
-		print("tablelist")
-		print(tablelist)
-		print("varlist")
-		print(varlist)
+		#print("table.name")
+		#print(table.name)
+		#print("tablelist")
+		#print(tablelist)
+		#print("varlist")
+		#print(varlist)
 		conditionalProbabilityTable = ConditionalProbabilityTable(tablelist,varlist)
 		general_distribution[table.name] = conditionalProbabilityTable
 		state[table.name] = Node(conditionalProbabilityTable, table.name)
 		model.add_state(state[table.name])
-		print('state')
-		print(state)
+		#print('state')
+		#print(state)
 		for var in table.randomVariables:
-			print("var.name")
-			print(var.name)
-			print ("table.name")
-			print (table.name)
+			#print("var.name")
+			#print(var.name)
+			#print ("table.name")
+			#print (table.name)
 			model.add_edge(state[var.name],state[table.name])
 
 	return model
