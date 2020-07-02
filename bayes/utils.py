@@ -39,7 +39,7 @@ def make_nmap():
 	
 
 def dictVarsAndValues(bayesianNetwork,cpt):
-	
+	varsAndValues = {}
 	for dist in bayesianNetwork.discreteDistributions:
 		varsAndValues [dist.name]= []
 		for var in dist.variables:
