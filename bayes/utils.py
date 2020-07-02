@@ -107,7 +107,7 @@ def all(bayesianNetwork, cpt, invars, outvars):
 def avg(bayesianNetwork, cpt, invars, outvars):
 	import itertools
 	nmap = make_nmap()
-
+	print(nmap)
 	vdict = dictVarsAndValues(bayesianNetwork, cpt)
 	vlist = [vdict[v] for v in invars.keys()]
 	cartesian = list(itertools.product(*vlist))
