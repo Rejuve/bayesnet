@@ -14,8 +14,8 @@ def make_nmap():
 		val = 1/a
 		for j in range (0,a):
 			cutoff[a][j] = j*val
-	print("nmap")
-	print(nmap)
+	print("cutoff")
+	print(cutoff)
 	for a in range(2,10):
 		if not a in nmap:
 			nmap[a]={}
