@@ -35,6 +35,8 @@ def make_nmap():
 					k += 1
 				bucketnumLower = k-1
 				k=0
+				print("len(cutoff[b])")
+				print(len(cutoff[b]))
 				while k< len(cutoff[b]) and uppercutoffi <= cutoff [b][k]:
 					print("cutoff [b][k]")
 					print(cutoff [b][k])
