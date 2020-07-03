@@ -33,6 +33,14 @@ def make_nmap():
 				while k< len(cutoff[b]) and uppercutoffi < cutoff [b][k]:
 					k += 1
 				bucketnumUpper = k
+				print(lowercutoffi)
+				print(lowercutoffi)
+				print(uppercutoffi)
+				print(uppercutoffi)
+				print(bucketnumLower)
+				print(bucketnumLower)
+				print(bucketnumUpper)
+				print(bucketnumUpper)
 				coveredBuckets = [s for s in range(bucketnumLower, bucketnumUpper)]
 				nmap[a][b][i] = set(coveredBuckets)
 				
