@@ -130,22 +130,27 @@ def avg(bayesianNetwork, cpt, invars, outvars):
 	vdict = dictVarsAndValues(bayesianNetwork, cpt)
 	vlist = [vdict[v] for v in invars.keys()]
 	cartesian = list(itertools.product(*vlist))
-	klist = [a for a in invars.values()]
+	#klist = [a for a in invars.values()]
 	keylist = invars.keys()
 	cpt_rows = []
 	num_outvars = len(outvars)
 	for c in cartesian:
 		bins = {}
-		for i,vset in enumerate(klist):
-			for j , slot in enumerate(vlist[i]):
+		#for i,vset in enumerate(klist):
+		for i,varlist in enumerate(vlist):
+			for j , slot in enumerate(varlist):
 				if slot == c[i]:
 					var_number = j
-			num_invars = len(vlist[i])
+			num_invars = len(varlist)
 			addset = nmap[num_invars][num_outvars][var_number]
 			for p in addset:
 				if p not in bins:
 					bins[p] = 0
 				bins[p]+= 1
+		print("c")
+		print(c)
+		print("bins")
+		print(bins)
 		maxv = 0
 		maxk = 0
 		for k,v in bins.items():
@@ -156,7 +161,7 @@ def avg(bayesianNetwork, cpt, invars, outvars):
 			cpt_row = []
 			cpt_row.extend(c)
 			cpt_row.append(o)
-			val = 1.0 if (outvars[k]) else 0.0
+			val = 1.0 if (maxk == i) else 0.0
 			cpt_row.append(val)
 			cpt_rows.append(cpt_row)
 	return (cpt_rows,keylist,outvars)
