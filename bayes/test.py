@@ -1284,6 +1284,16 @@ variable.probability = 0.98
 
 cpt ={} 
 
+cpt["wearables"] = avg(bayesianNetwork,cpt,
+{
+"heart_rate_variability":{"abnormally_low_heart_rate_variability","low_heart_rate_variabiliity"},
+"oxygen":{"abnormally_low_oxygen","low_oxygen"}
+},
+["anomalous","slight_anomaly","normal"]
+)
+
+
+
 cpt["possible_dehydration"] = any(bayesianNetwork,cpt,
 {
 "low_urine":{"low_urine"},
