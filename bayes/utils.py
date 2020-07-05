@@ -142,7 +142,7 @@ def avg(bayesianNetwork, cpt, invars, outvars):
 					var_number = j
 			num_invars = len(vlist[i])
 			addset = nmap[num_invars][num_outvars][var_number]
-			for p in range(addset):
+			for p in addset:
 				if p not in bins:
 					bins[p] = 0
 				bins[p]+= 1
