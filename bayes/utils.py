@@ -37,11 +37,11 @@ def make_nmap():
 				k=0
 				print("len(cutoff[b])")
 				print(len(cutoff[b]))
-				while k< len(cutoff[b]) and uppercutoffi >= cutoff [b][k]:
+				while k< len(cutoff[b]) and uppercutoffi > cutoff [b][k]:
 					print("cutoff [b][k]")
 					print(cutoff [b][k])
 					k += 1
-				bucketnumUpper = k-1
+				bucketnumUpper = k
 				print("lowercutoffi")
 				print(lowercutoffi)
 				print("uppercutoffi")
