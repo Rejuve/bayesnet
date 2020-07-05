@@ -14,8 +14,8 @@ def make_nmap():
 		val = 1/a
 		for j in range (0,a):
 			cutoff[a][j] = j*val
-	print("cutoff")
-	print(cutoff)
+	#print("cutoff")
+	#print(cutoff)
 	for a in range(2,10):
 		if not a in nmap:
 			nmap[a]={}
@@ -26,30 +26,30 @@ def make_nmap():
 				lowercutoffi = cutoff[a][i]
 				uppercutoffi = cutoff[a][i+1] if i+1 < a else 1
 				k=0
-				print("len(cutoff[b])")
-				print(len(cutoff[b]))
+				#print("len(cutoff[b])")
+				#print(len(cutoff[b]))
 				
 				while k< len(cutoff[b]) and lowercutoffi >= cutoff [b][k]:
-					print("cutoff [b][k]")
-					print(cutoff [b][k])
+					#print("cutoff [b][k]")
+					#print(cutoff [b][k])
 					k += 1
 				bucketnumLower = k-1
 				k=0
-				print("len(cutoff[b])")
-				print(len(cutoff[b]))
+				#print("len(cutoff[b])")
+				#print(len(cutoff[b]))
 				while k< len(cutoff[b]) and uppercutoffi > cutoff [b][k]:
-					print("cutoff [b][k]")
-					print(cutoff [b][k])
+					#print("cutoff [b][k]")
+					#print(cutoff [b][k])
 					k += 1
 				bucketnumUpper = k
-				print("lowercutoffi")
-				print(lowercutoffi)
-				print("uppercutoffi")
-				print(uppercutoffi)
-				print("bucketnumLower")
-				print(bucketnumLower)
-				print("bucketnumUpper")
-				print(bucketnumUpper)
+				#print("lowercutoffi")
+				#print(lowercutoffi)
+				#print("uppercutoffi")
+				#print(uppercutoffi)
+				#print("bucketnumLower")
+				#print(bucketnumLower)
+				#print("bucketnumUpper")
+				#print(bucketnumUpper)
 				coveredBuckets = [s for s in range(bucketnumLower, bucketnumUpper)]
 				nmap[a][b][i] = set(coveredBuckets)
 				
@@ -171,10 +171,10 @@ def if_then_else(bayesianNetwork, cpt, invars, outvars):
 	vlist = [vdict[v] for v in invars.keys()]
 	cartesian = list(itertools.product(*vlist))
 	klist = [a for a in invars.values()]
-	print('cartesian')
-	print(cartesian)
-	print('klist')
-	print(klist)
+	#print('cartesian')
+	#print(cartesian)
+	#print('klist')
+	#print(klist)
 	keylist = invars.keys()
 	cpt_rows = [] 
 	for c in cartesian:
