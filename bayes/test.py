@@ -1235,6 +1235,7 @@ variable.name = "high_heart_rate_variability"
 variable.probability = 0.17
 
 
+
 discreteDistribution = bayesianNetwork.discreteDistributions.add()
 discreteDistribution.name = "oxygen"
 variable = discreteDistribution.variables.add()
@@ -1245,10 +1246,7 @@ variable.name = "low_oxygen"
 variable.probability = 0.15
 variable = discreteDistribution.variables.add()
 variable.name = "normal_oxygen"
-variable.probability = 0.66
-variable = discreteDistribution.variables.add()
-variable.name = "high_oxygen"
-variable.probability = 0.17
+variable.probability = 0.83
 
 
 #hotspot anomaly
