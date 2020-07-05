@@ -65,7 +65,7 @@ def dictVarsAndValues(bayesianNetwork,cpt):
 			varsAndValues[dist.name].append(var.name)
 	for name,cpt_tuple in cpt.items():
 		#print('name')
-		#print(name)
+		print(name)
 		#print('cpt_tuple')
 		#print(cpt_tuple)
 		varsAndValues[name]= cpt_tuple[2]
@@ -126,7 +126,7 @@ def all(bayesianNetwork, cpt, invars, outvars):
 def avg(bayesianNetwork, cpt, invars, outvars):
 	import itertools
 	nmap = make_nmap()
-	print(nmap)
+	#print(nmap)
 	vdict = dictVarsAndValues(bayesianNetwork, cpt)
 	vlist = [vdict[v] for v in invars.keys()]
 	cartesian = list(itertools.product(*vlist))
