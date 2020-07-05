@@ -851,7 +851,7 @@ variable.probability = 0.95
 
 
 discreteDistribution = bayesianNetwork.discreteDistributions.add()
-discreteDistribution.name = "new_or_worse_shortness_of_breath"
+discreteDistribution.name = "shortness_of_breath"
 variable = discreteDistribution.variables.add()
 variable.name = "new_or_worse_painful_shortness_of_breath"
 variable.probability = 0.01
