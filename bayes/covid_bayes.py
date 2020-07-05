@@ -1473,7 +1473,7 @@ cpt["high_covid"] = any(bayesianNetwork,cpt,
 	"cough":{"cough_up_blood"},
 	"muscle_weakness":{"muscle_weakness_cant_move"},
 	"low_oxygen_symptoms":{"have_low_oxygen_symptoms"},
-	"covid vulnerabilities": {"severe_covid_vulnerabilites"}
+	"covid_vulnerabilities": {"severe_covid_vulnerabilites"}
 	},
 	["high_covid","other_covid"]
 	)
