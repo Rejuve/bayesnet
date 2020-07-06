@@ -157,11 +157,20 @@ def avg(bayesianNetwork, cpt, invars, outvars):
 			if v > maxv:
 				maxv = v
 				maxk = k
+		mink = len(outvars)
+		maxkinline = 0
+		for k,v in bins.items():
+			if v == maxv and k < mink:
+				mink = k
+			if v == maxv and k > maxkinline:
+				maxkinline = k
+		winner = int( (mink + maxkinline)/2.)
+			
 		for i,o in enumerate(outvars):
 			cpt_row = []
 			cpt_row.extend(c)
 			cpt_row.append(o)
-			val = 1.0 if (maxk == i) else 0.0
+			val = 1.0 if (winner == i) else 0.0
 			cpt_row.append(val)
 			cpt_rows.append(cpt_row)
 	return (cpt_rows,keylist,outvars)
