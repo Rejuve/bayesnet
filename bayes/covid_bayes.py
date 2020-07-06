@@ -1399,6 +1399,47 @@ cpt["other_cofactors"] = avg(bayesianNetwork,cpt,
 
 )
 
+
+cpt["untreated_blood_pressure"] = all(bayesianNetwork,cpt,
+	{
+	 "blood_pressure":{"very_high_blood_pressure","high_blood_pressure"},
+	 "blood_pressure_medication":{"not_taking_blood_pressure_medication"}
+	},
+	["untreated_blood_pressure", "other_blood_pressure"]
+	)
+	
+	
+cpt["untreated_diabetes"] = all(bayesianNetwork,cpt,
+	{
+	 "diabetes":{"has_diabetes"},
+	 "diabetes_medication":{"no_diabetes_medication"}
+	},
+	["untreated_diabetes", "other_diabetes"]
+	)
+
+	
+cpt["metabolic_disease"] = if_then_else(bayesianNetwork,cpt,
+	{
+	"untreated_diabetes":{"untreated_diabetes"},
+	"diabetes_medication":{"insulin","oral_diabetes_medication"},
+	"untreated_blood_pressure":{"untreated_blood_pressure"},
+	"diabetes":{"prediabetes"}
+	},
+	["severe_metabolic_disease","high_metabolic_disease", "medium_metabolic_disease","low_metabolic_disease","no_metabolic_disease"]
+	) 
+
+
+
+cpt["other_comorbidities"] = any(bayesianNetwork,cpt,
+{
+"heart_disease":{"heart_disease"},
+"bmi":{"morbidly_obese"},
+"metabolic_disease":{"severe_metabolic_disease","high_metabolic_disease"},
+"other_cofactors":{"significant_other_cofactors"}
+},
+[ "other_comorbidities","no_other_comorbidities"]
+)
+
 cpt["covid_symptoms"] = avg(bayesianNetwork,cpt,
 [
 "colored_spots_on_toes",
@@ -1543,45 +1584,6 @@ cpt["covid_symptom_level"] = if_then_else(bayesianNetwork,cpt,
 	["high_covid", "medium_covid","low_covid","no_covid"]
 	) 
 	
-cpt["untreated_blood_pressure"] = all(bayesianNetwork,cpt,
-	{
-	 "blood_pressure":{"very_high_blood_pressure","high_blood_pressure"},
-	 "blood_pressure_medication":{"not_taking_blood_pressure_medication"}
-	},
-	["untreated_blood_pressure", "other_blood_pressure"]
-	)
-	
-	
-cpt["untreated_diabetes"] = all(bayesianNetwork,cpt,
-	{
-	 "diabetes":{"has_diabetes"},
-	 "diabetes_medication":{"no_diabetes_medication"}
-	},
-	["untreated_diabetes", "other_diabetes"]
-	)
-
-	
-cpt["metabolic_disease"] = if_then_else(bayesianNetwork,cpt,
-	{
-	"untreated_diabetes":{"untreated_diabetes"},
-	"diabetes_medication":{"insulin","oral_diabetes_medication"},
-	"untreated_blood_pressure":{"untreated_blood_pressure"},
-	"diabetes":{"prediabetes"}
-	},
-	["severe_metabolic_disease","high_metabolic_disease", "medium_metabolic_disease","low_metabolic_disease","no_metabolic_disease"]
-	) 
-
-
-
-cpt["other_comorbidities"] = any(bayesianNetwork,cpt,
-{
-"heart_disease":{"heart_disease"},
-"bmi":{"morbidly_obese"},
-"metabolic_disease":{"severe_metabolic_disease","high_metabolic_disease"},
-"other_cofactors":{"significant_other_cofactors"}
-},
-[ "other_comorbidities","no_other_comorbidities"]
-)
 
 
 	
