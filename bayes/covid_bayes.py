@@ -1424,23 +1424,40 @@ cpt["covid_symptoms"] = avg(bayesianNetwork,cpt,
 )
 
 
-cpt["social_distancing"]= avg(bayesianNetwork,cpt,
+cpt["personal_social_distancing"]= avg(bayesianNetwork,cpt,
 {
 "isolation_space",
+"visits_per_week",
 "leaving_house_per_day",
-"high_risk_place_per_week",
 "deliveries_per_week",
 "mask",
+"wash_hands_per_day"
+},
+["no_personal_social_distancing","some_personal_social_distancing","safe_personal_social_distancing"]
+)
+
+cpt["social_distancing_environment"]= avg(bayesianNetwork,cpt,
+{
+"high_risk_place_per_week",
 "public_transportation_per_week",
 "workplace_social_distancing",
 "neighbors_social_distancing",
-"visits_per_week",
 "local_govt_social_distancing",
-"wash_hands_per_day"
+},
+["no_social_distancing_environnment","some_social_distancing_environment","safe_social_distancing_environment"]
+)
+
+	
+cpt["social_distancing"]= avg(bayesianNetwork,cpt,
+{
+"social_distancing_environment",
+"personal_social_distancing"
 },
 ["no_social_distancing","some_social_distancing","safe_social_distancing"]
 )
 
+	
+	
 cpt["wearables"] = avg(bayesianNetwork,cpt,
 {
 "heart_rate_variability",
