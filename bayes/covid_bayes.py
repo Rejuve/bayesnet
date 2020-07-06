@@ -1308,34 +1308,49 @@ cpt["smoking"] = any(bayesianNetwork,cpt,
 )
 
 
-cpt["substance_abuse"] = any(bayesianNetwork,cpt,
+cpt["legal_substance_abuse"] = any(bayesianNetwork,cpt,
 {
 "adderall_per_week":{"over_fifteen_adderall_per_week","one_to_fifteen_adderall_per_week"},
 "ritalin_per_week":{"over_fifteen_ritalin_per_week"},
 "opiods_per_week":{"over_fifteen_opiods_per_week"},
-"cocaine_per_week":{"over_five_cocaine_per_week","one_to_five_cocaine_per_week"},
 "methamphetamine_per_week":{"over_five_methamphetamine_per_week","one_to_five_methamphetamine_per_week"},
+"amphetamines_per_week":{"over_fifteen_amphetamines_per_week","one_to_fifteen_amphetamines_per_week"},
+"snuff_per_week":{"over_fifty_snuff_per_week"},
+"alchohol_glasses_per_week":{"over_twentyone_glasses_per_week"},
+"other_substance_per_week":{"over_fifteen_other_substance_per_week"}
+},
+["legal_substance_abuse","no_legal_substance_abuse"]
+)
+
+
+
+cpt["illegal_substance_abuse"] = any(bayesianNetwork,cpt,
+{
+"cocaine_per_week":{"over_five_cocaine_per_week","one_to_five_cocaine_per_week"},
 "ecstasy_per_week":{"over_five_ecstasy_per_week","one_to_five_ecstasy_per_week"},
 "speed_per_week":{"over_five_speed_per_week","one_to_five_speed_per_week"},
-"amphetamines_per_week":{"over_fifteen_amphetamines_per_week","one_to_fifteen_amphetamines_per_week"},
-"other_substance_per_week":{"over_fifteen_other_substance_per_week"},
 "depressants_per_week":{ "over_five_depressants_per_week","one_to_five_depressants_per_week"},
 "hallucinogens_per_week":{"over_fifteen_hallucinogens_per_week","one_to_fifteen_hallucinogens_per_week"},
 "dissociatives_per_week":{"over_five_dissociatives_per_week","one_to_five_dissociatives_per_week"},
-"snuff_per_week":{"over_fifty_snuff_per_week"},
-"alchohol_glasses_per_week":{"over_twentyone_glasses_per_week"}
 },
-["heavy_substance_abuse","light_substance_abuse","no_substance_abuse"]
+["illegal_substance_abuse","no_illegal_substance_abuse"]
+)
+
+cpt["substance_abuse"] = any(bayesianNetwork,cpt,
+{
+"legal_substance_abuse":{"heavy_substance_abuse"},
+"illegal_substance_abuse":{"heavy_substance_abuse","light_substance_abuse"}
+},
+["substance_abuse","no_substance_abuse"]
 )
 
 
 cpt["stress"] = avg(bayesianNetwork,cpt,
 {
+"socially_disadvantaged",
 "pregnancy_in_months",
 "sleep_quickly",
 "sleep_in_hours",
-"sex_per_month",
-"marital_status",
 "number_of_children",
 "activity_level",
 "lonely",
@@ -1345,25 +1360,52 @@ cpt["stress"] = avg(bayesianNetwork,cpt,
 )
 
 
-cpt["other_comorbidities"] = any(bayesianNetwork,cpt,
+
+cpt["heart_disease"] = avg(bayesianNetwork,cpt,
 {
-"hx_family_lung_disease":{"hx_family_lung_disease"},
-"cholesterol":{"high_cholestorol"},
-"heart_attack":{"had_heart_attack"},
-"tiaa":{"had_tiaa"},
-"stroke":{"had_stroke"},
-"peripheral_artery_disease":{"peripheral_artery_disease"},
-"angina":{"had_angina"},
-"atherosclerotic_cardiovascular_disease":{"had_atherosclerotic_cardiovascular_disease"},
-"other_chronic_disease":{"have_other_chronic_disease"},
+"heart_attack",
+"peripheral_artery_disease",
+"angina",
+"atherosclerotic_cardiovascular_disease",
+},
+["serious_heart_disease","some_heart_disease","no_heart_disease"]
+
+)
+
+cpt["disability"] = any(bayesianNetwork,cpt,
+{
 "disability_walk_or_run":{"have_disability_walk_or_run"},
 "disability_equipment":{"have_disability_equipment"},
 "mental_disability_cant_work":{"have_mental_disability_cant_work"},
 "heterosome":{"other","X","XXY","XYY"}
 },
-["significant_other_comorbidities","some__other_comorbidities","no__other_comorbidities"]
+["disability","no_disability"]
 
 )
+
+cpt["other_cofactors"] = avg(bayesianNetwork,cpt,
+{
+"stress",
+"disability",
+"substance_abuse",
+"cholesterol",
+"hx_family_lung_disease",
+"tiaa",
+"stroke",
+"smoking",
+"other_chronic_disease",
+},
+["significant_other_cofactors","other_cofactors","no_other_cofactors"]
+
+)
+
+
+cpt["other_comorbidities"] = any(bayesianNetwork,cpt,
+{
+"heart_disease":{"heart_disease"},
+"bmi":{"morbidly_obese"},
+"metabolic_disease":{"severe_metabolic_disease","high_metabolic_disease"},
+"other_cofactors":{"significant_other_cofactors"}
 
 
 cpt["covid_symptoms"] = avg(bayesianNetwork,cpt,
@@ -1436,7 +1478,6 @@ cpt["serious_shortness_of_breath"] = all(bayesianNetwork,cpt,
 cpt["covid_vulnerabilities"] = avg(bayesianNetwork,cpt,
 	{
 	"covid_symptoms",
-	"socially_disadvantaged",
 	"social_distancing",
 	"wearables"
 	},
@@ -1506,11 +1547,11 @@ cpt["untreated_blood_pressure"] = all(bayesianNetwork,cpt,
 cpt["untreated_diabetes"] = all(bayesianNetwork,cpt,
 	{
 	 "diabetes":{"has_diabetes"},
-	 "blood_pressure_medication":{"no_diabetes_medication"}
+	 "diabetes_medication":{"no_diabetes_medication"}
 	},
 	["untreated_diabetes", "other_diabetes"]
 	)
-	
+
 	
 cpt["metabolic_disease"] = if_then_else(bayesianNetwork,cpt,
 	{
@@ -1551,10 +1592,9 @@ cpt["covid_risk"] = avg(bayesianNetwork,cpt,
 	
 cpt["covid_severity"] = avg(bayesianNetwork,cpt,
 	{
-	"bmi",
-	"metabolic_disease",
-	"other_comorbidities",
-	"socially_disadvantaged"
+	"age",
+	"comorbidities"
+	
 	},
 	["high_covid_severity","medium_covid_severity","low_covid_severity","no_covid_severity"]
 	)
