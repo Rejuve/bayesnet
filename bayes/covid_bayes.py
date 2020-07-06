@@ -1466,13 +1466,33 @@ cpt["disability"] = any(bayesianNetwork,cpt,
 
 )
 
-cpt["health_cofactors"] = avg(bayesianNetwork,cpt,
+
+
+cpt["neurological_cofactors"] = avg(bayesianNetwork,cpt,
+[
+"tiaa",
+"stroke",
+],
+["significant_neurological_cofactors","neurological_cofactors","no_neurological_cofactors"]
+
+)
+
+
+cpt["misc_health_cofactors"] = avg(bayesianNetwork,cpt,
 [
 "cholesterol",
 "hx_family_lung_disease",
-"tiaa",
-"stroke",
 "other_chronic_disease"
+],
+["significant_misc_health_cofactors","misc_health_cofactors","no_misc_health_cofactors"]
+
+)
+
+
+cpt["health_cofactors"] = avg(bayesianNetwork,cpt,
+[
+"neurological_cofactors",
+"misc_health_cofactors"
 ],
 ["significant_health_cofactors","health_cofactors","no_health_cofactors"]
 
