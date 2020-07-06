@@ -1282,14 +1282,14 @@ variable.probability = 0.98
 cpt ={} 
 
 cpt["socially_disadvantaged"] = avg(bayesianNetwork,cpt,
-{
+[
 "ethnicity",
 "education",
 "employment",
 "income_in_USD",
 "community",
 "regular_exams"
-},
+],
 ["very_socially_disadvantaged","somewhat_socially_disadvantaged","not_socially_disadvantaged"]
 
 )
@@ -1346,7 +1346,7 @@ cpt["substance_abuse"] = any(bayesianNetwork,cpt,
 
 
 cpt["stress"] = avg(bayesianNetwork,cpt,
-{
+[
 "socially_disadvantaged",
 "pregnancy_in_months",
 "sleep_quickly",
@@ -1355,19 +1355,19 @@ cpt["stress"] = avg(bayesianNetwork,cpt,
 "activity_level",
 "lonely",
 "close_confidants"
-},
+],
 ["high_stress","medium_stress","low_stress","stress_free"]
 )
 
 
 
 cpt["heart_disease"] = avg(bayesianNetwork,cpt,
-{
+[
 "heart_attack",
 "peripheral_artery_disease",
 "angina",
 "atherosclerotic_cardiovascular_disease",
-},
+],
 ["serious_heart_disease","some_heart_disease","no_heart_disease"]
 
 )
@@ -1384,7 +1384,7 @@ cpt["disability"] = any(bayesianNetwork,cpt,
 )
 
 cpt["other_cofactors"] = avg(bayesianNetwork,cpt,
-{
+[
 "stress",
 "disability",
 "substance_abuse",
@@ -1394,7 +1394,7 @@ cpt["other_cofactors"] = avg(bayesianNetwork,cpt,
 "stroke",
 "smoking",
 "other_chronic_disease",
-},
+],
 ["significant_other_cofactors","other_cofactors","no_other_cofactors"]
 
 )
@@ -1406,10 +1406,12 @@ cpt["other_comorbidities"] = any(bayesianNetwork,cpt,
 "bmi":{"morbidly_obese"},
 "metabolic_disease":{"severe_metabolic_disease","high_metabolic_disease"},
 "other_cofactors":{"significant_other_cofactors"}
-
+},
+[ "other_comorbidities","no_other_comorbidities"]
+)
 
 cpt["covid_symptoms"] = avg(bayesianNetwork,cpt,
-{
+[
 "colored_spots_on_toes",
 "neck_stiffness",
 "low_urine",
@@ -1419,50 +1421,50 @@ cpt["covid_symptoms"] = avg(bayesianNetwork,cpt,
 "sore_throat",
 "pink_eye",
 "headache"
-},
+],
 [ "significant_covid_symptoms","mild_covid_symptoms","no_covid_symptoms"]
 )
 
 
 cpt["personal_social_distancing"]= avg(bayesianNetwork,cpt,
-{
+[
 "isolation_space",
 "visits_per_week",
 "leaving_house_per_day",
 "deliveries_per_week",
 "mask",
 "wash_hands_per_day"
-},
+],
 ["no_personal_social_distancing","some_personal_social_distancing","safe_personal_social_distancing"]
 )
 
 cpt["social_distancing_environment"]= avg(bayesianNetwork,cpt,
-{
+[
 "high_risk_place_per_week",
 "public_transportation_per_week",
 "workplace_social_distancing",
 "neighbors_social_distancing",
 "local_govt_social_distancing",
-},
+],
 ["no_social_distancing_environnment","some_social_distancing_environment","safe_social_distancing_environment"]
 )
 
 	
 cpt["social_distancing"]= avg(bayesianNetwork,cpt,
-{
+[
 "social_distancing_environment",
 "personal_social_distancing"
-},
+],
 ["no_social_distancing","some_social_distancing","safe_social_distancing"]
 )
 
 	
 	
 cpt["wearables"] = avg(bayesianNetwork,cpt,
-{
+[
 "heart_rate_variability",
 "oxygen"
-},
+],
 ["anomalous","slight_anomaly","normal"]
 )
 
@@ -1493,11 +1495,11 @@ cpt["serious_shortness_of_breath"] = all(bayesianNetwork,cpt,
 	
 	
 cpt["covid_vulnerabilities"] = avg(bayesianNetwork,cpt,
-	{
+	[
 	"covid_symptoms",
 	"social_distancing",
 	"wearables"
-	},
+	],
 	["severe_covid_vulnerabilities", "moderate_covid_vulnerabilites","some_covid_vulnerabilites", "insignificant_covid_vulnerabilities"]
 	)
 	
@@ -1535,10 +1537,10 @@ cpt["high_covid"] = any(bayesianNetwork,cpt,
 	
 	
 cpt["covid_environment"] = avg(bayesianNetwork,cpt,
-	{
+	[
 	"exposure",
 	"hotspot"
-	},
+	],
 	["high_risk_covid_environment", "medium_risk_covid_environment", "low_risk_covid_environment","no_risk_covid_environment"]
 	) 
 	
@@ -1598,21 +1600,20 @@ cpt["emergency_treatment"] = any(bayesianNetwork,cpt,
 
 	
 cpt["covid_risk"] = avg(bayesianNetwork,cpt,
-	{
+	[
 	"covid_symptom_level",
 	"covid_environment"
-	},
+	],
 	["high_covid_risk","medium_covid_risk","low_covid_risk","no_covid_risk"]
 	)
 	
 	
 	
 cpt["covid_severity"] = avg(bayesianNetwork,cpt,
-	{
+	[
 	"age",
-	"comorbidities"
-	
-	},
+	"other_comorbidities"
+	],
 	["high_covid_severity","medium_covid_severity","low_covid_severity","no_covid_severity"]
 	)
 	
