@@ -1281,57 +1281,124 @@ variable.probability = 0.98
 
 cpt ={} 
 
-cpt["socially_disadvantaged"] = avg(bayesianNetwork,cpt,
+cpt["systemically_disadvantaged"] = avg(bayesianNetwork,cpt,
 [
-"ethnicity",
 "education",
+"ethnicity",
+"community"
+],
+["very_systemically_disadvantaged","somewhat_systemically_disadvantaged","not_systemically_disadvantaged"]
+
+)
+
+
+cpt["economically_disadvantaged"] = avg(bayesianNetwork,cpt,
+[
 "employment",
 "income_in_USD",
-"community",
 "regular_exams"
+],
+["very_economically_disadvantaged","somewhat_economically_disadvantaged","not_economically_disadvantaged"]
+
+)
+
+
+cpt["socially_disadvantaged"] = avg(bayesianNetwork,cpt,
+[
+"systemically_disadvantaged",
+"economically_disadvantaged"
 ],
 ["very_socially_disadvantaged","somewhat_socially_disadvantaged","not_socially_disadvantaged"]
 
 )
 
 
-cpt["smoking"] = any(bayesianNetwork,cpt,
+cpt["tobacco"] = any(bayesianNetwork,cpt,
 {
 "cigarettes_per_week":{"over_fifty_cigarettes_per_week","eleven_to_fifty_cigarettes_per_week"},
 "cigars_per_week":{"over_fifty_cigars_per_week"},
-"vapes_per_week":{"over_fifty_vapes_per_week","six_to_fifty_vapes_per_week"},
+"vapes_per_week":{"over_fifty_vapes_per_week","six_to_fifty_vapes_per_week"}
+},
+["tobacco","no_tobacco"]
+)
+
+cpt["substance_smoking"] = any(bayesianNetwork,cpt,
+{
 "hookah_per_week":{ "over_six_hookah_per_week"},
 "cannabis_per_week":{"over_fifteen_cannabis_per_week"},
 "inhalants_per_week":{"over_fifteen_inhalants_per_week","one_to_fifteen_inhalants_per_week"}
+},
+["substance_smoking","no_substance_smoking"]
+)
+
+cpt["smoking"] = any(bayesianNetwork,cpt,
+{
+"tobacco":{"tobacco"},
+"substance_smoking":{"substance_smoking"}
 },
 ["smoking","no_smoking"]
 )
 
 
-cpt["legal_substance_abuse"] = any(bayesianNetwork,cpt,
+cpt["stimulant_abuse"] = any(bayesianNetwork,cpt,
 {
 "adderall_per_week":{"over_fifteen_adderall_per_week","one_to_fifteen_adderall_per_week"},
 "ritalin_per_week":{"over_fifteen_ritalin_per_week"},
-"opiods_per_week":{"over_fifteen_opiods_per_week"},
 "methamphetamine_per_week":{"over_five_methamphetamine_per_week","one_to_five_methamphetamine_per_week"},
 "amphetamines_per_week":{"over_fifteen_amphetamines_per_week","one_to_fifteen_amphetamines_per_week"},
+},
+["stimulant_abuse","no_stimulant_abuse"]
+)
+
+
+cpt["addictive_substance_abuse"] = any(bayesianNetwork,cpt,
+{
+"opiods_per_week":{"over_fifteen_opiods_per_week"},
 "snuff_per_week":{"over_fifty_snuff_per_week"},
 "alchohol_glasses_per_week":{"over_twentyone_glasses_per_week"},
 "other_substance_per_week":{"over_fifteen_other_substance_per_week"}
+},
+["addictive_substance_abuse","no_addictive_substance_abuse"]
+)
+
+
+
+cpt["legal_substance_abuse"] = any(bayesianNetwork,cpt,
+{
+"addictive_substance_abuse":{"addictive_substance_abuse"},
+"stimulant_abuse":{"stimulant_abuse"}
 },
 ["legal_substance_abuse","no_legal_substance_abuse"]
 )
 
 
 
-cpt["illegal_substance_abuse"] = any(bayesianNetwork,cpt,
+cpt["illegal_upper_abuse"] = any(bayesianNetwork,cpt,
 {
 "cocaine_per_week":{"over_five_cocaine_per_week","one_to_five_cocaine_per_week"},
 "ecstasy_per_week":{"over_five_ecstasy_per_week","one_to_five_ecstasy_per_week"},
-"speed_per_week":{"over_five_speed_per_week","one_to_five_speed_per_week"},
+"speed_per_week":{"over_five_speed_per_week","one_to_five_speed_per_week"}
+},
+["illegal_upper_abuse","no_illegal_upper_abuse"]
+)
+
+
+cpt["illegal_downer_abuse"] = any(bayesianNetwork,cpt,
+{
 "depressants_per_week":{ "over_five_depressants_per_week","one_to_five_depressants_per_week"},
 "hallucinogens_per_week":{"over_fifteen_hallucinogens_per_week","one_to_fifteen_hallucinogens_per_week"},
 "dissociatives_per_week":{"over_five_dissociatives_per_week","one_to_five_dissociatives_per_week"},
+},
+["illegal_downer_abuse","no_illegal_downer_abuse"]
+)
+
+
+
+
+cpt["illegal_substance_abuse"] = any(bayesianNetwork,cpt,
+{
+"illegal_upper_abuse":{"illegal_upper_abuse"},
+"illegal_downer_abuse":{"illegal_downer_abuse"}
 },
 ["illegal_substance_abuse","no_illegal_substance_abuse"]
 )
@@ -1345,16 +1412,32 @@ cpt["substance_abuse"] = any(bayesianNetwork,cpt,
 )
 
 
-cpt["stress"] = avg(bayesianNetwork,cpt,
+cpt["depression"] = avg(bayesianNetwork,cpt,
+[
+"sleep_quickly",
+"sleep_in_hours",
+"lonely",
+"close_confidants"
+],
+["high_depression","medium_depression","low_depression","depression_free"]
+)
+
+
+cpt["societal_stress"] = avg(bayesianNetwork,cpt,
 [
 "socially_disadvantaged",
 "pregnancy_in_months",
-"sleep_quickly",
-"sleep_in_hours",
 "number_of_children",
-"activity_level",
-"lonely",
-"close_confidants"
+"activity_level"
+],
+["high_societal_stress","medium_societal_stress","low_societal_stress","societal_stress_free"]
+)
+
+
+cpt["stress"] = avg(bayesianNetwork,cpt,
+[
+"depression",
+"societal_stress"
 ],
 ["high_stress","medium_stress","low_stress","stress_free"]
 )
@@ -1383,17 +1466,35 @@ cpt["disability"] = any(bayesianNetwork,cpt,
 
 )
 
-cpt["other_cofactors"] = avg(bayesianNetwork,cpt,
+cpt["health_cofactors"] = avg(bayesianNetwork,cpt,
 [
-"stress",
-"disability",
-"substance_abuse",
 "cholesterol",
 "hx_family_lung_disease",
 "tiaa",
 "stroke",
-"smoking",
-"other_chronic_disease",
+"other_chronic_disease"
+],
+["significant_health_cofactors","health_cofactors","no_health_cofactors"]
+
+)
+
+
+cpt["behavioral_cofactors"] = avg(bayesianNetwork,cpt,
+[
+"stress",
+"disability",
+"substance_abuse",
+"smoking"
+],
+["significant_behavioral_cofactors","behavioral_cofactors","no_behavioral_cofactors"]
+
+)
+
+
+cpt["other_cofactors"] = avg(bayesianNetwork,cpt,
+[
+"health_cofactors",
+"behavioral_cofactors"
 ],
 ["significant_other_cofactors","other_cofactors","no_other_cofactors"]
 
@@ -1440,27 +1541,45 @@ cpt["other_comorbidities"] = any(bayesianNetwork,cpt,
 [ "other_comorbidities","no_other_comorbidities"]
 )
 
-cpt["covid_symptoms"] = avg(bayesianNetwork,cpt,
+cpt["specific_covid_symptoms"] = avg(bayesianNetwork,cpt,
 [
 "colored_spots_on_toes",
+"decreased_smell_or_taste"
+],
+[ "significant_specific_covid_symptoms","mild_specific_covid_symptoms","no_specific_covid_symptoms"]
+)
+
+cpt["head_and_neck_covid_symptoms"] = avg(bayesianNetwork,cpt,
+[
 "neck_stiffness",
-"low_urine",
-"nausea",
-"vomiting",
-"decreased_smell_or_taste",
 "sore_throat",
 "pink_eye",
 "headache"
 ],
-[ "significant_covid_symptoms","mild_covid_symptoms","no_covid_symptoms"]
+[ "significant_head_and_neck_covid_symptoms","mild_head_and_neck_covid_symptoms","no_head_and_neck_covid_symptoms"]
 )
 
+cpt["gastrointestinal_covid_symptoms"] = avg(bayesianNetwork,cpt,
+[
+"low_urine",
+"nausea",
+"vomiting",
+],
+[ "significant_gastrointestinal_covid_symptoms","mild_gastrointestinal_covid_symptoms","no_gastrointestinal_covid_symptoms"]
+)
+
+cpt["covid_symptoms"] = any(bayesianNetwork,cpt,
+{
+"gastrointestinal_covid_symptoms":{"significant_gastrointestinal_covid_symptoms"},
+"specific_covid_symptoms":{"significant_specific_covid_symptoms"},
+"head_and_neck_covid_symptoms":{"significant_head_and_neck_covid_symptoms"}
+},
+[ "significant_covid_symptoms","no_significant_covid_symptoms"]
+)
 
 cpt["personal_social_distancing"]= avg(bayesianNetwork,cpt,
 [
 "isolation_space",
-"visits_per_week",
-"leaving_house_per_day",
 "deliveries_per_week",
 "mask",
 "wash_hands_per_day"
@@ -1468,13 +1587,24 @@ cpt["personal_social_distancing"]= avg(bayesianNetwork,cpt,
 ["no_personal_social_distancing","some_personal_social_distancing","safe_personal_social_distancing"]
 )
 
+
+
+cpt["social_distancing_connectedness"]= avg(bayesianNetwork,cpt,
+[
+"visits_per_week",
+"leaving_house_per_day",
+"high_risk_place_per_week",
+"public_transportation_per_week"
+],
+["no_social_distancing_connectedness","some_social_distancing_connectedness","safe_social_distancing_connectedness"]
+)
+
+
 cpt["social_distancing_environment"]= avg(bayesianNetwork,cpt,
 [
-"high_risk_place_per_week",
-"public_transportation_per_week",
 "workplace_social_distancing",
 "neighbors_social_distancing",
-"local_govt_social_distancing",
+"local_govt_social_distancing"
 ],
 ["no_social_distancing_environnment","some_social_distancing_environment","safe_social_distancing_environment"]
 )
@@ -1483,7 +1613,8 @@ cpt["social_distancing_environment"]= avg(bayesianNetwork,cpt,
 cpt["social_distancing"]= avg(bayesianNetwork,cpt,
 [
 "social_distancing_environment",
-"personal_social_distancing"
+"personal_social_distancing",
+"social_distancing_connectedness"	
 ],
 ["no_social_distancing","some_social_distancing","safe_social_distancing"]
 )
