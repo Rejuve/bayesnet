@@ -222,6 +222,7 @@ def if_then_else(bayesianNetwork, cpt, invars, outvars):
 def addCpt(bayesianNetwork, cpt):
 
 	for name, cpt_tuple in cpt.items():
+		print (name)
 		conditionalProbabilityTable = bayesianNetwork.conditionalProbabilityTables.add()
 		conditionalProbabilityTable.name = name
 		for rv in cpt_tuple[1]:
