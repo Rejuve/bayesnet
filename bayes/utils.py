@@ -72,7 +72,7 @@ def dictVarsAndValues(bayesianNetwork,cpt):
 	return varsAndValues
 
 def any(bayesianNetwork, cpt, invars, outvars):
-	print (outvars)
+	#print (outvars)
 	import itertools
 
 	vdict = dictVarsAndValues(bayesianNetwork, cpt)
@@ -101,7 +101,7 @@ def any(bayesianNetwork, cpt, invars, outvars):
 
 
 def all(bayesianNetwork, cpt, invars, outvars):
-	print (outvars)
+	#print (outvars)
 	import itertools
 
 	vdict = dictVarsAndValues(bayesianNetwork, cpt)
@@ -126,7 +126,7 @@ def all(bayesianNetwork, cpt, invars, outvars):
 
 
 def avg(bayesianNetwork, cpt, invars, outvars):
-	print (outvars)
+	#print (outvars)
 	import itertools
 	nmap = make_nmap()
 	#print(nmap)
@@ -182,7 +182,7 @@ def avg(bayesianNetwork, cpt, invars, outvars):
 
 
 def if_then_else(bayesianNetwork, cpt, invars, outvars):
-	print (outvars)
+	#print (outvars)
 	import itertools
 
 	vdict = dictVarsAndValues(bayesianNetwork, cpt)
