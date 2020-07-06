@@ -65,13 +65,14 @@ def dictVarsAndValues(bayesianNetwork,cpt):
 			varsAndValues[dist.name].append(var.name)
 	for name,cpt_tuple in cpt.items():
 		#print('name')
-		print(name)
+		#print(name)
 		#print('cpt_tuple')
 		#print(cpt_tuple)
 		varsAndValues[name]= cpt_tuple[2]
 	return varsAndValues
 
 def any(bayesianNetwork, cpt, invars, outvars):
+	print (outvars)
 	import itertools
 
 	vdict = dictVarsAndValues(bayesianNetwork, cpt)
@@ -100,6 +101,7 @@ def any(bayesianNetwork, cpt, invars, outvars):
 
 
 def all(bayesianNetwork, cpt, invars, outvars):
+	print (outvars)
 	import itertools
 
 	vdict = dictVarsAndValues(bayesianNetwork, cpt)
@@ -124,14 +126,15 @@ def all(bayesianNetwork, cpt, invars, outvars):
 
 
 def avg(bayesianNetwork, cpt, invars, outvars):
+	print (outvars)
 	import itertools
 	nmap = make_nmap()
 	#print(nmap)
 	vdict = dictVarsAndValues(bayesianNetwork, cpt)
-	vlist = [vdict[v] for v in invars.keys()]
+	vlist = [vdict[v] for v in invars]
 	cartesian = list(itertools.product(*vlist))
 	#klist = [a for a in invars.values()]
-	keylist = invars.keys()
+	keylist = invars
 	cpt_rows = []
 	num_outvars = len(outvars)
 	for c in cartesian:
@@ -147,10 +150,10 @@ def avg(bayesianNetwork, cpt, invars, outvars):
 				if p not in bins:
 					bins[p] = 0
 				bins[p]+= 1
-		print("c")
-		print(c)
-		print("bins")
-		print(bins)
+		#print("c")
+		#print(c)
+		#print("bins")
+		#print(bins)
 		maxv = 0
 		maxk = 0
 		for k,v in bins.items():
@@ -179,6 +182,7 @@ def avg(bayesianNetwork, cpt, invars, outvars):
 
 
 def if_then_else(bayesianNetwork, cpt, invars, outvars):
+	print (outvars)
 	import itertools
 
 	vdict = dictVarsAndValues(bayesianNetwork, cpt)
