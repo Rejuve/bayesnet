@@ -1399,17 +1399,6 @@ cpt["other_cofactors"] = avg(bayesianNetwork,cpt,
 
 )
 
-
-cpt["other_comorbidities"] = any(bayesianNetwork,cpt,
-{
-"heart_disease":{"heart_disease"},
-"bmi":{"morbidly_obese"},
-"metabolic_disease":{"severe_metabolic_disease","high_metabolic_disease"},
-"other_cofactors":{"significant_other_cofactors"}
-},
-[ "other_comorbidities","no_other_comorbidities"]
-)
-
 cpt["covid_symptoms"] = avg(bayesianNetwork,cpt,
 [
 "colored_spots_on_toes",
@@ -1582,6 +1571,17 @@ cpt["metabolic_disease"] = if_then_else(bayesianNetwork,cpt,
 	["severe_metabolic_disease","high_metabolic_disease", "medium_metabolic_disease","low_metabolic_disease","no_metabolic_disease"]
 	) 
 
+
+
+cpt["other_comorbidities"] = any(bayesianNetwork,cpt,
+{
+"heart_disease":{"heart_disease"},
+"bmi":{"morbidly_obese"},
+"metabolic_disease":{"severe_metabolic_disease","high_metabolic_disease"},
+"other_cofactors":{"significant_other_cofactors"}
+},
+[ "other_comorbidities","no_other_comorbidities"]
+)
 
 
 	
