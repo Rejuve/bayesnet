@@ -1283,12 +1283,12 @@ cpt ={}
 
 cpt["socially_disadvantaged"] = avg(bayesianNetwork,cpt,
 {
-"ethnicity":{ "african_american","hispanic","ethnicity_other","african","middle_eastern","native_american","pacific_islander"},
-"education":{"education_other","some_high_school","high_school","vocational"},
-"employment":{"unemployment"},
-"income_in_USD":{"under_25k_USD","26_to_50k_USD"},
-"community":{"rural"},
-"regular_exams":{"no_regular_exams"}
+"ethnicity",
+"education",
+"employment",
+"income_in_USD",
+"community",
+"regular_exams"
 },
 ["very_socially_disadvantaged","somewhat_socially_disadvantaged","not_socially_disadvantaged"]
 
@@ -1331,15 +1331,15 @@ cpt["substance_abuse"] = any(bayesianNetwork,cpt,
 
 cpt["stress"] = avg(bayesianNetwork,cpt,
 {
-"pregnancy_in_months":{"over_six_months_pregnant","three_to_six_months_pregnant","under_three_months_pregnant"},
-"sleep_quickly":{"dont_sleep_quickly"},
-"sleep_in_hours":{"under_five_hours_sleep","five_or_six_hours_sleep"},
-"sex_per_month":{"no_sex_per_month"},
-"marital_status":{"single"},
-"number_of_children":{"three_or_more"},
-"activity_level":{"sedentary"},
-"lonely":{"often_lonely"},
-"close_confidants": {"no_close_confidants"}
+"pregnancy_in_months",
+"sleep_quickly",
+"sleep_in_hours",
+"sex_per_month",
+"marital_status",
+"number_of_children",
+"activity_level",
+"lonely",
+"close_confidants"
 },
 ["high_stress","medium_stress","low_stress","stress_free"]
 )
@@ -1368,15 +1368,15 @@ cpt["other_comorbidities"] = any(bayesianNetwork,cpt,
 
 cpt["covid_symptoms"] = avg(bayesianNetwork,cpt,
 {
-"colored_spots_on_toes":{"colored_spots_on_toes"},
-"neck_stiffness":{"neck_stiffness"},
-"low_urine":{"low_urine"},
-"nausea":{"nausea"},
-"vomiting":{"vomiting"},
-"decreased_smell_or_taste":{"decreased_smell_or_taste"},
-"sore_throat":{"sore_throat"},
-"pink_eye":{"pink_eye"},
-"headache":{"headache"}
+"colored_spots_on_toes",
+"neck_stiffness",
+"low_urine",
+"nausea",
+"vomiting",
+"decreased_smell_or_taste",
+"sore_throat",
+"pink_eye",
+"headache"
 },
 [ "significant_covid_symptoms","mild_covid_symptoms","no_covid_symptoms"]
 )
@@ -1384,25 +1384,25 @@ cpt["covid_symptoms"] = avg(bayesianNetwork,cpt,
 
 cpt["social_distancing"]= avg(bayesianNetwork,cpt,
 {
-"isolation_space":{"no_isolation_space"},
-"leaving_house_per_day":{"leave_house_more_than_twice_per_day"},
-"high_risk_place_per_week":{"high_risk_place_no_sanitizer_over_three_per_week","high_risk_place_no_sanitizer_once_or_more_per_week"},
-"deliveries_per_week":{ "deliveries_no_sanitation_over_three_per_week","deliveris_no_sanitation_once_or_more_per_week"},
-"mask": {"no_mask"},
-"public_transportation_per_week":{ "public_transportation_over_three_per_week"},
-"workplace_social_distancing":{"no_workplace_social_distancing"},
-"neighbors_social_distancing":{"no_neighbors_social_distancing"},
-"visits_per_week":{"visits_more_than_twice_per_week"},
-"local_govt_social_distancing": {"no_local_govt_social_distancing"},
-"wash_hands_per_day":{"wash_hands_zero_per_day","wash_hands_once_or_twice_per_day"}
+"isolation_space",
+"leaving_house_per_day",
+"high_risk_place_per_week",
+"deliveries_per_week",
+"mask",
+"public_transportation_per_week",
+"workplace_social_distancing",
+"neighbors_social_distancing",
+"visits_per_week",
+"local_govt_social_distancing",
+"wash_hands_per_day"
 },
 ["no_social_distancing","some_social_distancing","safe_social_distancing"]
 )
 
 cpt["wearables"] = avg(bayesianNetwork,cpt,
 {
-"heart_rate_variability":{"abnormally_low_heart_rate_variability","low_heart_rate_variabiliity"},
-"oxygen":{"abnormally_low_oxygen","low_oxygen"}
+"heart_rate_variability",
+"oxygen"
 },
 ["anomalous","slight_anomaly","normal"]
 )
@@ -1435,10 +1435,10 @@ cpt["serious_shortness_of_breath"] = all(bayesianNetwork,cpt,
 	
 cpt["covid_vulnerabilities"] = avg(bayesianNetwork,cpt,
 	{
-	"covid_symptoms":{"significant_covid_symptoms","mild_covid_symptoms"},
-	"socially_disadvantaged":{"very_socially_disadvantaged","somewhat_socially_disadvantaged"},
-	"social_distancing":{"no_social_distancing","some_social_distancing"},
-	"wearables":{"anomalous","slight_anomaly"}
+	"covid_symptoms",
+	"socially_disadvantaged",
+	"social_distancing",
+	"wearables"
 	},
 	["severe_covid_vulnerabilities", "moderate_covid_vulnerabilites","some_covid_vulnerabilites", "insignificant_covid_vulnerabilities"]
 	)
@@ -1478,8 +1478,8 @@ cpt["high_covid"] = any(bayesianNetwork,cpt,
 	
 cpt["covid_environment"] = avg(bayesianNetwork,cpt,
 	{
-	"exposure":{ "exposure_in_family_not_isolated","exposure_in_family","exposure_healthcare_worker","known_exposure","exposure_high_risk_worker"},
-	"hotspot":{"abnormally_high_hotspot","high_hotspot","normal_hotspot"}
+	"exposure",
+	"hotspot"
 	},
 	["high_risk_covid_environment", "medium_risk_covid_environment", "low_risk_covid_environment","no_risk_covid_environment"]
 	) 
@@ -1541,8 +1541,8 @@ cpt["emergency_treatment"] = any(bayesianNetwork,cpt,
 	
 cpt["covid_risk"] = avg(bayesianNetwork,cpt,
 	{
-	"covid_symptom_level":{"high_covid", "medium_covid"},
-	"covid_environment":{"high_risk_covid_environment", "medium_risk_covid_environment"}
+	"covid_symptom_level",
+	"covid_environment"
 	},
 	["high_covid_risk","medium_covid_risk","low_covid_risk","no_covid_risk"]
 	)
@@ -1551,10 +1551,10 @@ cpt["covid_risk"] = avg(bayesianNetwork,cpt,
 	
 cpt["covid_severity"] = avg(bayesianNetwork,cpt,
 	{
-	"bmi":{"morbidly_obese", "obese"},
-	"metabolic_disease":{"severe_metabolic_disease","high_metabolic_disease", "medium_metabolic_disease"},
-	"other_comorbidities":{"significant_other_comorbidities","some__other_comorbidities"},
-	"socially_disadvantaged":{"very_socially_disadvantaged"}
+	"bmi",
+	"metabolic_disease",
+	"other_comorbidities",
+	"socially_disadvantaged"
 	},
 	["high_covid_severity","medium_covid_severity","low_covid_severity","no_covid_severity"]
 	)
