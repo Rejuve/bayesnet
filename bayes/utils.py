@@ -2,8 +2,26 @@ from pomegranate import DiscreteDistribution
 from pomegranate import BayesianNetwork
 from pomegranate import Node
 from pomegranate import ConditionalProbabilityTable
+import json
+
+def get_var_positions(bayesianNetwork):
+	var_positions = {}
+	for i,dist in enumerate(bayesianNetwork.discreteDistributions):
+		var_positions[dist.name]=i
+	start = len(var_positions)
+	for j,table in enumerate(bayesianNetwork.conditionalProbabilityTables):
+		var_positions[table.name] = j+ start
+	return var_positions
 
 
+def query(baked_net, netspec, evidence,out_var_list):
+	answer = {}
+	var_positions = get_var_positions(netspec)
+	description = baked_net.predict_proba(evidence)
+	for dist_name in out_var_list:
+		answer[dist_name] = (json.loads(description[var_positions[dist_name]].to_json()))['parameters'][0]
+	return answer
+	
 
 def make_nmap(): 
 	nmap = {}
