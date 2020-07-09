@@ -2,6 +2,11 @@ syntax = "proto2";
 
 package bayes;
 
+service BayesNet{
+  rpc StartNet(BayesianNetwork) returns (int32) {}
+  rpc Query(Query) returns (Answer) {}
+  }
+
 message BayesianNetwork{
 
   message DiscreteDistribution{
@@ -37,3 +42,31 @@ message BayesianNetwork{
   repeated ConditionalProbabilityTable conditionalProbabilityTables = 2;
 }
 
+message Query{
+  required int32 net_id = 1;
+  message Evidence{
+    required int32 var_num = 1;
+    required int32 response = 2;
+    }
+  repeated Evidence evidence = 2;
+  message Outvar{
+    required int32 var_num = 1;
+  }
+  repeated Outvar outvars = 3;
+}
+
+
+message Answer{
+  
+  message VarAnswer{
+    required int32 var_num = 1;
+    
+    message VarState{
+      required int32 state_num=1;
+      required float probability=2
+    }
+    repeated VarState varStates = 2;
+  }
+  repeated VarAnswer varAnswers = 1;
+}
+ 
