@@ -4,7 +4,7 @@ package bayes;
 
 service BayesNet{
   rpc StartNet(BayesianNetwork) returns (Id) {}
-  rpc Query(Query) returns (Answer) {}
+  rpc Ask(Query) returns (Answer) {}
   }
 
 message BayesianNetwork{
