@@ -3,7 +3,7 @@ syntax = "proto2";
 package bayes;
 
 service BayesNet{
-  rpc StartNet(BayesianNetwork) returns (int32) {}
+  rpc StartNet(BayesianNetwork) returns (Id) {}
   rpc Query(Query) returns (Answer) {}
   }
 
@@ -42,6 +42,10 @@ message BayesianNetwork{
   repeated ConditionalProbabilityTable conditionalProbabilityTables = 2;
 }
 
+message Id{
+  required int32 id = 1;
+  }
+
 message Query{
   required int32 net_id = 1;
   message Evidence{
@@ -63,7 +67,7 @@ message Answer{
     
     message VarState{
       required int32 state_num=1;
-      required float probability=2
+      required float probability=2;
     }
     repeated VarState varStates = 2;
   }
