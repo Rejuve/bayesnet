@@ -1,5 +1,5 @@
 registry = {
-    "covid_bayesnet": {
+    "bayes_service": {
         "grpc": 7003,
     },
 }
