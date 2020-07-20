@@ -3,8 +3,8 @@
   "ipfs_end_point": "http://ipfs.singularitynet.io:80",
   "blockchain_network_selected": "ropsten",
   "passthrough_endpoint": "http://localhost:7003",
-  "organization_id": "Singularity Studio",
-  "service_id": "covid_bayesnet",
+  "organization_id": "singularity_studio",
+  "service_id": "bayes_service",
   "payment_channel_storage_server": {
     "data_dir": "/opt/singnet/etcd/ropsten"
   },
