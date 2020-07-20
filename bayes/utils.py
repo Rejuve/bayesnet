@@ -259,8 +259,8 @@ def addCpt(bayesianNetwork, cpt):
 	
 
 
-def bayesInitialize(bayesianNetwork,name):
-	model = BayesianNetwork(name)
+def bayesInitialize(bayesianNetwork):
+	model = BayesianNetwork()
 	state = {}
 	general_distribution = {}
 	for dist in bayesianNetwork.discreteDistributions:
