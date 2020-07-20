@@ -4,7 +4,7 @@
   "blockchain_network_selected": "ropsten",
   "passthrough_endpoint": "http://localhost:7003",
   "organization_id": "Singularity Studio",
-  "service_id": "bayesnet",
+  "service_id": "covid_bayesnet",
   "payment_channel_storage_server": {
     "data_dir": "/opt/singnet/etcd/ropsten"
   },
