@@ -14,6 +14,37 @@ def get_var_positions(bayesianNetwork):
 	return var_positions
 
 
+def get_var_names(bayesianNetwork):
+	var_names = {}
+	for i,dist in enumerate(bayesianNetwork.discreteDistributions):
+		var_names[i]=dist.name
+	return var_names
+
+def get_var_val_names(bayesianNetwork):
+	var_val_names = {}
+	for dist in bayesianNetwork.discreteDistributions:
+		for pos,var in enumerate(dist.variables):
+			var_val_names[dist.name][pos] = var.name
+	return var_val_names
+
+
+
+def get_evidence_and_outvars(query, bayesianNetwork):
+	var_val_names = get_var_val_names(bayesianNetwork)
+	var_names = get_var_names(bayesianNetwork)
+	evidence_dict = {}
+	for e in query.evidence:
+		if e.var_num in var_names and var_names[e.var_num] in var_val_names and e.response in var_val_names[ var_names[e.var_num]]
+			var_name = var_names[e.var_num]
+			var_val_name = var_val_names[var_name][e.response]
+			evidence_dict[var_name] = var_val_name 
+	outvar_list =[var_names[o] for o in query.outvars if o in var_names]
+	return(evidence_dict, outvar_list)
+		
+		
+		
+		
+
 def query(baked_net, netspec, evidence,out_var_list):
 	answer = {}
 	var_positions = get_var_positions(netspec)
