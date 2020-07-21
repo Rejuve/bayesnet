@@ -1,5 +1,11 @@
 import sys
 import grpc
+import bayes
+from bayes import create_query
+import bayesian_pb2
+
+
+	
 
 # import the generated classes
 import service.service_spec.bayes_service_pb2_grpc as grpc_ex_grpc
@@ -23,30 +29,28 @@ if __name__ == "__main__":
             endpoint = "localhost:{}".format(registry["bayes_service"]["grpc"])
 
         bayesianNetwork = covid_bayes.covid_bayes()
-        query = 
         evidence = {}
         outvars= ["emergency_treatment","covid_risk","covid_severity"]
-        grpc_method = input("Method (add|sub|mul|div): ") if not test_flag else "mul"
+        query = create_query(evidence,outvars,bayesianNetwork)
+        bayesianNetworkQuery = bayesian_pb2.BayesianNetworkQuery()
+        bayesianNetworkQuery.bayesianNetwork = bayesianNework
+        bayesianNetworkQuery.query = query
+        
+        grpc_method = input("Method (net|query|both): ") if not test_flag else "both"
         a = float(input("Number 1: ") if not test_flag else "12")
         b = float(input("Number 2: ") if not test_flag else "7")
 
         # Open a gRPC channel
         channel = grpc.insecure_channel("{}".format(endpoint))
-        stub = grpc_ex_grpc.CalculatorStub(channel)
-        number = grpc_ex_pb2.Numbers(a=a, b=b)
+        stub = grpc_ex_grpc.BayesNetStub(channel)
 
-        if grpc_method == "add":
-            response = stub.add(number)
+        if grpc_method == "both":
+            response = stub.StatelessNet(query)
             print(response.value)
-        elif grpc_method == "sub":
-            response = stub.sub(number)
-            print(response.value)
-        elif grpc_method == "mul":
-            response = stub.mul(number)
-            print(response.value)
-        elif grpc_method == "div":
-            response = stub.div(number)
-            print(response.value)
+        elif grpc_method == "net":
+            pass
+        elif grpc_method == "query":
+           pass
         else:
             print("Invalid method!")
             exit(1)
