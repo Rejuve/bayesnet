@@ -1,15 +1,15 @@
 import sys
 import grpc
 import bayes
-from bayes import create_query
-import bayesian_pb2
+from bayes.utils import create_query
 
 
 	
 
 # import the generated classes
-import service.service_spec.bayes_service_pb2_grpc as grpc_ex_grpc
-import service.service_spec.bayes_service_pb2 as grpc_ex_pb2
+import service.service_spec.bayesian_pb2_grpc as grpc_bayes_grpc
+import service.service_spec.bayesian_pb2 as grpc_bayes_pb2
+from grpc_bayes_pb2 import BayesianNetworkQuery
 
 from service import registry
 
@@ -32,7 +32,7 @@ if __name__ == "__main__":
         evidence = {}
         outvars= ["emergency_treatment","covid_risk","covid_severity"]
         query = create_query(evidence,outvars,bayesianNetwork)
-        bayesianNetworkQuery = bayesian_pb2.BayesianNetworkQuery()
+        bayesianNetworkQuery = BayesianNetworkQuery()
         bayesianNetworkQuery.bayesianNetwork = bayesianNework
         bayesianNetworkQuery.query = query
         
@@ -42,7 +42,7 @@ if __name__ == "__main__":
 
         # Open a gRPC channel
         channel = grpc.insecure_channel("{}".format(endpoint))
-        stub = grpc_ex_grpc.BayesNetStub(channel)
+        stub = grpc_bayes_grpc.BayesNetStub(channel)
 
         if grpc_method == "both":
             response = stub.StatelessNet(query)
