@@ -46,7 +46,9 @@ if __name__ == "__main__":
 
         if grpc_method == "both":
             response = stub.StatelessNet(query)
-            print(response.value)
+	
+            print("response.varAnswers")
+            print(response.varAnswers)
         elif grpc_method == "net":
             pass
         elif grpc_method == "query":
