@@ -4,6 +4,7 @@ from pomegranate import Node
 from pomegranate import ConditionalProbabilityTable
 import json
 import service.service_spec.bayesian_pb2
+from service.service_spec.bayesian_pb2 import Query
 
 def get_var_positions(bayesianNetwork):
 	var_positions = {}
@@ -52,7 +53,7 @@ def get_evidence_and_outvars(query, bayesianNetwork):
 	return(evidence_dict, outvar_list)
 		
 def create_query (evidence_dict, outvar_list,bayesianNetwork):
-	query = bayesian_pb2.Query()
+	query = Query()
 	var_val_positions = get_var_val_positions(bayesianNetwork)
 	var_positions = get_var_positions(bayesianNetwork)
 	evidence_pos_dict = {}
