@@ -1775,3 +1775,6 @@ def covid_bayes():
 
 	addCpt(bayesianNetwork,cpt)
 	return(bayesianNetwork)
+
+if __name__ == '__main__':
+	covid_bayes()
