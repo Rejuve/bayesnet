@@ -6,7 +6,8 @@ from bayes.utils import if_then_else
 from bayes.utils import bayesInitialize
 from bayes.utils import addCpt
 
-import bayesian_pb2
+
+import service.service_spec.bayesian_pb2
 
 
 def covid_bayes():
