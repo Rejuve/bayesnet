@@ -3,6 +3,7 @@ from pomegranate import BayesianNetwork
 from pomegranate import Node
 from pomegranate import ConditionalProbabilityTable
 import json
+import service.service_spec.bayesian_pb2
 
 def get_var_positions(bayesianNetwork):
 	var_positions = {}
