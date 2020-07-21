@@ -8,10 +8,11 @@ from bayes.utils import addCpt
 
 
 import service.service_spec.bayesian_pb2
+from service.service_spec.bayesian_pb2 import BayesianNetwork
 
 
 def covid_bayes():
-	bayesianNetwork = bayesian_pb2.BayesianNetwork()
+	bayesianNetwork = BayesianNetwork()
 
 
 
