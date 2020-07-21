@@ -50,9 +50,23 @@ def get_evidence_and_outvars(query, bayesianNetwork):
 	outvar_list =[var_names[o] for o in query.outvars if o in var_names]
 	return(evidence_dict, outvar_list)
 		
-		
-		
-		
+def create_query (evidence_dict, outvar_list,bayesianNetwork):
+	query = bayesian_pb2.Query()
+	var_val_positions = get_var_val_positions(bayesianNetwork)
+	var_positions = get_var_positions(bayesianNetwork)
+	evidence_pos_dict = {}
+	for k,v in evidence_dict.items():
+		if k in var_positions and k in var_val_positions and v in var_val_positions[k]:
+			evidence= query.evidence.add()
+			evidence.var_num = var_positions[k]
+			evidence.response = var_val_positions[k][v]
+	for v in outvar_list:
+		if v in var_positions:
+			outvar = query.outvars.add()
+			outvar.var_num = var_positions[v]
+	return query
+			
+
 
 def query(baked_net, netspec, evidence,out_var_list):
 	answer = {}
