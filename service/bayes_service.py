@@ -9,11 +9,11 @@ import bayes
 from bayes.utils import bayesInitialize
 from bayes.utils import query
 import pomegranate
-import bayesian_pb2
+import service.service_spec.bayesian_pb2
 
 # Importing the generated codes from buildproto.sh
-import service.service_spec.bayes_service_pb2_grpc as grpc_bt_grpc
-from service.service_spec.bayes_service_pb2 import Result
+import service.service_spec.bayesian_pb2_grpc as grpc_bt_grpc
+#from service.service_spec.bayesian_pb2 import Answer
 
 logging.basicConfig(level=10, format="%(asctime)s - [%(levelname)8s] - %(name)s - %(message)s")
 log = logging.getLogger("example_service")
