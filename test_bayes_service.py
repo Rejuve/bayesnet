@@ -13,7 +13,7 @@ from service.service_spec.bayesian_pb2 import BayesianNetworkQuery
 
 from service import registry
 
-import covid_bayes
+from bayes import covid_bayes
 
 if __name__ == "__main__":
 
