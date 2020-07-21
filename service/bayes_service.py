@@ -68,7 +68,7 @@ class BayesNetServicer(grpc_bt_grpc.BayesNetServicer):
     net.bake()
     evidence,outvars = get_evidence_and_outvars(request.query, request.bayesianNetwork)
     answer_dict = query(net, request.bayesianNetwork, evidence,outvars)
-    answer = bayesian_pb2.Answer()
+    answer = Answer()
     var_positions = get_var_positions(request.bayesianNetwork)
     var_val_positions = get_var_val_positions(request.bayesianNetwork)
     
