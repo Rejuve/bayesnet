@@ -8,8 +8,8 @@ from bayes.utils import create_query
 
 # import the generated classes
 import service.service_spec.bayesian_pb2_grpc as grpc_bayes_grpc
-import service.service_spec.bayesian_pb2 as grpc_bayes_pb2
-from grpc_bayes_pb2 import BayesianNetworkQuery
+import service.service_spec.bayesian_pb2
+from service.service_spec.bayesian_pb2 import BayesianNetworkQuery
 
 from service import registry
 
