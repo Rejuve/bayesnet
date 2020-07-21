@@ -13,7 +13,7 @@ import service.service_spec.bayesian_pb2
 
 # Importing the generated codes from buildproto.sh
 import service.service_spec.bayesian_pb2_grpc as grpc_bt_grpc
-#from service.service_spec.bayesian_pb2 import Answer
+from service.service_spec.bayesian_pb2 import Answer
 
 logging.basicConfig(level=10, format="%(asctime)s - [%(levelname)8s] - %(name)s - %(message)s")
 log = logging.getLogger("example_service")
@@ -46,7 +46,7 @@ class BayesNetServicer(grpc_bt_grpc.BayesNetServicer):
   def AskNet(self, request, context):
     evidence,outvars = get_evidence_and_outvars(request.query, self.spec)
     answer_dict = query(self.net, self.spec, evidence,outvars)
-    answer = bayesian_pb2.Answer()
+    answer = Answer()
     var_positions = get_var_positions(self.spec)
     var_val_positions = get_var_val_positions(self.spec)
     
