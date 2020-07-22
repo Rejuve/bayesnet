@@ -68,6 +68,8 @@ class BayesNetServicer(grpc_bt_grpc.BayesNetServicer):
   
     print ("request")
     print (request)
+    print ("request.bayesianNetwork")
+    print (request.bayesianNetwork)
     net= bayesInitialize(request.bayesianNetwork)
     net.bake()
     print("net")
