@@ -42,10 +42,10 @@ message BayesianNetwork{
     repeated ConditionalProbabilityRow conditionalProbabilityRows = 3;
     
     message OutVar {
-    	string name = 1
+    	string name = 1;
     }
     
-    repeated Outvar outvars = 4
+    repeated Outvar outvars = 4;
   }
   repeated ConditionalProbabilityTable conditionalProbabilityTables = 2;
   
