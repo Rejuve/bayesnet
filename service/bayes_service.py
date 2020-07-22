@@ -9,6 +9,8 @@ import bayes
 from bayes.utils import bayesInitialize
 from bayes.utils import query
 from bayes.utils import get_evidence_and_outvars
+from bayes.utils import get_var_positions
+from bayes.utils import get_var_val_positions
 
 import pomegranate
 import service.service_spec.bayesian_pb2
