@@ -53,6 +53,10 @@ def get_evidence_and_outvars(query, bayesianNetwork):
 	return(evidence_dict, outvar_list)
 		
 def create_query (evidence_dict, outvar_list,bayesianNetwork):
+	print("evidence_dict")
+	print(evidence_dict)
+	print("outvar_list")
+	print(outvar_list)
 	query = Query()
 	var_val_positions = get_var_val_positions(bayesianNetwork)
 	print ("var_val_positions")
