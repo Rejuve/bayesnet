@@ -45,7 +45,7 @@ message BayesianNetwork{
     	string name = 1;
     }
     
-    repeated Outvar outvars = 4;
+    repeated OutVar outvars = 4;
   }
   repeated ConditionalProbabilityTable conditionalProbabilityTables = 2;
   
