@@ -98,7 +98,7 @@ class BayesNetServicer(grpc_bt_grpc.BayesNetServicer):
 # (from generated .py files by protobuf compiler)
 def serve(max_workers=10, port=7777):
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=max_workers))
-    grpc_bt_grpc.add_CalculatorServicer_to_server(BayesNetServicer(), server)
+    grpc_bt_grpc.add_BayesNetServicer_to_server(BayesNetServicer(), server)
     server.add_insecure_port("[::]:{}".format(port))
     return server
 
