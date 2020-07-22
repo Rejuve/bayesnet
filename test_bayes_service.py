@@ -35,10 +35,10 @@ if __name__ == "__main__":
         evidence = {}
         outvars= ["emergency_treatment","covid_risk","covid_severity"]
         query = create_query(evidence,outvars,bayesianNetwork)
-        print ("query")
-        print (query)
+        #print ("query")
+        #print (query)
         bayesianNetworkQuery = BayesianNetworkQuery()
-        bayesianNetworkQuery.bayesianNetwork = bayesianNework
+        bayesianNetworkQuery.bayesianNetwork = bayesianNetwork
         bayesianNetworkQuery.query = query
         print("bayesianNetworkQuery")
         print(bayesianNetworkQuery)
