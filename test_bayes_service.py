@@ -57,8 +57,8 @@ if __name__ == "__main__":
 
         if grpc_method == "both":
             response = stub.StatelessNet(bayesianNetworkQuery)
-            print("response")
-            print(response)
+            #print("response")
+            #print(response)
 	
             print("response.varAnswers")
             print(response.varAnswers)
