@@ -23,6 +23,10 @@ def get_var_val_positions(bayesianNetwork):
 		var_val_positions[dist.name] = {}
 		for pos,var in enumerate(dist.variables):
 			var_val_positions[dist.name][var.name] = pos
+	for j,table in enumerate(bayesianNetwork.conditionalProbabilityTables):
+		var_val_names[table.name] ={}
+		for pos,var in enumerate(table.randomVariables):
+			var_val_names[table.name][var.name] = pos
 	return var_val_positions
 
 
@@ -30,6 +34,9 @@ def get_var_names(bayesianNetwork):
 	var_names = {}
 	for i,dist in enumerate(bayesianNetwork.discreteDistributions):
 		var_names[i]=dist.name
+	start = len(var_names)
+	for j,table in enumerate(bayesianNetwork.conditionalProbabilityTables):
+		var_names[j+ start] = table.name
 	return var_names
 
 def get_var_val_names(bayesianNetwork):
@@ -38,6 +45,10 @@ def get_var_val_names(bayesianNetwork):
 		var_val_names[dist.name]={}
 		for pos,var in enumerate(dist.variables):
 			var_val_names[dist.name][pos] = var.name
+	for j,table in enumerate(bayesianNetwork.conditionalProbabilityTables):
+		var_val_names[table.name] ={}
+		for pos,var in enumerate(table.randomVariables):
+			var_val_names[table.name][pos] = var.name
 	return var_val_names
 
 
