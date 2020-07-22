@@ -55,30 +55,30 @@ def get_evidence_and_outvars(query, bayesianNetwork):
 	return(evidence_dict, outvar_list)
 		
 def create_query (evidence_dict, outvar_list,bayesianNetwork):
-	print("evidence_dict")
-	print(evidence_dict)
-	print("outvar_list")
-	print(outvar_list)
+	#print("evidence_dict")
+	#print(evidence_dict)
+	#print("outvar_list")
+	#print(outvar_list)
 	query = Query()
 	var_val_positions = get_var_val_positions(bayesianNetwork)
-	print ("var_val_positions")
-	print (var_val_positions)
+	#print ("var_val_positions")
+	#print (var_val_positions)
 	var_positions = get_var_positions(bayesianNetwork)
-	print ("var_positions")
-	print (var_positions)
+	#print ("var_positions")
+	#print (var_positions)
 	for k,v in evidence_dict.items():
 		if k in var_positions and k in var_val_positions and v in var_val_positions[k]:
 			evidence= query.evidence.add()
 			evidence.var_num = var_positions[k]
 			evidence.response = var_val_positions[k][v]
-			print("evidence")
-			print(evidence)
+			#print("evidence")
+			#print(evidence)
 	for v in outvar_list:
 		if v in var_positions:
 			outvar = query.outvars.add()
 			outvar.var_num = var_positions[v]
-			print ("outvar")
-			print(outvar)
+			#print ("outvar")
+			#print(outvar)
 	return query
 			
 
