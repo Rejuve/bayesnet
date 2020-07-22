@@ -20,6 +20,7 @@ def get_var_positions(bayesianNetwork):
 def get_var_val_positions(bayesianNetwork):
 	var_val_positions = {}
 	for dist in bayesianNetwork.discreteDistributions:
+		var_val_positions[dist.name] = {}
 		for pos,var in enumerate(dist.variables):
 			var_val_positions[dist.name][var.name] = pos
 	return var_val_positions
@@ -34,6 +35,7 @@ def get_var_names(bayesianNetwork):
 def get_var_val_names(bayesianNetwork):
 	var_val_names = {}
 	for dist in bayesianNetwork.discreteDistributions:
+		var_val_names[dist.name]={}
 		for pos,var in enumerate(dist.variables):
 			var_val_names[dist.name][pos] = var.name
 	return var_val_names
