@@ -40,12 +40,12 @@ if __name__ == "__main__":
         bayesianNetworkQuery = BayesianNetworkQuery()
         bayesianNetworkQuery.bayesianNetwork.CopyFrom( bayesianNetwork)
         bayesianNetworkQuery.query.CopyFrom(query)
-        print("bayesianNetworkQuery")
-        print(bayesianNetworkQuery)
+        #print("bayesianNetworkQuery")
+        #print(bayesianNetworkQuery)
         
         grpc_method = input("Method (net|query|both): ") if not test_flag else "both"
-        print("grpc_method")
-        print(grpc_method)
+        #print("grpc_method")
+        #print(grpc_method)
 
         # Open a gRPC channel
         channel = grpc.insecure_channel("{}".format(endpoint))
