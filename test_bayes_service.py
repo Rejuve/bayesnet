@@ -27,11 +27,11 @@ if __name__ == "__main__":
         endpoint = input("Endpoint (localhost:{}): ".format(registry["bayes_service"]["grpc"])) if not test_flag else ""
         if endpoint == "":
             endpoint = "localhost:{}".format(registry["bayes_service"]["grpc"])
-        print ("endpoint")
-        print (endpoint)
+        #print ("endpoint")
+        #print (endpoint)
         bayesianNetwork = covid_bayes.covid_bayes()
-        print("bayesianNetwork")
-        print(bayesianNetwork)
+        #print("bayesianNetwork")
+        #print(bayesianNetwork)
         evidence = {}
         outvars= ["emergency_treatment","covid_risk","covid_severity"]
         query = create_query(evidence,outvars,bayesianNetwork)
