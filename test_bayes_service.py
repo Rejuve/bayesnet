@@ -49,11 +49,11 @@ if __name__ == "__main__":
 
         # Open a gRPC channel
         channel = grpc.insecure_channel("{}".format(endpoint))
-        print("channel")
-        print(channel)
+        #print("channel")
+        #print(channel)
         stub = grpc_bayes_grpc.BayesNetStub(channel)
-        print("stub")
-        print(stub)
+        #print("stub")
+        #print(stub)
 
         if grpc_method == "both":
             response = stub.StatelessNet(bayesianNetworkQuery)
