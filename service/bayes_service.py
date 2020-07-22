@@ -8,6 +8,8 @@ import service.common
 import bayes
 from bayes.utils import bayesInitialize
 from bayes.utils import query
+from bayes.utils import get_evidence_and_outcomes
+
 import pomegranate
 import service.service_spec.bayesian_pb2
 
