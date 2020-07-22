@@ -37,8 +37,6 @@ if __name__ == "__main__":
         bayesianNetworkQuery.query = query
         
         grpc_method = input("Method (net|query|both): ") if not test_flag else "both"
-        a = float(input("Number 1: ") if not test_flag else "12")
-        b = float(input("Number 2: ") if not test_flag else "7")
 
         # Open a gRPC channel
         channel = grpc.insecure_channel("{}".format(endpoint))
@@ -58,5 +56,6 @@ if __name__ == "__main__":
             exit(1)
 
     except Exception as e:
+	print("Exception")
         print(e)
         exit(1)
