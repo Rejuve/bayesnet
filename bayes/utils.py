@@ -43,7 +43,7 @@ def get_var_val_names(bayesianNetwork):
 
 
 def get_evidence_and_outvars(query, bayesianNetwork):
-	print("query in get_evidence_and_outvars)
+	print("query in get_evidence_and_outvars")
 	print(query)
 	var_val_names = get_var_val_names(bayesianNetwork)
 	var_names = get_var_names(bayesianNetwork)
