@@ -88,11 +88,11 @@ class BayesNetServicer(grpc_bt_grpc.BayesNetServicer):
     #print(answer_dict)
     answer = Answer()
     var_positions = get_var_positions(request.bayesianNetwork)
-    print("var_positions")
-    print(var_positions)
+    #print("var_positions")
+    #print(var_positions)
     var_val_positions = get_var_val_positions(request.bayesianNetwork)
-    print("var_val_positions")
-    print(var_val_positions)
+    #print("var_val_positions")
+    #print(var_val_positions)
     
     for var, val_dict in answer_dict.items():
       var_answer = answer.varAnswers.add()
