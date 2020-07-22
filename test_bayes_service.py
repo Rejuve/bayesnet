@@ -60,7 +60,7 @@ if __name__ == "__main__":
             #print("response")
             #print(response)
 	
-            print("response.varAnswers")
+            #print("response.varAnswers")
             print(response.varAnswers)
         elif grpc_method == "net":
             pass
