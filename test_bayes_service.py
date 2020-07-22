@@ -38,8 +38,8 @@ if __name__ == "__main__":
         #print ("query")
         #print (query)
         bayesianNetworkQuery = BayesianNetworkQuery()
-        bayesianNetworkQuery.bayesianNetwork = bayesianNetwork
-        bayesianNetworkQuery.query = query
+        bayesianNetworkQuery.bayesianNetwork.CopyFrom( bayesianNetwork)
+        bayesianNetworkQuery.query.CopyFrom(query)
         print("bayesianNetworkQuery")
         print(bayesianNetworkQuery)
         
