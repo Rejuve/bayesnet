@@ -51,7 +51,7 @@ def get_evidence_and_outvars(query, bayesianNetwork):
 			var_name = var_names[e.var_num]
 			var_val_name = var_val_names[var_name][e.response]
 			evidence_dict[var_name] = var_val_name 
-	outvar_list =[var_names[o] for o in query.outvars if o in var_names]
+	outvar_list =[var_names[o.var_num] for o in query.outvars if o.var_num in var_names]
 	return(evidence_dict, outvar_list)
 		
 def create_query (evidence_dict, outvar_list,bayesianNetwork):
