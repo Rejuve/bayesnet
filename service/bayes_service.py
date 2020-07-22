@@ -84,8 +84,8 @@ class BayesNetServicer(grpc_bt_grpc.BayesNetServicer):
     #print ("outvars")
     #print (outvars)
     answer_dict = query(net, request.bayesianNetwork, evidence,outvars)
-    print("answer_dict")
-    print(answer_dict)
+    #print("answer_dict")
+    #print(answer_dict)
     answer = Answer()
     var_positions = get_var_positions(request.bayesianNetwork)
     #print("var_positions")
@@ -101,8 +101,8 @@ class BayesNetServicer(grpc_bt_grpc.BayesNetServicer):
         var_answer.var_num = var_num
         for val, prob in val_dict.items():
           val_num = var_val_positions[var][val]
-          print("val_num")
-          print(val_num)
+          #print("val_num")
+          #print(val_num)
           var_state = var_answer.varStates.add()
           var_state.state_num = val_num
           var_state.probability =prob
