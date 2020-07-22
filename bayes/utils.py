@@ -339,6 +339,9 @@ def addCpt(bayesianNetwork, cpt):
 					randomVariableValue.name = var
 				else:
 					conditionalProbabilityRow.probability = var
+		for outvar in cpt_tuple[2]:
+			out = conditionalProbabilityTable.outvars.add()
+			out.name = outvar
 				
 	
 
