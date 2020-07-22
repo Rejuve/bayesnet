@@ -8,7 +8,7 @@ import service.common
 import bayes
 from bayes.utils import bayesInitialize
 from bayes.utils import query
-from bayes.utils import get_evidence_and_outcomes
+from bayes.utils import get_evidence_and_outvars
 
 import pomegranate
 import service.service_spec.bayesian_pb2
@@ -70,8 +70,12 @@ class BayesNetServicer(grpc_bt_grpc.BayesNetServicer):
     print (request)
     net= bayesInitialize(request.bayesianNetwork)
     net.bake()
+    print("net")
+    print(net)
     evidence,outvars = get_evidence_and_outvars(request.query, request.bayesianNetwork)
     answer_dict = query(net, request.bayesianNetwork, evidence,outvars)
+    print("answer_dict")
+    print(answer_dict)
     answer = Answer()
     var_positions = get_var_positions(request.bayesianNetwork)
     var_val_positions = get_var_val_positions(request.bayesianNetwork)
