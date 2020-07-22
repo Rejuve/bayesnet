@@ -27,23 +27,38 @@ if __name__ == "__main__":
         endpoint = input("Endpoint (localhost:{}): ".format(registry["bayes_service"]["grpc"])) if not test_flag else ""
         if endpoint == "":
             endpoint = "localhost:{}".format(registry["bayes_service"]["grpc"])
-
+	print ("endpoint")
+	print (endpoint)
         bayesianNetwork = covid_bayes.covid_bayes()
+	print("bayesianNetwork")
+	print(bayesianNetwork)
         evidence = {}
         outvars= ["emergency_treatment","covid_risk","covid_severity"]
         query = create_query(evidence,outvars,bayesianNetwork)
+	print ("query")
+	print (query)
         bayesianNetworkQuery = BayesianNetworkQuery()
         bayesianNetworkQuery.bayesianNetwork = bayesianNework
         bayesianNetworkQuery.query = query
+	print("bayesianNetworkQuery")
+	print(bayesianNetworkQuery)
         
         grpc_method = input("Method (net|query|both): ") if not test_flag else "both"
+	print("grpc_method")
+	print(grpc_method)
 
         # Open a gRPC channel
         channel = grpc.insecure_channel("{}".format(endpoint))
+	print("channel")
+	print(channel)
         stub = grpc_bayes_grpc.BayesNetStub(channel)
+	print("stub")
+	print(stub)
 
         if grpc_method == "both":
             response = stub.StatelessNet(query)
+            print("response")
+            print(response)
 	
             print("response.varAnswers")
             print(response.varAnswers)
