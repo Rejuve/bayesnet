@@ -64,6 +64,8 @@ class BayesNetServicer(grpc_bt_grpc.BayesNetServicer):
 
   def StatelessNet(self, request, context):
   
+    print ("request")
+    print (request)
     net= bayesInitialize(request.bayesianNetwork)
     net.bake()
     evidence,outvars = get_evidence_and_outvars(request.query, request.bayesianNetwork)
