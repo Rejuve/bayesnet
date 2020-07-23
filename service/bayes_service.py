@@ -75,7 +75,7 @@ class BayesNetServicer(grpc_bt_grpc.BayesNetServicer):
     
 
   def StartNet(self, request, context):
-    uniqueID = getUniqueID()
+    uniqueID = self.getUniqueID()
     self.spec[uniqueID]= request
     self.baked[uniqueID] = bayesInitialize(request)
     self.baked[uniqueID].bake()
