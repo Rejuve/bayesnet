@@ -46,16 +46,22 @@ if __name__ == "__main__":
             response = stub.StatelessNet(bayesianNetworkQuery)
             print("response.varAnswers")
             print(response.varAnswers)
+	    print("response.error_msg")
+            print(response.error_msg)
         elif grpc_method == "statefull":
             response = stub.StartNet(bayesianNetwork)
             print("response.id")
             print(response.id)
+	    print("response.error_msg")
+            print(response.error_msg)
             queryId = QueryId()
             queryId.id = response.id
             queryId.query.CopyFrom(query)
             response = stub.AskNet(queryId)
             print("response.varAnswers")
             print(response.varAnswers)
+	    print("response.error_msg")
+            print(response.error_msg)
         else:
             print("Invalid method!")
             exit(1)
