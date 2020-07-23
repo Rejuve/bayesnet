@@ -11,7 +11,8 @@ from bayes.utils import query
 from bayes.utils import get_evidence_and_outvars
 from bayes.utils import get_var_positions
 from bayes.utils import get_var_val_positions
-
+import os
+import pickle
 import pomegranate
 import service.service_spec.bayesian_pb2
 
@@ -37,22 +38,65 @@ and then query it with its unique id.
 
 class BayesNetServicer(grpc_bt_grpc.BayesNetServicer):
 
-  def __init__(self):
-    self.net = None
-    self.spec = None
+  def __init__(self,path="./nets"):
+    self.baked_path = path+_baked.p
+    self.spec_path = path+_spec.p
+    self.error = False
+    
+    
+    if os.path.isfile(self.baked_path) and os.path.isfile(self.spec_path):
+        with open(self.baked_path, "rb") as f:
+            try:
+                self.baked  =  pickle.load(f)
+            except Exception as e:
+                print(e)
+                self.baked = {}
+                self.error = True
+        if not self.error:
+          with open(self.spec_path, "rb") as f:
+              try:
+                  self.spec  =  pickle.load(f)
+              except Exception as e:
+                  print(e)
+                  self.spec = {}
+        else:
+          self.spec ={}
+    else:
+      self.baked ={}
+      self.spec ={}
+      
     log.debug("BayesServicer created")
+    
+  def getUniqueID(self):
+    i=0
+    while i not in self.baked or i not in self.spec:
+      i += 1
+    return i
+    
 
   def StartNet(self, request, context):
-    self.spec = request
-    self.net= bayesInitialize(request)
-    self.net.bake()
+    uniqueID = getUniqueID()
+    self.spec[uniqueID]= request
+    self.baked[uniqueID] = bayesInitialize(request)
+    self.baked[uniqueID].bake()
+    #todo: asyncronous return id before saving
+    with open(self.baked_path, 'wb') as f:
+      pickle.dump(self.baked, f)
+      f.close()
+    with open(self.spec_path, 'wb') as f:
+      pickle.dump(self.spec, f)
+      f.close()
+    id = Id()
+    id.id = uniqueID
+    return id
+  
 
   def AskNet(self, request, context):
-    evidence,outvars = get_evidence_and_outvars(request.query, self.spec)
-    answer_dict = query(self.net, self.spec, evidence,outvars)
+    evidence,outvars = get_evidence_and_outvars(request.query, self.spec[request.id])
+    answer_dict = query(self.baked[request.id], self.spec[request.id], evidence,outvars)
     answer = Answer()
-    var_positions = get_var_positions(self.spec)
-    var_val_positions = get_var_val_positions(self.spec)
+    var_positions = get_var_positions(self.spec[request.id])
+    var_val_positions = get_var_val_positions(self.spec[request.id])
     
     for var, val_dict in answer_dict.items():
       var_answer = answer.varAnswers.add()
@@ -68,31 +112,13 @@ class BayesNetServicer(grpc_bt_grpc.BayesNetServicer):
 
   def StatelessNet(self, request, context):
   
-    #print ("request")
-    #print (request)
-    #print ("request.bayesianNetwork")
-    #print (request.bayesianNetwork)
     net= bayesInitialize(request.bayesianNetwork)
     net.bake()
-    #print("net")
-    #print(net)
-    #print("request.query")
-    #print(request.query)
     evidence,outvars = get_evidence_and_outvars(request.query, request.bayesianNetwork)
-    #print ('evidence')
-    #print (evidence)
-    #print ("outvars")
-    #print (outvars)
     answer_dict = query(net, request.bayesianNetwork, evidence,outvars)
-    #print("answer_dict")
-    #print(answer_dict)
     answer = Answer()
     var_positions = get_var_positions(request.bayesianNetwork)
-    #print("var_positions")
-    #print(var_positions)
     var_val_positions = get_var_val_positions(request.bayesianNetwork)
-    #print("var_val_positions")
-    #print(var_val_positions)
     
     for var, val_dict in answer_dict.items():
       var_answer = answer.varAnswers.add()
@@ -101,8 +127,6 @@ class BayesNetServicer(grpc_bt_grpc.BayesNetServicer):
         var_answer.var_num = var_num
         for val, prob in val_dict.items():
           val_num = var_val_positions[var][val]
-          #print("val_num")
-          #print(val_num)
           var_state = var_answer.varStates.add()
           var_state.state_num = val_num
           var_state.probability =prob
