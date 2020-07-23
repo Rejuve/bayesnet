@@ -69,7 +69,7 @@ class BayesNetServicer(grpc_bt_grpc.BayesNetServicer):
     
   def getUniqueID(self):
     i=0
-    while i not in self.baked or i not in self.spec:
+    while i in self.baked or i in self.spec:
       i += 1
     return i
     
