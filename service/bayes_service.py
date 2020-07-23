@@ -3,6 +3,9 @@ import logging
 
 import grpc
 import concurrent.futures as futures
+import protobuf
+from protobuf import json_format
+
 
 import service.common
 import bayes
@@ -19,6 +22,7 @@ import service.service_spec.bayesian_pb2
 # Importing the generated codes from buildproto.sh
 import service.service_spec.bayesian_pb2_grpc as grpc_bt_grpc
 from service.service_spec.bayesian_pb2 import Answer
+from service.service_spec.bayesian_pb2 import BayesianNetwork
 
 logging.basicConfig(level=10, format="%(asctime)s - [%(levelname)8s] - %(name)s - %(message)s")
 log = logging.getLogger("example_service")
@@ -38,32 +42,26 @@ and then query it with its unique id.
 
 class BayesNetServicer(grpc_bt_grpc.BayesNetServicer):
 
-  def __init__(self,path="./nets"):
-    self.baked_path = path+"_baked.p"
+  def __init__(self,path="./nets",reset=False):
+    self.baked = {}
+    self.spec = {}
     self.spec_path = path+"_spec.p"
-    self.error = False
     
-    
-    if os.path.isfile(self.baked_path) and os.path.isfile(self.spec_path):
-        with open(self.baked_path, "rb") as f:
-            try:
-                self.baked  =  pickle.load(f)
-            except Exception as e:
-                print(e)
-                self.baked = {}
-                self.error = True
-        if not self.error:
+
+    if os.path.isfile(self.spec_path):
           with open(self.spec_path, "rb") as f:
               try:
-                  self.spec  =  pickle.load(f)
+                  self.spec_json  =  pickle.load(f)
               except Exception as e:
                   print(e)
-                  self.spec = {}
-        else:
-          self.spec ={}
+                  self.spec_json = {}
     else:
-      self.baked ={}
-      self.spec ={}
+      self.spec_json ={}
+      
+    for i,json_string in self.spec_json.items():
+       self.spec[i] = json_format.Parse(json_string, BayesianNetwork())
+       self.baked[i] = bayesInitialize(self.spec[i])
+       self.baked[i].bake() 
       
     log.debug("BayesServicer created")
     
@@ -79,12 +77,12 @@ class BayesNetServicer(grpc_bt_grpc.BayesNetServicer):
     self.spec[uniqueID]= request
     self.baked[uniqueID] = bayesInitialize(request)
     self.baked[uniqueID].bake()
-    #todo: asyncronous return id before saving
-    with open(self.baked_path, 'wb') as f:
-      pickle.dump(self.baked, f)
-      f.close()
+    self.spec_json = {}
+    #todo: return id asynchronously without waiting to save, or save if guaranteed upon error
+    for i, message in self.spec.items():
+      self.spec_json[i] = json_format.MessageToJson(message)
     with open(self.spec_path, 'wb') as f:
-      pickle.dump(self.spec, f)
+      pickle.dump(self.spec_json, f)
       f.close()
     id = Id()
     id.id = uniqueID
