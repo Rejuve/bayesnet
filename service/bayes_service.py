@@ -39,8 +39,8 @@ and then query it with its unique id.
 class BayesNetServicer(grpc_bt_grpc.BayesNetServicer):
 
   def __init__(self,path="./nets"):
-    self.baked_path = path+_baked.p
-    self.spec_path = path+_spec.p
+    self.baked_path = path+"_baked.p"
+    self.spec_path = path+"_spec.p"
     self.error = False
     
     
