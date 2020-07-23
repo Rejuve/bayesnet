@@ -9,7 +9,7 @@ from service.service_spec.bayesian_pb2 import Query
 
 def complexity_check(bayesianNetwork,
 #todo: check obscenity		
-	max_size_in_bytes = 10	     
+	max_size_in_bytes = 10,	     
 	allowed_number_nodes = 300,
 	allowed_number_variables= 4,
 	allowed_number_variable_values= 9):
