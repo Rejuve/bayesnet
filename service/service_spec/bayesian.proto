@@ -69,7 +69,7 @@ message Query{
 
 
 message QueryId{
-  Id net_id = 1;
+  int32 id = 1;
   Query query = 2;
 }
 
