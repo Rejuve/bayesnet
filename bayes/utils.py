@@ -8,7 +8,8 @@ from service.service_spec.bayesian_pb2 import Query
 
 
 def complexity_check(bayesianNetwork,
-	allowed_number_nodes = 1000,
+#todo: check obscentity		     
+	allowed_number_nodes = 10, #1000,
 	allowed_number_variables= 4,
 	allowed_number_variable_values= 5):
 
