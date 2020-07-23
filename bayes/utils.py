@@ -9,9 +9,9 @@ from service.service_spec.bayesian_pb2 import Query
 
 def complexity_check(bayesianNetwork,
 #todo: check obscenity		     
-	allowed_number_nodes = 10, #1000,
+	allowed_number_nodes = 300,
 	allowed_number_variables= 4,
-	allowed_number_variable_values= 5):
+	allowed_number_variable_values= 9):
 
 	passes = True
 	messages = []
@@ -29,7 +29,7 @@ def complexity_check(bayesianNetwork,
 		messages.append("This net's max number of variable values is {0} while allowed number is {1}".format(maxvarval,allowed_number_variable_values))
 	row_test = True	
 	for table in bayesianNetwork.conditionalProbabilityTables:
-		numvars = len(table.conditionalProbabilityRows[0].randomVariableValues)
+		numvars = len(table.conditionalProbabilityRows[0].randomVariableValues)-1
 		if numvars > allowed_number_variables:
 			passes = False
 			messages.append("Variable {0} has {1} dependancies while the allowed number is {2}".format(table.name, numvars,allowed_number_variables))
