@@ -3,8 +3,7 @@ import logging
 
 import grpc
 import concurrent.futures as futures
-import protobuf
-from protobuf import json_format
+from google.protobuf import json_format
 
 
 import service.common
