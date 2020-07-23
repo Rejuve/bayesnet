@@ -46,7 +46,7 @@ if __name__ == "__main__":
             response = stub.StatelessNet(bayesianNetworkQuery)
             print("response.varAnswers")
             print(response.varAnswers)
-	    print("response.error_msg")
+            print("response.error_msg")
             print(response.error_msg)
         elif grpc_method == "statefull":
             response = stub.StartNet(bayesianNetwork)
