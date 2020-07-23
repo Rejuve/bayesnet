@@ -95,22 +95,25 @@ class BayesNetServicer(grpc_bt_grpc.BayesNetServicer):
   
 
   def AskNet(self, request, context):
-    evidence,outvars = get_evidence_and_outvars(request.query, self.spec[request.id])
-    answer_dict = query(self.baked[request.id], self.spec[request.id], evidence,outvars)
     answer = Answer()
-    var_positions = get_var_positions(self.spec[request.id])
-    var_val_positions = get_var_val_positions(self.spec[request.id])
-    
-    for var, val_dict in answer_dict.items():
-      var_answer = answer.varAnswers.add()
-      if var in var_positions:
-        var_num = var_positions[var]
-        var_answer.var_num = var_num
-        for val, prob in val_dict.items():
-          val_num = var_val_positions[var][val]
-          var_state = var_answer.varStates.add()
-          var_state.state_num = val_num
-          var_state.probability =prob
+    if request.id in self.spec:
+      evidence,outvars = get_evidence_and_outvars(request.query, self.spec[request.id])
+      answer_dict = query(self.baked[request.id], self.spec[request.id], evidence,outvars)
+      var_positions = get_var_positions(self.spec[request.id])
+      var_val_positions = get_var_val_positions(self.spec[request.id])
+
+      for var, val_dict in answer_dict.items():
+        var_answer = answer.varAnswers.add()
+        if var in var_positions:
+          var_num = var_positions[var]
+          var_answer.var_num = var_num
+          for val, prob in val_dict.items():
+            val_num = var_val_positions[var][val]
+            var_state = var_answer.varStates.add()
+            var_state.state_num = val_num
+            var_state.probability =prob
+    else:
+      answer.error_msg = "Net {} does not exist".format(request.id)
     return(answer)
 
   def StatelessNet(self, request, context):
