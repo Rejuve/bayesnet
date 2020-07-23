@@ -8,31 +8,37 @@ from service.service_spec.bayesian_pb2 import Query
 
 
 def complexity_check(bayesianNetwork,
-#todo: check obscenity		     
+#todo: check obscenity		
+	max_size_in_bytes = 10	     
 	allowed_number_nodes = 300,
 	allowed_number_variables= 4,
 	allowed_number_variable_values= 9):
 
 	passes = True
 	messages = []
+	size = bayesianNetwork.CalculateSize()
 	
-	var_val_positions = get_var_val_positions(bayesianNetwork)
-	num_nodes = len(var_val_positions)
-	if num_nodes > allowed_number_nodes:
+	if size > max_size_in_bytes:
 		passes = False
-		messages.append("This net's number of nodes is {0} while allowed number is {1}".format(num_nodes,allowed_number_nodes))
-		
-	lenlist = [len(l) for l in list(var_val_positions.values())]
-	maxvarval=  max(lenlist)
-	if maxvarval > allowed_number_variable_values:
-		passes = False
-		messages.append("This net's max number of variable values is {0} while allowed number is {1}".format(maxvarval,allowed_number_variable_values))
-	row_test = True	
-	for table in bayesianNetwork.conditionalProbabilityTables:
-		numvars = len(table.conditionalProbabilityRows[0].randomVariableValues)-1
-		if numvars > allowed_number_variables:
+		messages.append("This net's size is {0} bytes while max size is {1} bytes".format(size,max_size_in_bytes))
+	else:
+		var_val_positions = get_var_val_positions(bayesianNetwork)
+		num_nodes = len(var_val_positions)
+		if num_nodes > allowed_number_nodes:
 			passes = False
-			messages.append("Variable {0} has {1} dependancies while the allowed number is {2}".format(table.name, numvars,allowed_number_variables))
+			messages.append("This net's number of nodes is {0} while allowed number is {1}".format(num_nodes,allowed_number_nodes))
+
+		lenlist = [len(l) for l in list(var_val_positions.values())]
+		maxvarval=  max(lenlist)
+		if maxvarval > allowed_number_variable_values:
+			passes = False
+			messages.append("This net's max number of variable values is {0} while allowed number is {1}".format(maxvarval,allowed_number_variable_values))
+		row_test = True	
+		for table in bayesianNetwork.conditionalProbabilityTables:
+			numvars = len(table.conditionalProbabilityRows[0].randomVariableValues)-1
+			if numvars > allowed_number_variables:
+				passes = False
+				messages.append("Variable {0} has {1} dependancies while the allowed number is {2}".format(table.name, numvars,allowed_number_variables))
 	errors = '\n'.join(messages)
 	return (passes,errors)
 
