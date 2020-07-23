@@ -22,6 +22,7 @@ import service.service_spec.bayesian_pb2
 import service.service_spec.bayesian_pb2_grpc as grpc_bt_grpc
 from service.service_spec.bayesian_pb2 import Answer
 from service.service_spec.bayesian_pb2 import BayesianNetwork
+from service.service_spec.bayesian_pb2 import Id
 
 logging.basicConfig(level=10, format="%(asctime)s - [%(levelname)8s] - %(name)s - %(message)s")
 log = logging.getLogger("example_service")
