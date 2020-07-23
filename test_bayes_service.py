@@ -50,9 +50,9 @@ if __name__ == "__main__":
             response = stub.StartNet(bayesianNetwork)
             print("response.id")
             print(response.id)
-	    queryId = QueryId()
-	    queryId.id = response.id
-	    queryId.query.CopyFrom(query)
+            queryId = QueryId()
+            queryId.id = response.id
+            queryId.query.CopyFrom(query)
             response = stub.AskNet(queryId)
             print("response.varAnswers")
             print(response.varAnswers)
