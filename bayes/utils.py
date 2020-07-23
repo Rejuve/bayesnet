@@ -16,7 +16,7 @@ def complexity_check(bayesianNetwork,
 
 	passes = True
 	messages = []
-	size = bayesianNetwork.CalculateSize()
+	size = bayesianNetwork.ByteSize()
 	
 	if size > max_size_in_bytes:
 		passes = False
