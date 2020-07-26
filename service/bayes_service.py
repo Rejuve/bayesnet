@@ -9,6 +9,7 @@ import service
 
 
 import bayes
+from bayes import utils
 from bayes.utils import bayesInitialize
 from bayes.utils import query
 from bayes.utils import get_evidence_and_outvars
