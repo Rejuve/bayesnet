@@ -5,8 +5,9 @@ import grpc
 import concurrent.futures as futures
 from google.protobuf import json_format
 
+import service
+from service import common
 
-import service.common
 import bayes
 from bayes.utils import bayesInitialize
 from bayes.utils import query
