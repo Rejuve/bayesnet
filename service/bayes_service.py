@@ -6,7 +6,7 @@ import concurrent.futures as futures
 from google.protobuf import json_format
 
 import service
-from service import common
+
 
 import bayes
 from bayes.utils import bayesInitialize
