@@ -19,6 +19,7 @@ import bayes
 import os
 import pickle
 import pomegranate
+from service import service_spec
 import service.service_spec.bayesian_pb2
 
 # Importing the generated codes from buildproto.sh
