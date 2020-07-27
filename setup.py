@@ -2,5 +2,5 @@ from distutils.core import setup
 
 setup(name='covid-bayes',
       version='1.0',
-      packages=['bayes','service']
+      packages=['sn_bayes','sn_service']
       )
