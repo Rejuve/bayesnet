@@ -1,14 +1,14 @@
-import bayes
-from bayes.utils import any
-from bayes.utils import all
-from bayes.utils import avg
-from bayes.utils import if_then_else
-from bayes.utils import bayesInitialize
-from bayes.utils import addCpt
+import sn_bayes
+from sn_bayes.utils import any
+from sn_bayes.utils import all
+from sn_bayes.utils import avg
+from sn_bayes.utils import if_then_else
+from sn_bayes.utils import bayesInitialize
+from sn_bayes.utils import addCpt
 
 
-import service.service_spec.bayesian_pb2
-from service.service_spec.bayesian_pb2 import BayesianNetwork
+import sn_service.service_spec.bayesian_pb2
+from sn_service.service_spec.bayesian_pb2 import BayesianNetwork
 
 
 def covid_bayes():
