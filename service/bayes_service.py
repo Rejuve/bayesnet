@@ -5,18 +5,18 @@ import grpc
 import concurrent.futures as futures
 from google.protobuf import json_format
 
-from covid-bayesnet.bayes.utils import bayesInitialize
-from covid-bayesnet.bayes.utils import query
-from covid-bayesnet.bayes.utils import get_evidence_and_outvars
-from covid-bayesnet.bayes.utils import get_var_positions
-from covid-bayesnet.bayes.utils import get_var_val_positions
-from covid-bayesnet.bayes.utils import complexity_check
+from bayes.utils import bayesInitialize
+from bayes.utils import query
+from bayes.utils import get_evidence_and_outvars
+from bayes.utils import get_var_positions
+from bayes.utils import get_var_val_positions
+from bayes.utils import complexity_check
 import os
 import pickle
 import pomegranate
-import covid-bayesnet.service
-from covid-bayesnet.service import service_spec
-import covid-bayesnet.service.service_spec.bayesian_pb2
+import service
+from service import service_spec
+import service.service_spec.bayesian_pb2
 
 # Importing the generated codes from buildproto.sh
 
