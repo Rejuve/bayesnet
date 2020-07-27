@@ -1,20 +1,20 @@
 import sys
 import grpc
-import bayes
-from bayes.utils import create_query
+import sn_bayes
+from sn_bayes.utils import create_query
 
 
 	
 
 # import the generated classes
-import service.service_spec.bayesian_pb2_grpc as grpc_bayes_grpc
-import service.service_spec.bayesian_pb2
-from service.service_spec.bayesian_pb2 import BayesianNetworkQuery
-from service.service_spec.bayesian_pb2 import QueryId
+import sn_service.service_spec.bayesian_pb2_grpc as grpc_bayes_grpc
+import sn_service.service_spec.bayesian_pb2
+from sn_service.service_spec.bayesian_pb2 import BayesianNetworkQuery
+from sn_service.service_spec.bayesian_pb2 import QueryId
 
-from service import registry
+from sn_service import registry
 
-from bayes import covid_bayes
+from sn_bayes import covid_bayes
 
 if __name__ == "__main__":
 
