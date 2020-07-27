@@ -5,24 +5,21 @@ import grpc
 import concurrent.futures as futures
 from google.protobuf import json_format
 
-import service
-
-
-import bayes
-#from bayes import utils
-#from bayes.utils import bayesInitialize
-#from bayes.utils import query
-#from bayes.utils import get_evidence_and_outvars
-#from bayes.utils import get_var_positions
-#from bayes.utils import get_var_val_positions
-#from bayes.utils import complexity_check
+from covid-bayesnet.bayes.utils import bayesInitialize
+from covid-bayesnet.bayes.utils import query
+from covid-bayesnet.bayes.utils import get_evidence_and_outvars
+from covid-bayesnet.bayes.utils import get_var_positions
+from covid-bayesnet.bayes.utils import get_var_val_positions
+from covid-bayesnet.bayes.utils import complexity_check
 import os
 import pickle
 import pomegranate
-from service import service_spec
-import service.service_spec.bayesian_pb2
+import covid-bayesnet.service
+from covid-bayesnet.service import service_spec
+import covid-bayesnet.service.service_spec.bayesian_pb2
 
 # Importing the generated codes from buildproto.sh
+
 import service.service_spec.bayesian_pb2_grpc as grpc_bt_grpc
 from service.service_spec.bayesian_pb2 import Answer
 from service.service_spec.bayesian_pb2 import BayesianNetwork
@@ -64,7 +61,7 @@ class BayesNetServicer(grpc_bt_grpc.BayesNetServicer):
       
     for i,json_string in self.spec_json.items():
        self.spec[i] = json_format.Parse(json_string, BayesianNetwork())
-       self.baked[i] = bayes.utils.bayesInitialize(self.spec[i])
+       self.baked[i] = bayesInitialize(self.spec[i])
        self.baked[i].bake() 
       
     log.debug("BayesServicer created")
@@ -78,11 +75,11 @@ class BayesNetServicer(grpc_bt_grpc.BayesNetServicer):
 
   def StartNet(self, request, context):
     id = Id()
-    not_too_complex,error_msg = bayes.utils.complexity_check(request)
+    not_too_complex,error_msg = complexity_check(request)
     if not_too_complex:
       uniqueID = self.getUniqueID()
       self.spec[uniqueID]= request
-      self.baked[uniqueID] = bayes.utils.bayesInitialize(request)
+      self.baked[uniqueID] = bayesInitialize(request)
       self.baked[uniqueID].bake()
       self.spec_json = {}
       #todo: return id asynchronously without waiting to save, or save if guaranteed upon error
@@ -100,10 +97,10 @@ class BayesNetServicer(grpc_bt_grpc.BayesNetServicer):
   def AskNet(self, request, context):
     answer = Answer()
     if request.id in self.spec:
-      evidence,outvars = bayes.utils.get_evidence_and_outvars(request.query, self.spec[request.id])
-      answer_dict = bayes.utils.query(self.baked[request.id], self.spec[request.id], evidence,outvars)
-      var_positions = bayes.utils.get_var_positions(self.spec[request.id])
-      var_val_positions = bayes.utils.get_var_val_positions(self.spec[request.id])
+      evidence,outvars = get_evidence_and_outvars(request.query, self.spec[request.id])
+      answer_dict = query(self.baked[request.id], self.spec[request.id], evidence,outvars)
+      var_positions = get_var_positions(self.spec[request.id])
+      var_val_positions = get_var_val_positions(self.spec[request.id])
 
       for var, val_dict in answer_dict.items():
         var_answer = answer.varAnswers.add()
@@ -121,15 +118,15 @@ class BayesNetServicer(grpc_bt_grpc.BayesNetServicer):
 
   def StatelessNet(self, request, context):
     answer = Answer()
-    not_too_complex,error_msg = bayes.utils.complexity_check(request.bayesianNetwork)
+    not_too_complex,error_msg = complexity_check(request.bayesianNetwork)
     if not_too_complex:
       net= bayesInitialize(request.bayesianNetwork)
       net.bake()
-      evidence,outvars = bayes.utils.get_evidence_and_outvars(request.query, request.bayesianNetwork)
-      answer_dict = bayes.utils.query(net, request.bayesianNetwork, evidence,outvars)
+      evidence,outvars = get_evidence_and_outvars(request.query, request.bayesianNetwork)
+      answer_dict = query(net, request.bayesianNetwork, evidence,outvars)
 
-      var_positions = bayes.utils.get_var_positions(request.bayesianNetwork)
-      var_val_positions = bayes.utils.get_var_val_positions(request.bayesianNetwork)
+      var_positions = get_var_positions(request.bayesianNetwork)
+      var_val_positions = get_var_val_positions(request.bayesianNetwork)
 
       for var, val_dict in answer_dict.items():
         var_answer = answer.varAnswers.add()
