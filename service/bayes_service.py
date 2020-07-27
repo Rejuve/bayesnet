@@ -28,7 +28,8 @@ from service.service_spec.bayesian_pb2 import Id
 logging.basicConfig(level=10, format="%(asctime)s - [%(levelname)8s] - %(name)s - %(message)s")
 log = logging.getLogger("example_service")
 
-
+import sys
+print (sys.path)
 """
 Bayesian net service, where you can either send a Bayesian net, and a query, and
 have an answer without saving your net saved, or you can send a net to be saved,
