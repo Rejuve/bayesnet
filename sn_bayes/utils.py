@@ -4,7 +4,7 @@ from pomegranate import Node
 from pomegranate import ConditionalProbabilityTable
 import json
 import sn_service.service_spec.bayesian_pb2
-from ssn_ervice.service_spec.bayesian_pb2 import Query
+from sn_service.service_spec.bayesian_pb2 import Query
 
 
 def complexity_check(bayesianNetwork,
