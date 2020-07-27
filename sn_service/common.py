@@ -2,7 +2,7 @@ import argparse
 import os.path
 import time
 
-from service import registry
+from sn_service import registry
 
 
 def common_parser(script_name):
