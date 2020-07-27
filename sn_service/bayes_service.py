@@ -5,25 +5,25 @@ import grpc
 import concurrent.futures as futures
 from google.protobuf import json_format
 
-from bayes.utils import bayesInitialize
-from bayes.utils import query
-from bayes.utils import get_evidence_and_outvars
-from bayes.utils import get_var_positions
-from bayes.utils import get_var_val_positions
-from bayes.utils import complexity_check
+from sn_bayes.utils import bayesInitialize
+from sn_bayes.utils import query
+from sn_bayes.utils import get_evidence_and_outvars
+from sn_bayes.utils import get_var_positions
+from sn_bayes.utils import get_var_val_positions
+from sn_bayes.utils import complexity_check
 import os
 import pickle
 import pomegranate
-import service
-from service import service_spec
-import service.service_spec.bayesian_pb2
+import sn_service
+from sn_service import service_spec
+import sn_service.service_spec.bayesian_pb2
 
 # Importing the generated codes from buildproto.sh
 
-import service.service_spec.bayesian_pb2_grpc as grpc_bt_grpc
-from service.service_spec.bayesian_pb2 import Answer
-from service.service_spec.bayesian_pb2 import BayesianNetwork
-from service.service_spec.bayesian_pb2 import Id
+import sn_service.service_spec.bayesian_pb2_grpc as grpc_bt_grpc
+from sn_service.service_spec.bayesian_pb2 import Answer
+from sn_service.service_spec.bayesian_pb2 import BayesianNetwork
+from sn_service.service_spec.bayesian_pb2 import Id
 
 logging.basicConfig(level=10, format="%(asctime)s - [%(levelname)8s] - %(name)s - %(message)s")
 log = logging.getLogger("example_service")
@@ -165,6 +165,6 @@ if __name__ == "__main__":
     """
     Runs the gRPC server to communicate with the Snet Daemon.
     """
-    parser = service.common.common_parser(__file__)
+    parser = sn_service.common.common_parser(__file__)
     args = parser.parse_args(sys.argv[1:])
-    service.common.main_loop(serve, args)
+    sn_service.common.main_loop(serve, args)
