@@ -3,8 +3,8 @@ from pomegranate import BayesianNetwork
 from pomegranate import Node
 from pomegranate import ConditionalProbabilityTable
 import json
-import service.service_spec.bayesian_pb2
-from service.service_spec.bayesian_pb2 import Query
+import sn_service.service_spec.bayesian_pb2
+from ssn_ervice.service_spec.bayesian_pb2 import Query
 
 
 def complexity_check(bayesianNetwork,
