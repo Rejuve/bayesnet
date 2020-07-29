@@ -1,9 +1,12 @@
 import sys
+print("sys.path")
+print(sys.path)
 import logging
 
 import grpc
 import concurrent.futures as futures
 from google.protobuf import json_format
+
 
 from sn_bayes.utils import bayesInitialize
 from sn_bayes.utils import query
