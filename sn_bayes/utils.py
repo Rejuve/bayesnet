@@ -29,7 +29,7 @@ def complexity_check(bayesianNetwork,
 			messages.append("This net's number of nodes is {0} while allowed number is {1}".format(num_nodes,allowed_number_nodes))
 
 		lenlist = [len(l) for l in list(var_val_positions.values())]
-		maxvarval=  max(lenlist)
+		maxvarval=  max(lenlist) if len(lenlist) > 0  else 0
 		if maxvarval > allowed_number_variable_values:
 			passes = False
 			messages.append("This net's max number of variable values is {0} while allowed number is {1}".format(maxvarval,allowed_number_variable_values))
