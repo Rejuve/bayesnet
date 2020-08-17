@@ -3,9 +3,77 @@ from pomegranate import BayesianNetwork
 from pomegranate import Node
 from pomegranate import ConditionalProbabilityTable
 import json
+import copy
+import pandas as pd
 import sn_service.service_spec.bayesian_pb2
 from sn_service.service_spec.bayesian_pb2 import Query
 
+def var_deps(bayesianNetwork):
+    var_deps = {}
+    for dist in bayesianNetwork.discreteDistributions:
+        var_deps[dist.name] = []
+    for table in bayesianNetwork.conditionalProbabilityTables:
+        #print ("table: {}".format(table.name))
+        var_deps[table.name]= []
+        for var in table.randomVariables:
+            #print(var.name)
+            var_deps[table.name].append(var.name)
+    return var_deps
+
+
+def fillcols(var_dict):
+    var_deps =copy.deepcopy(var_dict)
+    #go through the dict and create a lists of lists , 
+    #where a var goes in the list only if all of the variable upon which 
+    #it depends are in the previous lists.
+    tree_list = []
+    initial_len = len(var_deps)
+    final_len=0
+    while len(var_deps)>  0 and final_len < initial_len:
+        next_level = []
+        deletes =[]
+        for var,deplist in var_deps.items():
+            all_found = True
+            for d in deplist:
+                found = False
+                for l in tree_list:
+                    if d in l:
+                        found = True
+                if not found:
+                    all_found = False
+            if all_found:
+                deletes.append(var)
+                next_level.append(var)
+        for delete in deletes:
+            var_deps.pop(delete)
+        final_len = len(var_deps)
+        tree_list.append(next_level)
+    return(tree_list)    
+
+def make_tree(bayesianNetwork):
+    variable_dependencies = var_deps(bayesianNetwork)
+    #print(variable_dependencies)
+    tree = fillcols(variable_dependencies)
+    #print(tree)
+    newtree = []
+    for ply in tree:
+        newl=[]
+        for v in ply: 
+            newstr = v + "("
+            #print(v)
+            deps = variable_dependencies[v]
+            for d in deps:
+                newstr += d
+                newstr += ","
+            newstr = newstr[:-1]+ ")"
+            newl.append(newstr)
+        newtree.append(newl)
+    df_dict ={}
+    for i,l in enumerate(newtree):
+        key = "level"+ str(i)
+        df_dict[key] = l  
+    df = pd.DataFrame.from_dict(df_dict, orient='index').T
+    return df
 
 def complexity_check(bayesianNetwork,
 #todo: check obscenity		
