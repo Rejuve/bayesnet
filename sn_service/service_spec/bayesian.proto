@@ -71,7 +71,7 @@ message Query{
   
   message Anomaly{
 	int32 var_num = 1;
-	repeated Timeval = 2;
+	repeated Timeval timevals = 2;
   }
   repeated Outvar outvars = 2;
   repeated Outvar explainvars =3;
@@ -106,7 +106,7 @@ message Answer{
   
   message Explanation{
 	int32 var_num = 1;
-	repeated Reason  = 2;
+	repeated Reason reason = 2;
   }
   
   repeated VarAnswer varAnswers = 1;
