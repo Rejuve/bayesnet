@@ -67,6 +67,7 @@ message Query{
   }
   message Timeval{
 	float val = 1;
+	float interval = 2;
 	}	
   
   message Anomaly{
