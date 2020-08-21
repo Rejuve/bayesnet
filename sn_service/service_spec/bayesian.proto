@@ -102,6 +102,7 @@ message Answer{
   message Explanation{
 	int32 var_num = 1;
 	VarAnswer = 2;
+	float weight = 3;
   }
   repeated VarAnswer varAnswers = 1;
   repeated Explanation explanations = 2;
