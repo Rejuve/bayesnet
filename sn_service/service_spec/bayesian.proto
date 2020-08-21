@@ -99,11 +99,16 @@ message Answer{
     repeated VarState varStates = 2;
   }
   
+  message Reason {
+  	VarAnswer var_answer = 1;
+	float weight = 2;
+  }
+  
   message Explanation{
 	int32 var_num = 1;
-	VarAnswer = 2;
-	float weight = 3;
+	repeated Reason  = 2;
   }
+  
   repeated VarAnswer varAnswers = 1;
   repeated Explanation explanations = 2;
   string error_msg = 3;
