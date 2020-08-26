@@ -941,7 +941,7 @@ def covid_bayes():
 	cpt["covid_environment"] = avg(bayesianNetwork,cpt,
 		[
 		"exposure",
-		"hotspot"
+		"hotspot_anomaly"
 		],
 		["high_risk_covid_environment", "medium_risk_covid_environment", "low_risk_covid_environment","no_risk_covid_environment"]
 		) 
