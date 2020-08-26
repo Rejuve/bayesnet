@@ -851,7 +851,7 @@ def covid_bayes():
 	["no_social_distancing","low_social_distancing","medium_social_distancing", "high_social_distancing"]
 	)
 	
-	cpt["social_distancing_boolean"]= avg(bayesianNetwork,cpt,
+	cpt["social_distancing_binary"]= avg(bayesianNetwork,cpt,
 	[
 	"social_distancing_environment",
 	"personal_social_distancing",
@@ -1002,7 +1002,7 @@ def covid_bayes():
 		)
 		
 		
-	cpt["covid_severity_boolean"] = avg(bayesianNetwork,cpt,
+	cpt["covid_severity_binary"] = avg(bayesianNetwork,cpt,
 		[
 		"age",
 		"comorbidities"
