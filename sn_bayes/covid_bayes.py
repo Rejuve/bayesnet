@@ -64,27 +64,6 @@ def covid_bayes():
 	variable.probability = 0.5
 
 
-	discreteDistribution = bayesianNetwork.discreteDistributions.add()
-	discreteDistribution.name = "heterosome"
-	variable = discreteDistribution.variables.add()
-	variable.name = "other"
-	variable.probability = 0.0005
-	variable = discreteDistribution.variables.add()
-	variable.name = "X"
-	variable.probability = 0.0005
-	variable = discreteDistribution.variables.add()
-	variable.name = "XXY"
-	variable.probability = 0.0005
-	variable = discreteDistribution.variables.add()
-	variable.name = "XYY"
-	variable.probability = 0.0005
-	variable = discreteDistribution.variables.add()
-	variable.name = "XY"
-	variable.probability = 0.499
-	variable = discreteDistribution.variables.add()
-	variable.name = "XX"
-	variable.probability = 0.499
-
 
 	discreteDistribution = bayesianNetwork.discreteDistributions.add()
 	discreteDistribution.name = "height_in_feet"
@@ -155,676 +134,102 @@ def covid_bayes():
 	variable.probability = 0.35
 
 
-	discreteDistribution = bayesianNetwork.discreteDistributions.add()
-	discreteDistribution.name = "education"
-	variable = discreteDistribution.variables.add()
-	variable.name = "education_other"
-	variable.probability = 0.05
-	variable = discreteDistribution.variables.add()
-	variable.name = "some_high_school"
-	variable.probability = 0.2
-	variable = discreteDistribution.variables.add()
-	variable.name = "high_school"
-	variable.probability = 0.2
-	variable = discreteDistribution.variables.add()
-	variable.name = "vocational"
-	variable.probability = 0.2
-	variable = discreteDistribution.variables.add()
-	variable.name = "bachelors"
-	variable.probability = 0.2
-	variable = discreteDistribution.variables.add()
-	variable.name = "masters"
-	variable.probability = 0.1
-	variable = discreteDistribution.variables.add()
-	variable.name = "phd"
-	variable.probability = 0.05
-
+#cardiovascular_disease 9%
+#https://www.sciencedaily.com/releases/2019/01/190131084238.htm
 
 	discreteDistribution = bayesianNetwork.discreteDistributions.add()
-	discreteDistribution.name = "employment"
+	discreteDistribution.name = "cardiovascular_disease"
 	variable = discreteDistribution.variables.add()
-	variable.name = "unemployed"  #same as seeking opportunities
-	variable.probability = 0.1
-	variable = discreteDistribution.variables.add()
-	variable.name = "employment_other"  #added, covers children, those who dont want work
-	variable.probability = 0.3
-	variable = discreteDistribution.variables.add()
-	variable.name = "retired"
-	variable.probability = 0.1
-	variable = discreteDistribution.variables.add()
-	variable.name = "part_time"
-	variable.probability = 0.1
-	variable = discreteDistribution.variables.add()
-	variable.name = "full_time"
-	variable.probability = 0.4
-
-
-	discreteDistribution = bayesianNetwork.discreteDistributions.add()
-	discreteDistribution.name = "marital_status"
-	variable = discreteDistribution.variables.add()
-	variable.name = "single"
-	variable.probability = 0.34
-	variable = discreteDistribution.variables.add()
-	variable.name = "relationship"
-	variable.probability = 0.33
-	variable = discreteDistribution.variables.add()
-	variable.name = "married"
-	variable.probability = 0.33
-
-
-	discreteDistribution = bayesianNetwork.discreteDistributions.add()
-	discreteDistribution.name = "number_of_children"
-	variable = discreteDistribution.variables.add()
-	variable.name = "three_or_more"
-	variable.probability = 0.05
-	variable = discreteDistribution.variables.add()
-	variable.name = "two_children"
-	variable.probability = 0.15
-	variable = discreteDistribution.variables.add()
-	variable.name = "one_children"
-	variable.probability = 0.20
-	variable = discreteDistribution.variables.add()
-	variable.name = "zero_children"
-	variable.probability = 0.70
-
-
-	discreteDistribution = bayesianNetwork.discreteDistributions.add()
-	discreteDistribution.name = "income_in_USD"
-	variable = discreteDistribution.variables.add()
-	variable.name = "under_25k_USD"
-	variable.probability = 0.20
-	variable = discreteDistribution.variables.add()
-	variable.name = "26_to_50k_USD"
-	variable.probability = 0.30
-	variable = discreteDistribution.variables.add()
-	variable.name = "51_to_100k_USD"
-	variable.probability = 0.25
-	variable = discreteDistribution.variables.add()
-	variable.name = "101_to_200k_USD"
-	variable.probability = 0.25
-	variable = discreteDistribution.variables.add()
-	variable.name = "over_200k_USD"
-	variable.probability = 0.05
-
-
-	discreteDistribution = bayesianNetwork.discreteDistributions.add()
-	discreteDistribution.name = "community"
-	variable = discreteDistribution.variables.add()
-	variable.name = "rural"
-	variable.probability = 0.20
-	variable = discreteDistribution.variables.add()
-	variable.name = "suburban"
-	variable.probability = 0.40
-	variable = discreteDistribution.variables.add()
-	variable.name = "urban"
-	variable.probability = 0.40
-
-
-	# basics/women questions 
-
-
-	discreteDistribution = bayesianNetwork.discreteDistributions.add()
-	discreteDistribution.name = "pregnancy_in_months"
-	variable = discreteDistribution.variables.add()
-	variable.name = "over_six_months_pregnant"
-	variable.probability = 0.025
-	variable = discreteDistribution.variables.add()
-	variable.name = "three_to_six_months_pregnant"
-	variable.probability = 0.025
-	variable = discreteDistribution.variables.add()
-	variable.name = "under_three_months_pregnant"
-	variable.probability = 0.025
-	variable = discreteDistribution.variables.add()
-	variable.name = "not_pregnant"
-	variable.probability = 0.925
-
-
-	# basics/sleep questions
-
-
-	discreteDistribution = bayesianNetwork.discreteDistributions.add()
-	discreteDistribution.name = "sleep_quickly"
-	variable = discreteDistribution.variables.add()
-	variable.name = "dont_sleep_quickly"
-	variable.probability = 0.35
-	variable = discreteDistribution.variables.add()
-	variable.name = "sleep_quickly"
-	variable.probability = 0.65
-
-
-	discreteDistribution = bayesianNetwork.discreteDistributions.add()
-	discreteDistribution.name = "sleep_in_hours"
-	variable = discreteDistribution.variables.add()
-	variable.name = "under_five_hours_sleep"
-	variable.probability = 0.1
-	variable = discreteDistribution.variables.add()
-	variable.name = "five_or_six_hours_sleep"
-	variable.probability = 0.2
-	variable = discreteDistribution.variables.add()
-	variable.name = "seven_or_eight_hours_sleep"
-	variable.probability = 0.35
-	variable = discreteDistribution.variables.add()
-	variable.name = "nine_or_ten_hours_sleep"
-	variable.probability = 0.2
-	variable = discreteDistribution.variables.add()
-	variable.name = "eleven_to_thirteen_hours_sleep"
-	variable.probability = 0.1
-	variable = discreteDistribution.variables.add()
-	variable.name = "over_thirteen_hours_sleep"
-	variable.probability = 0.05
-	# basics/lifestyle questions
-
-	discreteDistribution = bayesianNetwork.discreteDistributions.add()
-	discreteDistribution.name = "sex_per_month"
-	variable = discreteDistribution.variables.add()
-	variable.name = "over_twelve_sex_per_month"
-	variable.probability = 0.1
-	variable = discreteDistribution.variables.add()
-	variable.name = "six_to_twelve_sex_per_month"
-	variable.probability = 0.2
-	variable = discreteDistribution.variables.add()
-	variable.name = "three_to_five_sex_per_month"
-	variable.probability = 0.35
-	variable = discreteDistribution.variables.add()
-	variable.name = "two_sex_per_month"
-	variable.probability = 0.2
-	variable = discreteDistribution.variables.add()
-	variable.name = "one_sex_per_month"
-	variable.probability = 0.05
-	variable = discreteDistribution.variables.add()
-	variable.name = "no_sex_per_month"
-	variable.probability = 0.05
-
-
-	discreteDistribution = bayesianNetwork.discreteDistributions.add()
-	discreteDistribution.name = "cigarettes_per_week"
-	variable = discreteDistribution.variables.add()
-	variable.name = "over_fifty_cigarettes_per_week"
-	variable.probability = 0.05
-	variable = discreteDistribution.variables.add()
-	variable.name = "eleven_to_fifty_cigarettes_per_week"
-	variable.probability = 0.05
-	variable = discreteDistribution.variables.add()
-	variable.name = "one_to_ten_cigarettes_per_week"
-	variable.probability = 0.05
-	variable = discreteDistribution.variables.add()
-	variable.name = "no_cigarettes_per_week"
-	variable.probability = 0.85
-
-
-	discreteDistribution = bayesianNetwork.discreteDistributions.add()
-	discreteDistribution.name = "cigars_per_week"
-	variable = discreteDistribution.variables.add()
-	variable.name = "over_fifty_cigars_per_week"
-	variable.probability = 0.01
-	variable = discreteDistribution.variables.add()
-	variable.name = "six_to_fifty_cigars_per_week"
-	variable.probability = 0.01
-	variable = discreteDistribution.variables.add()
-	variable.name = "one_to_five_cigars_per_week"
-	variable.probability = 0.01
-	variable = discreteDistribution.variables.add()
-	variable.name = "no_cigars_per_week"
-	variable.probability = 0.97
-
-
-	discreteDistribution = bayesianNetwork.discreteDistributions.add()
-	discreteDistribution.name = "hookah_per_week"
-	variable = discreteDistribution.variables.add()
-	variable.name = "over_six_hookah_per_week"
-	variable.probability = 0.005
-	variable = discreteDistribution.variables.add()
-	variable.name = "one_to_five_hookah_per_week"
-	variable.probability = 0.055
-	variable = discreteDistribution.variables.add()
-	variable.name = "no_hookah_per_week"
-	variable.probability = 0.95
-
-
-	discreteDistribution = bayesianNetwork.discreteDistributions.add()
-	discreteDistribution.name = "snuff_per_week"
-	variable = discreteDistribution.variables.add()
-	variable.name = "over_fifty_snuff_per_week"
-	variable.probability = 0.001
-	variable = discreteDistribution.variables.add()
-	variable.name = "six_to_fifty_snuff_per_week"
-	variable.probability = 0.002
-	variable = discreteDistribution.variables.add()
-	variable.name = "one_to_five_snuff_per_week"
-	variable.probability = 0.002
-	variable = discreteDistribution.variables.add()
-	variable.name = "no_snuff_per_week"
-	variable.probability = 0.995
-
-
-	discreteDistribution = bayesianNetwork.discreteDistributions.add()
-	discreteDistribution.name = "vapes_per_week"
-	variable = discreteDistribution.variables.add()
-	variable.name = "over_fifty_vapes_per_week"
-	variable.probability = 0.01
-	variable = discreteDistribution.variables.add()
-	variable.name = "six_to_fifty_vapes_per_week"
-	variable.probability = 0.02
-	variable = discreteDistribution.variables.add()
-	variable.name = "one_to_five_vapes_per_week"
-	variable.probability = 0.02
-	variable = discreteDistribution.variables.add()
-	variable.name = "no_vapes_per_week"
-	variable.probability = 0.95
-
-
-	discreteDistribution = bayesianNetwork.discreteDistributions.add()
-	discreteDistribution.name = "alchohol_glasses_per_week"
-	variable = discreteDistribution.variables.add()
-	variable.name = "over_twentyone_glasses_per_week"
-	variable.probability = 0.05
-	variable = discreteDistribution.variables.add()
-	variable.name = "fifteen_to_twenty_glasses_per_week"
-	variable.probability = 0.1
-	variable = discreteDistribution.variables.add()
-	variable.name = "six_to_fourteen_glasses_per_week"
-	variable.probability = 0.2
-	variable = discreteDistribution.variables.add()
-	variable.name = "three_to_five_glasses_per_week"
-	variable.probability = 0.3
-	variable = discreteDistribution.variables.add()
-	variable.name = "zero_to_two_glasses_per_week"
-	variable.probability = 0.35
-
-	discreteDistribution = bayesianNetwork.discreteDistributions.add()
-	discreteDistribution.name = "adderall_per_week"
-	variable = discreteDistribution.variables.add()
-	variable.name = "over_fifteen_adderall_per_week"
-	variable.probability = 0.002
-	variable = discreteDistribution.variables.add()
-	variable.name = "one_to_fifteen_adderall_per_week"
-	variable.probability = 0.008
-	variable = discreteDistribution.variables.add()
-	variable.name = "zero_adderall_per_week"
-	variable.probability = 0.99
-
-
-	discreteDistribution = bayesianNetwork.discreteDistributions.add()
-	discreteDistribution.name = "ritalin_per_week"
-	variable = discreteDistribution.variables.add()
-	variable.name = "over_fifteen_ritalin_per_week"
-	variable.probability = 0.002
-	variable = discreteDistribution.variables.add()
-	variable.name = "one_to_fifteen_ritalin_per_week"
-	variable.probability = 0.008
-	variable = discreteDistribution.variables.add()
-	variable.name = "zero_ritalin_per_week"
-	variable.probability = 0.99
-
-
-	discreteDistribution = bayesianNetwork.discreteDistributions.add()
-	discreteDistribution.name = "cocaine_per_week"
-	variable = discreteDistribution.variables.add()
-	variable.name = "over_five_cocaine_per_week"
-	variable.probability = 0.002
-	variable = discreteDistribution.variables.add()
-	variable.name = "one_to_five_cocaine_per_week"
-	variable.probability = 0.008
-	variable = discreteDistribution.variables.add()
-	variable.name = "zero_cocaine_per_week"
-	variable.probability = 0.99
-
-
-	discreteDistribution = bayesianNetwork.discreteDistributions.add()
-	discreteDistribution.name = "methamphetamine_per_week"
-	variable = discreteDistribution.variables.add()
-	variable.name = "over_five_methamphetamine_per_week"
-	variable.probability = 0.002
-	variable = discreteDistribution.variables.add()
-	variable.name = "one_to_five_methamphetamine_per_week"
-	variable.probability = 0.008
-	variable = discreteDistribution.variables.add()
-	variable.name = "zero_methamphetamine_per_week"
-	variable.probability = 0.99
-
-
-	discreteDistribution = bayesianNetwork.discreteDistributions.add()
-	discreteDistribution.name = "ecstasy_per_week"
-	variable = discreteDistribution.variables.add()
-	variable.name = "over_five_ecstasy_per_week"
-	variable.probability = 0.002
-	variable = discreteDistribution.variables.add()
-	variable.name = "one_to_five_ecstasy_per_week"
-	variable.probability = 0.008
-	variable = discreteDistribution.variables.add()
-	variable.name = "zero_ecstasy_per_week"
-	variable.probability = 0.99
-
-	discreteDistribution = bayesianNetwork.discreteDistributions.add()
-	discreteDistribution.name = "speed_per_week"
-	variable = discreteDistribution.variables.add()
-	variable.name = "over_five_speed_per_week"
-	variable.probability = 0.002
-	variable = discreteDistribution.variables.add()
-	variable.name = "one_to_five_speed_per_week"
-	variable.probability = 0.008
-	variable = discreteDistribution.variables.add()
-	variable.name = "zero_speed_per_week"
-	variable.probability = 0.99
-
-
-	discreteDistribution = bayesianNetwork.discreteDistributions.add()
-	discreteDistribution.name = "amphetamines_per_week"
-	variable = discreteDistribution.variables.add()
-	variable.name = "over_fifteen_amphetamines_per_week"
-	variable.probability = 0.002
-	variable = discreteDistribution.variables.add()
-	variable.name = "one_to_fifteen_amphetamines_per_week"
-	variable.probability = 0.008
-	variable = discreteDistribution.variables.add()
-	variable.name = "zero_amphetamines_per_week"
-	variable.probability = 0.99
-
-
-	discreteDistribution = bayesianNetwork.discreteDistributions.add()
-	discreteDistribution.name = "other_substance_per_week"
-	variable = discreteDistribution.variables.add()
-	variable.name = "over_fifteen_other_substance_per_week"
-	variable.probability = 0.002
-	variable = discreteDistribution.variables.add()
-	variable.name = "one_to_fifteen_other_substance_per_week"
-	variable.probability = 0.008
-	variable = discreteDistribution.variables.add()
-	variable.name = "zero_other_substance_per_week"
-	variable.probability = 0.99
-
-
-	discreteDistribution = bayesianNetwork.discreteDistributions.add()
-	discreteDistribution.name = "opiods_per_week"
-	variable = discreteDistribution.variables.add()
-	variable.name = "over_fifteen_opiods_per_week"
-	variable.probability = 0.002
-	variable = discreteDistribution.variables.add()
-	variable.name = "one_to_fifteen_opiods_per_week"
-	variable.probability = 0.008
-	variable = discreteDistribution.variables.add()
-	variable.name = "zero_opiods_per_week"
-	variable.probability = 0.99
-
-
-	discreteDistribution = bayesianNetwork.discreteDistributions.add()
-	discreteDistribution.name = "depressants_per_week"
-	variable = discreteDistribution.variables.add()
-	variable.name = "over_five_depressants_per_week"
-	variable.probability = 0.002
-	variable = discreteDistribution.variables.add()
-	variable.name = "one_to_five_depressants_per_week"
-	variable.probability = 0.008
-	variable = discreteDistribution.variables.add()
-	variable.name = "zero_depressants_per_week"
-	variable.probability = 0.99
-
-
-	discreteDistribution = bayesianNetwork.discreteDistributions.add()
-	discreteDistribution.name = "cannabis_per_week"
-	variable = discreteDistribution.variables.add()
-	variable.name = "over_fifteen_cannabis_per_week"
-	variable.probability = 0.01
-	variable = discreteDistribution.variables.add()
-	variable.name = "one_to_fifteen_cannabis_per_week"
+	variable.name = "cardiovascular_disease"
 	variable.probability = 0.09
 	variable = discreteDistribution.variables.add()
-	variable.name = "zero_cannabis_per_week"
-	variable.probability = 0.90
-
-
-	discreteDistribution = bayesianNetwork.discreteDistributions.add()
-	discreteDistribution.name = "hallucinogens_per_week"
-	variable = discreteDistribution.variables.add()
-	variable.name = "over_fifteen_hallucinogens_per_week"
-	variable.probability = 0.002
-	variable = discreteDistribution.variables.add()
-	variable.name = "one_to_fifteen_hallucinogens_per_week"
-	variable.probability = 0.008
-	variable = discreteDistribution.variables.add()
-	variable.name = "zero_hallucinogens_per_week"
-	variable.probability = 0.99
-
-
-	discreteDistribution = bayesianNetwork.discreteDistributions.add()
-	discreteDistribution.name = "dissociatives_per_week"
-	variable = discreteDistribution.variables.add()
-	variable.name = "over_five_dissociatives_per_week"
-	variable.probability = 0.002
-	variable = discreteDistribution.variables.add()
-	variable.name = "one_to_five_dissociatives_per_week"
-	variable.probability = 0.008
-	variable = discreteDistribution.variables.add()
-	variable.name = "zero_dissociatives_per_week"
-	variable.probability = 0.99
-
-
-	discreteDistribution = bayesianNetwork.discreteDistributions.add()
-	discreteDistribution.name = "inhalants_per_week"
-	variable = discreteDistribution.variables.add()
-	variable.name = "over_fifteen_inhalants_per_week"
-	variable.probability = 0.004
-	variable = discreteDistribution.variables.add()
-	variable.name = "one_to_fifteen_inhalants_per_week"
-	variable.probability = 0.016
-	variable = discreteDistribution.variables.add()
-	variable.name = "zero_inhalants_per_week"
-	variable.probability = 0.98
-
-
-
-	discreteDistribution = bayesianNetwork.discreteDistributions.add()
-	discreteDistribution.name = "activity_level"
-	variable = discreteDistribution.variables.add()
-	variable.name = "sedentary"
-	variable.probability = 0.3
-	variable = discreteDistribution.variables.add()
-	variable.name = "somewhat_active"
-	variable.probability = 0.4
-	variable = discreteDistribution.variables.add()
-	variable.name = "very_active"
-	variable.probability = 0.2
-	variable = discreteDistribution.variables.add()
-	variable.name = "intense_physical_exercise"
-	variable.probability = 0.1
-
-
-	discreteDistribution = bayesianNetwork.discreteDistributions.add()
-	discreteDistribution.name = "lonely"
-	variable = discreteDistribution.variables.add()
-	variable.name = "often_lonely"
-	variable.probability = 0.3
-	variable = discreteDistribution.variables.add()
-	variable.name = "not_often_lonely"
-	variable.probability = 0.7
-
-
-	discreteDistribution = bayesianNetwork.discreteDistributions.add()
-	discreteDistribution.name = "close_confidants"
-	variable = discreteDistribution.variables.add()
-	variable.name = "no_close_confidants"
-	variable.probability = 0.3
-	variable = discreteDistribution.variables.add()
-	variable.name = "has_close_confidants"
-	variable.probability = 0.7
-
-
-	# basics/medical questions
-
-
-	discreteDistribution = bayesianNetwork.discreteDistributions.add()
-	discreteDistribution.name = "regular_exams"
-	variable = discreteDistribution.variables.add()
-	variable.name = "no_regular_exams"
-	variable.probability = 0.6
-	variable = discreteDistribution.variables.add()
-	variable.name = "regular_exams"
-	variable.probability = 0.4
-
-
-	discreteDistribution = bayesianNetwork.discreteDistributions.add()
-	discreteDistribution.name = "blood_pressure"
-	variable = discreteDistribution.variables.add()
-	variable.name = "very_high_blood_pressure"
-	variable.probability = 0.05
-	variable = discreteDistribution.variables.add()
-	variable.name = "high_blood_pressure"
-	variable.probability = 0.1
-	variable = discreteDistribution.variables.add()
-	variable.name = "borderline_blood_pressure"
-	variable.probability = 0.2
-	variable = discreteDistribution.variables.add()
-	variable.name = "low_blood_pressure"
-	variable.probability = 0.05
-	variable = discreteDistribution.variables.add()
-	variable.name = "normal_blood_pressure"
-	variable.probability = 0.65
-
-
-	discreteDistribution = bayesianNetwork.discreteDistributions.add()
-	discreteDistribution.name = "blood_pressure_medication"
-	variable = discreteDistribution.variables.add()
-	variable.name = "taking_blood_pressure_medication"
-	variable.probability = 0.05
-	variable = discreteDistribution.variables.add()
-	variable.name = "not_taking_blood_pressure_medication"
-	variable.probability = 0.95
-
-
-	discreteDistribution = bayesianNetwork.discreteDistributions.add()
-	discreteDistribution.name = "cholesterol"
-	variable = discreteDistribution.variables.add()
-	variable.name = "high_cholesterol"
-	variable.probability = 0.10
-	variable = discreteDistribution.variables.add()
-	variable.name = "normal_cholesterol"
-	variable.probability = 0.90
-
-
-	discreteDistribution = bayesianNetwork.discreteDistributions.add()
-	discreteDistribution.name = "heart_attack"
-	variable = discreteDistribution.variables.add()
-	variable.name = "had_heart_attack"
-	variable.probability = 0.05
-	variable = discreteDistribution.variables.add()
-	variable.name = "no_heart_attack"
-	variable.probability = 0.95
-
-
-	discreteDistribution = bayesianNetwork.discreteDistributions.add()
-	discreteDistribution.name = "tiaa"
-	variable = discreteDistribution.variables.add()
-	variable.name = "had_tiaa"
-	variable.probability = 0.05
-	variable = discreteDistribution.variables.add()
-	variable.name = "no_tiaa"
-	variable.probability = 0.95
-
-
-	discreteDistribution = bayesianNetwork.discreteDistributions.add()
-	discreteDistribution.name = "stroke"
-	variable = discreteDistribution.variables.add()
-	variable.name = "had_stroke"
-	variable.probability = 0.01
-	variable = discreteDistribution.variables.add()
-	variable.name = "no_stroke"
-	variable.probability = 0.99
-
-
-	discreteDistribution = bayesianNetwork.discreteDistributions.add()
-	discreteDistribution.name = "peripheral_artery_disease"
-	variable = discreteDistribution.variables.add()
-	variable.name = "had_peripheral_artery_disease"
-	variable.probability = 0.05
-	variable = discreteDistribution.variables.add()
-	variable.name = "no_peripheral_artery_disease"
-	variable.probability = 0.95
-
-
-	discreteDistribution = bayesianNetwork.discreteDistributions.add()
-	discreteDistribution.name = "angina"
-	variable = discreteDistribution.variables.add()
-	variable.name = "had_angina"
-	variable.probability = 0.1
-	variable = discreteDistribution.variables.add()
-	variable.name = "no_angina"
-	variable.probability = 0.90
-
-
-	discreteDistribution = bayesianNetwork.discreteDistributions.add()
-	discreteDistribution.name = "atherosclerotic_cardiovascular_disease"
-	variable = discreteDistribution.variables.add()
-	variable.name = "had_atherosclerotic_cardiovascular_disease"
-	variable.probability = 0.05
-	variable = discreteDistribution.variables.add()
-	variable.name = "no_atherosclerotic_cardiovascular_disease"
-	variable.probability = 0.95
-
+	variable.name = "no_cardiovascular_disease"
+	variable.probability = 0.91
+	
+	
+#diabetes 12%
+#https://www.healio.com/news/endocrinology/20200730/prevalence-of-diabetes-hypertension-among-covid19-patients-likely-lower-than-reported
 
 	discreteDistribution = bayesianNetwork.discreteDistributions.add()
 	discreteDistribution.name = "diabetes"
 	variable = discreteDistribution.variables.add()
-	variable.name = "has_diabetes"
-	variable.probability = 0.05
-	variable = discreteDistribution.variables.add()
-	variable.name = "prediabetes"
-	variable.probability = 0.95
+	variable.name = "diabetes"
+	variable.probability = 0.12
 	variable = discreteDistribution.variables.add()
 	variable.name = "no_diabetes"
-	variable.probability = 0.95
-
-
-	discreteDistribution = bayesianNetwork.discreteDistributions.add()
-	discreteDistribution.name = "diabetes_medication"
-	variable = discreteDistribution.variables.add()
-	variable.name = "insulin"
-	variable.probability = 0.02
-	variable = discreteDistribution.variables.add()
-	variable.name = "oral_medication"
-	variable.probability = 0.03
-	variable = discreteDistribution.variables.add()
-	variable.name = "no_diabetes_medication"
-	variable.probability = 0.95
-
+	variable.probability = 0.88
+	
+#hypertension 17%
+#https://www.healio.com/news/endocrinology/20200730/prevalence-of-diabetes-hypertension-among-covid19-patients-likely-lower-than-reported
 
 	discreteDistribution = bayesianNetwork.discreteDistributions.add()
-	discreteDistribution.name = "disability_walk_or_run"
+	discreteDistribution.name = "hypertension"
 	variable = discreteDistribution.variables.add()
-	variable.name = "have_disability_walk_or_run"
-	variable.probability = 0.05
+	variable.name = "hypertension"
+	variable.probability = 0.17
 	variable = discreteDistribution.variables.add()
-	variable.name = "no_disability_walk_or_run"
-	variable.probability = 0.95
+	variable.name = "no_hypertension"
+	variable.probability = 0.83
 
-
-	discreteDistribution = bayesianNetwork.discreteDistributions.add()
-	discreteDistribution.name = "disability_equipment"
-	variable = discreteDistribution.variables.add()
-	variable.name = "have_disability_equipment"
-	variable.probability = 0.05
-	variable = discreteDistribution.variables.add()
-	variable.name = "no_disability_equipment"
-	variable.probability = 0.95
-
+#37M/328M = 11%
+#https://www.lung.org/about-us/mission-impact-and-history/our-impact
 
 	discreteDistribution = bayesianNetwork.discreteDistributions.add()
-	discreteDistribution.name = "mental_disability_cant_work"
+	discreteDistribution.name = "lung_disease"
 	variable = discreteDistribution.variables.add()
-	variable.name = "have_mental_disability_cant_work"
-	variable.probability = 0.05
+	variable.name = "lung_disease"
+	variable.probability = 0.11
 	variable = discreteDistribution.variables.add()
-	variable.name = "no_mental_disability_cant_work"
-	variable.probability = 0.95
-
+	variable.name = "no_lung_disease"
+	variable.probability = 0.89
+	
+#kidney disease = 14%
+#https://www.niddk.nih.gov/health-information/health-statistics/kidney-disease#:~:text=The%20overall%20prevalence%20of%20CKD,661%2C000%20Americans%20have%20kidney%20failure.
 
 	discreteDistribution = bayesianNetwork.discreteDistributions.add()
-	discreteDistribution.name = "other_chronic_disease"
+	discreteDistribution.name = "kidney_disease"
 	variable = discreteDistribution.variables.add()
-	variable.name = "have_other_chronic_disease"
-	variable.probability = 0.05
+	variable.name = "kidney_disease"
+	variable.probability = 0.3
 	variable = discreteDistribution.variables.add()
-	variable.name = "no_other_chronic_disease"
-	variable.probability = 0.95
+	variable.name = "no_kidney_disase"
+	variable.probability = 0.7
+
+#cancer = 5.5%
+#https://ourworldindata.org/cancer#:~:text=Prevalence%20of%20cancer%20ranges%20from,countries%20shown%20in%20light%20yellow.
+
+	discreteDistribution = bayesianNetwork.discreteDistributions.add()
+	discreteDistribution.name = "cancer"
+	variable = discreteDistribution.variables.add()
+	variable.name = "cancer"
+	variable.probability = 0.3
+	variable = discreteDistribution.variables.add()
+	variable.name = "no_cancer"
+	variable.probability = 0.7
+	
+#immunocompromised=2.7%
+#https://www.healio.com/news/infectious-disease/20161101/nearly-3-of-us-adult-population-immunosuppressed#:~:text=Among%20them%2C%202.8%25%20(n,CI%2C%202.9%2D3.3).
+
+	discreteDistribution = bayesianNetwork.discreteDistributions.add()
+	discreteDistribution.name = "immunocompromised"
+	variable = discreteDistribution.variables.add()
+	variable.name = "immunocompromised"
+	variable.probability = 0.3
+	variable = discreteDistribution.variables.add()
+	variable.name = "not_immunocompromised"
+	variable.probability = 0.7
+
+#psychiatric disorders 17.6%
+#https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3997379/#:~:text=Period%20prevalence%20of%20common%20mental,CI%2C%2025.9%E2%80%9332.6%25).
+
+	discreteDistribution = bayesianNetwork.discreteDistributions.add()
+	discreteDistribution.name = "psychological_disorders"
+	variable = discreteDistribution.variables.add()
+	variable.name = "psychological_disorders"
+	variable.probability = 0.3
+	variable = discreteDistribution.variables.add()
+	variable.name = "no_psychological_disorders"
+	variable.probability = 0.7
 
 
 	# covid symptoms questions in discrete distributions
@@ -1220,57 +625,6 @@ def covid_bayes():
 	variable.probability = 0.20
 
 
-	#wearable anomalies
-
-
-	discreteDistribution = bayesianNetwork.discreteDistributions.add()
-	discreteDistribution.name = "heart_rate_variability"
-	variable = discreteDistribution.variables.add()
-	variable.name = "abnormally_low_heart_rate_variability"
-	variable.probability = 0.02
-	variable = discreteDistribution.variables.add()
-	variable.name = "low_heart_rate_variabiliity"
-	variable.probability = 0.15
-	variable = discreteDistribution.variables.add()
-	variable.name = "normal_heart_rate_variability"
-	variable.probability = 0.66
-	variable = discreteDistribution.variables.add()
-	variable.name = "high_heart_rate_variability"
-	variable.probability = 0.17
-
-
-	discreteDistribution = bayesianNetwork.discreteDistributions.add()
-	discreteDistribution.name = "oxygen"
-	variable = discreteDistribution.variables.add()
-	variable.name = "abnormally_low_oxygen"
-	variable.probability = 0.02
-	variable = discreteDistribution.variables.add()
-	variable.name = "low_oxygen"
-	variable.probability = 0.15
-	variable = discreteDistribution.variables.add()
-	variable.name = "normal_oxygen"
-	variable.probability = 0.83
-
-
-	#hotspot anomaly
-
-
-	discreteDistribution = bayesianNetwork.discreteDistributions.add()
-	discreteDistribution.name = "hotspot"
-	variable = discreteDistribution.variables.add()
-	variable.name = "abnormally_high_hotspot"
-	variable.probability = 0.02
-	variable = discreteDistribution.variables.add()
-	variable.name = "high_hotspot"
-	variable.probability = 0.15
-	variable = discreteDistribution.variables.add()
-	variable.name = "normal_hotspot"
-	variable.probability = 0.66
-	variable = discreteDistribution.variables.add()
-	variable.name = "low_hotspot"
-	variable.probability = 0.17
-
-
 	discreteDistribution = bayesianNetwork.discreteDistributions.add()
 	discreteDistribution.name = "severe_neck_pain"
 	variable = discreteDistribution.variables.add()
@@ -1279,292 +633,137 @@ def covid_bayes():
 	variable = discreteDistribution.variables.add()
 	variable.name = "no_severe_neck_pain"
 	variable.probability = 0.98
+		
 
+	discreteDistribution = bayesianNetwork.discreteDistributions.add()
+	discreteDistribution.name = "tested"
+	variable = discreteDistribution.variables.add()
+	variable.name = "tested"
+	variable.probability = 0.02
+	variable = discreteDistribution.variables.add()
+	variable.name = "not_tested"
+	variable.probability = 0.98
+	
+
+	discreteDistribution = bayesianNetwork.discreteDistributions.add()
+	discreteDistribution.name = "swab_test"
+	variable = discreteDistribution.variables.add()
+	variable.name = "swab_test_positive"
+	variable.probability = 0.02
+	variable = discreteDistribution.variables.add()
+	variable.name = "swab_test_negative"
+	variable.probability = 0.98
+	
+	discreteDistribution = bayesianNetwork.discreteDistributions.add()
+	discreteDistribution.name = "antibody_test"
+	variable = discreteDistribution.variables.add()
+	variable.name = "antibody_test_positive"
+	variable.probability = 0.02
+	variable = discreteDistribution.variables.add()
+	variable.name = "antibody_test_negative"
+	variable.probability = 0.98
+	
+
+	discreteDistribution = bayesianNetwork.discreteDistributions.add()
+	discreteDistribution.name = "saliva_test"
+	variable = discreteDistribution.variables.add()
+	variable.name = "saliva_test_positive"
+	variable.probability = 0.02
+	variable = discreteDistribution.variables.add()
+	variable.name = "saliva_test_negative"
+	variable.probability = 0.98
+	
+	#anomalies
+	
+	discreteDistribution = bayesianNetwork.discreteDistributions.add()
+	discreteDistribution.name = "hotspot_anomaly"
+	variable = discreteDistribution.variables.add()
+	variable.name = "hotspot_anomaly"
+	variable.probability = 0.15
+	variable = discreteDistribution.variables.add()
+	variable.name = "no_hotspot_anomaly"
+	variable.probability = 0.85
+	
+	
+	discreteDistribution = bayesianNetwork.discreteDistributions.add()
+	discreteDistribution.name = "heart_rate_anomaly"
+	variable = discreteDistribution.variables.add()
+	variable.name = "heart_rate_anomaly"
+	variable.probability = 0.05
+	variable = discreteDistribution.variables.add()
+	variable.name = "no_heart_rate_anomaly"
+	variable.probability = 0.95
+	
+	
+	discreteDistribution = bayesianNetwork.discreteDistributions.add()
+	discreteDistribution.name = "heart_rate_variability_anomaly"
+	variable = discreteDistribution.variables.add()
+	variable.name = "heart_rate_variability_anomaly"
+	variable.probability = 0.1
+	variable = discreteDistribution.variables.add()
+	variable.name = "no_heart_rate_variability_anomaly"
+	variable.probability = 0.90
+	
+	
+	discreteDistribution = bayesianNetwork.discreteDistributions.add()
+	discreteDistribution.name = "oxygen_anomaly"
+	variable = discreteDistribution.variables.add()
+	variable.name = "oxygen_anomaly"
+	variable.probability = 0.05
+	variable = discreteDistribution.variables.add()
+	variable.name = "no_oxygen_anomaly"
+	variable.probability = 0.95
 
 	# conditional probability tables
 
 	cpt ={} 
 
-	cpt["systemically_disadvantaged"] = avg(bayesianNetwork,cpt,
+	
+	
+	cpt["metabolic_disease"] = any(bayesianNetwork,cpt,
 	[
-	"education",
-	"ethnicity",
-	"community"
+	"cardiovascular_disease",
+	"diabetes",
+	"hypertension",
+	"bmi"
 	],
-	["very_systemically_disadvantaged","somewhat_systemically_disadvantaged","not_systemically_disadvantaged"]
+	["metabolic_disease","no_metabolic_disease"]
 
 	)
-
-
-	cpt["economically_disadvantaged"] = avg(bayesianNetwork,cpt,
+	
+	
+	cpt["chronic_conditions"] = any(bayesianNetwork,cpt,
 	[
-	"employment",
-	"income_in_USD",
-	"regular_exams"
+	"lung_disease",
+	"cancer",
+	"immunocompromised",
+	"psychological_disorders",
 	],
-	["very_economically_disadvantaged","somewhat_economically_disadvantaged","not_economically_disadvantaged"]
+	["chronic_conditions","no_chronic_conditions"]
 
 	)
 
-
-	cpt["socially_disadvantaged"] = avg(bayesianNetwork,cpt,
+	
+	cpt["demographics"] = avg(bayesianNetwork,cpt,
 	[
-	"systemically_disadvantaged",
-	"economically_disadvantaged"
+	"age",
+	"sex",
+	"ethnicity"
 	],
-	["very_socially_disadvantaged","somewhat_socially_disadvantaged","not_socially_disadvantaged"]
+	["demographics","no_demographics"]
 
 	)
-
-
-	cpt["tobacco"] = any(bayesianNetwork,cpt,
-	{
-	"cigarettes_per_week":{"over_fifty_cigarettes_per_week","eleven_to_fifty_cigarettes_per_week"},
-	"cigars_per_week":{"over_fifty_cigars_per_week"},
-	"vapes_per_week":{"over_fifty_vapes_per_week","six_to_fifty_vapes_per_week"}
-	},
-	["tobacco","no_tobacco"]
-	)
-
-	cpt["substance_smoking"] = any(bayesianNetwork,cpt,
-	{
-	"hookah_per_week":{ "over_six_hookah_per_week"},
-	"cannabis_per_week":{"over_fifteen_cannabis_per_week"},
-	"inhalants_per_week":{"over_fifteen_inhalants_per_week","one_to_fifteen_inhalants_per_week"}
-	},
-	["substance_smoking","no_substance_smoking"]
-	)
-
-	cpt["smoking"] = any(bayesianNetwork,cpt,
-	{
-	"tobacco":{"tobacco"},
-	"substance_smoking":{"substance_smoking"}
-	},
-	["smoking","no_smoking"]
-	)
-
-
-	cpt["stimulant_abuse"] = any(bayesianNetwork,cpt,
-	{
-	"adderall_per_week":{"over_fifteen_adderall_per_week","one_to_fifteen_adderall_per_week"},
-	"ritalin_per_week":{"over_fifteen_ritalin_per_week"},
-	"methamphetamine_per_week":{"over_five_methamphetamine_per_week","one_to_five_methamphetamine_per_week"},
-	"amphetamines_per_week":{"over_fifteen_amphetamines_per_week","one_to_fifteen_amphetamines_per_week"},
-	},
-	["stimulant_abuse","no_stimulant_abuse"]
-	)
-
-
-	cpt["addictive_substance_abuse"] = any(bayesianNetwork,cpt,
-	{
-	"opiods_per_week":{"over_fifteen_opiods_per_week"},
-	"snuff_per_week":{"over_fifty_snuff_per_week"},
-	"alchohol_glasses_per_week":{"over_twentyone_glasses_per_week"},
-	"other_substance_per_week":{"over_fifteen_other_substance_per_week"}
-	},
-	["addictive_substance_abuse","no_addictive_substance_abuse"]
-	)
-
-
-
-	cpt["legal_substance_abuse"] = any(bayesianNetwork,cpt,
-	{
-	"addictive_substance_abuse":{"addictive_substance_abuse"},
-	"stimulant_abuse":{"stimulant_abuse"}
-	},
-	["legal_substance_abuse","no_legal_substance_abuse"]
-	)
-
-
-
-	cpt["illegal_upper_abuse"] = any(bayesianNetwork,cpt,
-	{
-	"cocaine_per_week":{"over_five_cocaine_per_week","one_to_five_cocaine_per_week"},
-	"ecstasy_per_week":{"over_five_ecstasy_per_week","one_to_five_ecstasy_per_week"},
-	"speed_per_week":{"over_five_speed_per_week","one_to_five_speed_per_week"}
-	},
-	["illegal_upper_abuse","no_illegal_upper_abuse"]
-	)
-
-
-	cpt["illegal_downer_abuse"] = any(bayesianNetwork,cpt,
-	{
-	"depressants_per_week":{ "over_five_depressants_per_week","one_to_five_depressants_per_week"},
-	"hallucinogens_per_week":{"over_fifteen_hallucinogens_per_week","one_to_fifteen_hallucinogens_per_week"},
-	"dissociatives_per_week":{"over_five_dissociatives_per_week","one_to_five_dissociatives_per_week"},
-	},
-	["illegal_downer_abuse","no_illegal_downer_abuse"]
-	)
-
-
-
-
-	cpt["illegal_substance_abuse"] = any(bayesianNetwork,cpt,
-	{
-	"illegal_upper_abuse":{"illegal_upper_abuse"},
-	"illegal_downer_abuse":{"illegal_downer_abuse"}
-	},
-	["illegal_substance_abuse","no_illegal_substance_abuse"]
-	)
-
-	cpt["substance_abuse"] = any(bayesianNetwork,cpt,
-	{
-	"legal_substance_abuse":{"heavy_substance_abuse"},
-	"illegal_substance_abuse":{"heavy_substance_abuse","light_substance_abuse"}
-	},
-	["substance_abuse","no_substance_abuse"]
-	)
-
-
-	cpt["depression"] = avg(bayesianNetwork,cpt,
+	
+	cpt["comorbidities"] = any(bayesianNetwork,cpt,
 	[
-	"sleep_quickly",
-	"sleep_in_hours",
-	"lonely",
-	"close_confidants"
+	"chronic_conditions",
+	"metabolic__disease",
+	"demographics"
 	],
-	["high_depression","medium_depression","low_depression","depression_free"]
-	)
-
-
-	cpt["societal_stress"] = avg(bayesianNetwork,cpt,
-	[
-	"socially_disadvantaged",
-	"pregnancy_in_months",
-	"number_of_children",
-	"activity_level"
-	],
-	["high_societal_stress","medium_societal_stress","low_societal_stress","societal_stress_free"]
-	)
-
-
-	cpt["stress"] = avg(bayesianNetwork,cpt,
-	[
-	"depression",
-	"societal_stress"
-	],
-	["high_stress","medium_stress","low_stress","stress_free"]
-	)
-
-
-
-	cpt["heart_disease"] = avg(bayesianNetwork,cpt,
-	[
-	"heart_attack",
-	"peripheral_artery_disease",
-	"angina",
-	"atherosclerotic_cardiovascular_disease",
-	],
-	["serious_heart_disease","some_heart_disease","no_heart_disease"]
+	["comorbidities","no_comorbidities"]
 
 	)
-
-	cpt["disability"] = any(bayesianNetwork,cpt,
-	{
-	"disability_walk_or_run":{"have_disability_walk_or_run"},
-	"disability_equipment":{"have_disability_equipment"},
-	"mental_disability_cant_work":{"have_mental_disability_cant_work"},
-	"heterosome":{"other","X","XXY","XYY"}
-	},
-	["disability","no_disability"]
-
-	)
-
-
-
-	cpt["neurological_cofactors"] = avg(bayesianNetwork,cpt,
-	[
-	"tiaa",
-	"stroke",
-	],
-	["significant_neurological_cofactors","neurological_cofactors","no_neurological_cofactors"]
-
-	)
-
-
-	cpt["misc_health_cofactors"] = avg(bayesianNetwork,cpt,
-	[
-	"cholesterol",
-	"hx_family_lung_disease",
-	"other_chronic_disease"
-	],
-	["significant_misc_health_cofactors","misc_health_cofactors","no_misc_health_cofactors"]
-
-	)
-
-
-	cpt["health_cofactors"] = avg(bayesianNetwork,cpt,
-	[
-	"neurological_cofactors",
-	"misc_health_cofactors"
-	],
-	["significant_health_cofactors","health_cofactors","no_health_cofactors"]
-
-	)
-
-
-	cpt["behavioral_cofactors"] = avg(bayesianNetwork,cpt,
-	[
-	"stress",
-	"disability",
-	"substance_abuse",
-	"smoking"
-	],
-	["significant_behavioral_cofactors","behavioral_cofactors","no_behavioral_cofactors"]
-
-	)
-
-
-	cpt["other_cofactors"] = avg(bayesianNetwork,cpt,
-	[
-	"health_cofactors",
-	"behavioral_cofactors"
-	],
-	["significant_other_cofactors","other_cofactors","no_other_cofactors"]
-
-	)
-
-
-	cpt["untreated_blood_pressure"] = all(bayesianNetwork,cpt,
-		{
-		 "blood_pressure":{"very_high_blood_pressure","high_blood_pressure"},
-		 "blood_pressure_medication":{"not_taking_blood_pressure_medication"}
-		},
-		["untreated_blood_pressure", "other_blood_pressure"]
-		)
-
-
-	cpt["untreated_diabetes"] = all(bayesianNetwork,cpt,
-		{
-		 "diabetes":{"has_diabetes"},
-		 "diabetes_medication":{"no_diabetes_medication"}
-		},
-		["untreated_diabetes", "other_diabetes"]
-		)
-
-
-	cpt["metabolic_disease"] = if_then_else(bayesianNetwork,cpt,
-		{
-		"untreated_diabetes":{"untreated_diabetes"},
-		"diabetes_medication":{"insulin","oral_diabetes_medication"},
-		"untreated_blood_pressure":{"untreated_blood_pressure"},
-		"diabetes":{"prediabetes"}
-		},
-		["severe_metabolic_disease","high_metabolic_disease", "medium_metabolic_disease","low_metabolic_disease","no_metabolic_disease"]
-		) 
-
-
-
-	cpt["other_comorbidities"] = any(bayesianNetwork,cpt,
-	{
-	"heart_disease":{"heart_disease"},
-	"bmi":{"morbidly_obese"},
-	"metabolic_disease":{"severe_metabolic_disease","high_metabolic_disease"},
-	"other_cofactors":{"significant_other_cofactors"}
-	},
-	[ "other_comorbidities","no_other_comorbidities"]
-	)
-
+	
 	cpt["specific_covid_symptoms"] = avg(bayesianNetwork,cpt,
 	[
 	"colored_spots_on_toes",
@@ -1640,15 +839,24 @@ def covid_bayes():
 	"personal_social_distancing",
 	"social_distancing_connectedness"	
 	],
-	["no_social_distancing","some_social_distancing","safe_social_distancing"]
+	["no_social_distancing","low_social_distancing","medium_social_distancing", "high_social_distancing"]
+	)
+	
+	cpt["social_distancing_boolean"]= avg(bayesianNetwork,cpt,
+	[
+	"social_distancing_environment",
+	"personal_social_distancing",
+	"social_distancing_connectedness"	
+	],
+	["no_social_distancing", "social_distancing"]
 	)
 
 
-
-	cpt["wearables"] = avg(bayesianNetwork,cpt,
+	cpt["wearables"] = any(bayesianNetwork,cpt,
 	[
-	"heart_rate_variability",
-	"oxygen"
+	"heart_rate_variability_anomaly",
+	"oxygen_anomaly",
+	"heart_rate_anomaly"
 	],
 	["anomalous","slight_anomaly","normal"]
 	)
@@ -1674,7 +882,7 @@ def covid_bayes():
 
 	cpt["serious_shortness_of_breath"] = all(bayesianNetwork,cpt,
 		{"shortness_of_breath":{"new_or_worse_painful_shortness_of_breath","new_or_worse_shortness_of_breath"}, 
-		"other_comorbidities":{"significant_other_comorbidities","some__other_comorbidities"}},
+		"comorbidities":{"comorbidities"}},
 		["serious_shortness_of_breath","no_serious_shortness_of_breath"]
 		)
 
@@ -1766,6 +974,15 @@ def covid_bayes():
 
 
 
+	cpt["covid_risk_binary"] = avg(bayesianNetwork,cpt,
+		[
+		"covid_symptom_level",
+		"covid_environment"
+		],
+		["covid_risk","no_covid_risk"]
+		)
+
+
 	cpt["covid_severity"] = avg(bayesianNetwork,cpt,
 		[
 		"age",
@@ -1773,6 +990,16 @@ def covid_bayes():
 		],
 		["high_covid_severity","medium_covid_severity","low_covid_severity","no_covid_severity"]
 		)
+		
+		
+	cpt["covid_severity_boolean"] = avg(bayesianNetwork,cpt,
+		[
+		"age",
+		"other_comorbidities"
+		],
+		["covid_severity","no_covid_severity"]
+		)
+
 
 
 	addCpt(bayesianNetwork,cpt)
