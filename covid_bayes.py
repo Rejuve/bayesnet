@@ -720,35 +720,34 @@ def covid_bayes():
 
 	
 	cpt["covid_test"] = any(bayesianNetwork,cpt,
-	[
-	"swab_test",
-	"antibody_test",
-	"saliva_test"
-	],
+	{
+	"swab_test":{"swab_test_positive"},
+	"antibody_test":{"antibody_test_positive"},
+	"saliva_test":{"saliva_test_positive"}
+	},
 	["positive_covid_test","negative_covid_test"]
 
 	)
 	
 	
 	cpt["metabolic_disease"] = any(bayesianNetwork,cpt,
-	[
-	"cardiovascular_disease",
-	"diabetes",
-	"hypertension",
-	"bmi"
-	],
+	{
+	"cardiovascular_disease":{"cardiovascular_disease"},
+	"diabetes":{"diabetes"},
+	"hypertension":{"hypertension"}
+	},
 	["metabolic_disease","no_metabolic_disease"]
 
 	)
 	
 	
 	cpt["chronic_conditions"] = any(bayesianNetwork,cpt,
-	[
-	"lung_disease",
-	"cancer",
-	"immunocompromised",
-	"psychological_disorders",
-	],
+	{
+	"lung_disease":{"lung_disease"},
+	"cancer":{"cancer"},
+	"kidney_disease":{"kidney_disease"},
+	"immunocompromised":{"immunocompromised"}
+	},
 	["chronic_conditions","no_chronic_conditions"]
 
 	)
@@ -757,19 +756,19 @@ def covid_bayes():
 	cpt["demographics"] = avg(bayesianNetwork,cpt,
 	[
 	"age",
-	"sex",
-	"ethnicity"
+	"ethnicity",
+	"bmi"
 	],
 	["demographics","no_demographics"]
 
 	)
 	
 	cpt["comorbidities"] = any(bayesianNetwork,cpt,
-	[
-	"chronic_conditions",
-	"metabolic__disease",
-	"demographics"
-	],
+	{
+	"chronic_conditions":{"chronic_conditions"},
+	"metabolic_disease":{"metabolic_disease"},
+	"demographics":{"demographics"}
+	},
 	["comorbidities","no_comorbidities"]
 
 	)
@@ -863,12 +862,12 @@ def covid_bayes():
 
 
 	cpt["wearables"] = any(bayesianNetwork,cpt,
-	[
-	"heart_rate_variability_anomaly",
-	"oxygen_anomaly",
-	"heart_rate_anomaly"
-	],
-	["anomalous","slight_anomaly","normal"]
+	{
+	"heart_rate_variability_anomaly":{"heart_rate_variability_anomaly"},
+	"oxygen_anomaly":{"oxygen_anomaly"},
+	"heart_rate_anomaly":{"heart_rate_anomaly"}
+	},
+	["anomalous","normal"]
 	)
 
 
@@ -975,12 +974,12 @@ def covid_bayes():
 
 
 	cpt["covid_risk"] = any(bayesianNetwork,cpt,
-		[
-		"covid_symptom_level",
-		"covid_environment",
-		"covid_test"
-		],
-		["high_covid_risk","medium_covid_risk","low_covid_risk","no_covid_risk"]
+		{
+		"covid_symptom_level":{"high_covid"},
+		"covid_environment":{"high_covid"},
+		"covid_test":{"positive_covid_test"}
+		},
+		["covid_risk","no_covid_risk"]
 		)
 
 
