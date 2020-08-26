@@ -719,6 +719,16 @@ def covid_bayes():
 	cpt ={} 
 
 	
+	cpt["covid_test"] = any(bayesianNetwork,cpt,
+	[
+	"swab_test",
+	"antibody_test",
+	"saliva_test"
+	],
+	["positive_covid_test","negative_covid_test"]
+
+	)
+	
 	
 	cpt["metabolic_disease"] = any(bayesianNetwork,cpt,
 	[
@@ -964,10 +974,11 @@ def covid_bayes():
 
 
 
-	cpt["covid_risk"] = avg(bayesianNetwork,cpt,
+	cpt["covid_risk"] = any(bayesianNetwork,cpt,
 		[
 		"covid_symptom_level",
-		"covid_environment"
+		"covid_environment",
+		"covid_test"
 		],
 		["high_covid_risk","medium_covid_risk","low_covid_risk","no_covid_risk"]
 		)
