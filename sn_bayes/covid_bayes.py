@@ -996,7 +996,7 @@ def covid_bayes():
 	cpt["covid_severity"] = avg(bayesianNetwork,cpt,
 		[
 		"age",
-		"other_comorbidities"
+		"comorbidities"
 		],
 		["high_covid_severity","medium_covid_severity","low_covid_severity","no_covid_severity"]
 		)
@@ -1005,7 +1005,7 @@ def covid_bayes():
 	cpt["covid_severity_boolean"] = avg(bayesianNetwork,cpt,
 		[
 		"age",
-		"other_comorbidities"
+		"comorbidities"
 		],
 		["covid_severity","no_covid_severity"]
 		)
