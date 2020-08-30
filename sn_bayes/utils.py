@@ -211,7 +211,51 @@ def query(baked_net, netspec, evidence,out_var_list):
 	for dist_name in out_var_list:
 		answer[dist_name] = (json.loads(description[var_positions[dist_name]].to_json()))['parameters'][0]
 	return answer
+
 	
+def explain(baked_net, netspec, evidence,explain_list, reverse_explain_list = [], reverse_evidence = [] ):
+	#explain_list lists output variables to tell what input variable would make them less likely (for example covid severity)
+	#reverse_explain_list tells which of those out vars to explain more likely rather than less likely  (for example social distancing)
+	#reverse_evidence_list tells which of the evidence to explain should perturb one val to the left rather than the right (the default)
+	
+	#first make a list of all the pertubations to make
+	evidence_pertubations = []
+	var_val_positions = get_var_val_positions(netspec)
+	var_val_names = get var_val_names(netspec)
+	for var,val in evidence.items():
+		new_pos = None
+		old_pos = var_val_positions[var]
+		if var in reverse_evidence and old_pos > 0:
+			new_pos = old_pos-1
+		elif var not in reverse_evidence and old_pos < len(var_val_positions[var])-1: 
+			new_pos = old_pos+ 1
+		if new_pos is not None:
+			new_evidence = copy.deepcopy(evidence)
+			new_val = var_val_names[var][new_pos]
+			new_evidence[var]=new_val
+			evidence_pertubations.append(new_evidence)
+	
+	#next run each, obtaining the values of vars to be explained.  
+	#find the difference between these outputvalues and the output values from the original evidence input
+	result = query(baked_net,netspec,evidence,explain_list)
+	winners = {}
+	max_diff = {}
+	for key,val_dict in result.items():
+		winner = max(val_dict,key=val_dict.get)
+		winner_val = val_dict[winner]
+		winners[key] = (winner,winner_val)
+		max_diff[key] = (winner,0)
+	return_evidence = {key,{} for key in explain_list}
+	subtractions = {}
+	for evidence in evidence_perterbations:
+		result = query(baked_net,netspec,evidence,explain_list)
+		for key,val_tuple in explain_list:
+			diff = result[key][winners[key][0]]-winners[key][1] if key in reverse_explain_list else winners[
+			key][1] - result[key][winners[key][0]]
+			if diff > max_diff[key][1]:
+				max_diff[key][1] = diff
+	return max_diff
+		
 
 def make_nmap(): 
 	nmap = {}
