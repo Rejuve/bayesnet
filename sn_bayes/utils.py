@@ -224,7 +224,7 @@ def explain(baked_net, netspec, evidence,explain_list, reverse_explain_list = []
 	var_val_names = get_var_val_names(netspec)
 	for var,val in evidence.items():
 		new_pos = None
-		old_pos = var_val_positions[var]
+		old_pos = var_val_positions[var][val]
 		if var in reverse_evidence and old_pos > 0:
 			new_pos = old_pos-1
 		elif var not in reverse_evidence and old_pos < len(var_val_positions[var])-1: 
