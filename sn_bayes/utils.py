@@ -255,7 +255,7 @@ def explain(baked_net, netspec, evidence,explain_list, reverse_explain_list = []
 			key][1] - result[key][winners[key][0]]
 			if diff > max_diff[key][1]:
 				max_diff[key] = (max_diff[key][0],diff)
-				explanation[key].append(explaining_var, result, diff)
+				explanation[key].append((explaining_var, result, diff))
 				
 	return max_diff, explanation
 	
