@@ -248,7 +248,7 @@ def explain(baked_net, netspec, evidence,explain_list, reverse_explain_list = []
 	
 	for evidence in evidence_perturbations:
 		result = query(baked_net,netspec,evidence,explain_list)
-		for key,val_tuple in explain_list:
+		for key,val_tuple in explain_list.items():
 			diff = result[key][winners[key][0]]-winners[key][1] if key in reverse_explain_list else winners[
 			key][1] - result[key][winners[key][0]]
 			if diff > max_diff[key][1]:
