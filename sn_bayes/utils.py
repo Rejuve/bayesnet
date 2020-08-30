@@ -233,7 +233,7 @@ def explain(baked_net, netspec, evidence,explain_list, reverse_explain_list = []
 			new_evidence = copy.deepcopy(evidence)
 			new_val = var_val_names[var][new_pos]
 			new_evidence[var]=new_val
-			evidence_perturbations[var].= new_evidence
+			evidence_perturbations[var]= new_evidence
 	
 	#next run each, obtaining the values of vars to be explained.  
 	#find the difference between these outputvalues and the output values from the original evidence input
