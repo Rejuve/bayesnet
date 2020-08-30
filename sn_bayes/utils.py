@@ -219,7 +219,7 @@ def explain(baked_net, netspec, evidence,explain_list, reverse_explain_list = []
 	#reverse_evidence_list tells which of the evidence to explain should perturb one val to the left rather than the right (the default)
 	
 	#first make a list of all the pertubations to make
-	evidence_perturbations = []
+	evidence_perturbations = {}
 	var_val_positions = get_var_val_positions(netspec)
 	var_val_names = get_var_val_names(netspec)
 	for var,val in evidence.items():
@@ -233,27 +233,33 @@ def explain(baked_net, netspec, evidence,explain_list, reverse_explain_list = []
 			new_evidence = copy.deepcopy(evidence)
 			new_val = var_val_names[var][new_pos]
 			new_evidence[var]=new_val
-			evidence_perturbations.append(new_evidence)
+			evidence_perturbations[var].= new_evidence
 	
 	#next run each, obtaining the values of vars to be explained.  
 	#find the difference between these outputvalues and the output values from the original evidence input
 	result = query(baked_net,netspec,evidence,explain_list)
 	winners = {}
 	max_diff = {}
+	explanation = {}
 	for key,val_dict in result.items():
 		winner = max(val_dict,key=val_dict.get)
 		winner_val = val_dict[winner]
 		winners[key] = (winner,winner_val)
 		max_diff[key] = (winner,0)
+		explanation[key] = []
 	
-	for evidence in evidence_perturbations:
+	for explaining_var, evidence in evidence_perturbations.items():
 		result = query(baked_net,netspec,evidence,explain_list)
 		for key in explain_list:
 			diff = result[key][winners[key][0]]-winners[key][1] if key in reverse_explain_list else winners[
 			key][1] - result[key][winners[key][0]]
 			if diff > max_diff[key][1]:
 				max_diff[key] = (max_diff[key][0],diff)
-	return max_diff
+				explanation[key].append(explaining_var, result, diff)
+				
+	return max_diff, explanation
+	
+	
 		
 
 def make_nmap(): 
