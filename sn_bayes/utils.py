@@ -221,7 +221,7 @@ def explain(baked_net, netspec, evidence,explain_list, reverse_explain_list = []
 	#first make a list of all the pertubations to make
 	evidence_pertubations = []
 	var_val_positions = get_var_val_positions(netspec)
-	var_val_names = get var_val_names(netspec)
+	var_val_names = get_var_val_names(netspec)
 	for var,val in evidence.items():
 		new_pos = None
 		old_pos = var_val_positions[var]
@@ -245,8 +245,7 @@ def explain(baked_net, netspec, evidence,explain_list, reverse_explain_list = []
 		winner_val = val_dict[winner]
 		winners[key] = (winner,winner_val)
 		max_diff[key] = (winner,0)
-	return_evidence = {key,{} for key in explain_list}
-	subtractions = {}
+	
 	for evidence in evidence_perterbations:
 		result = query(baked_net,netspec,evidence,explain_list)
 		for key,val_tuple in explain_list:
