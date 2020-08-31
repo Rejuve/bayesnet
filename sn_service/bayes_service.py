@@ -144,7 +144,7 @@ class BayesNetServicer(grpc_bt_grpc.BayesNetServicer):
           var_answer.var_num = var_num
           for var, val in val_dict.items():
             val_num = var_positions[var]
-            var_state = var_answer.explanations.add()
+            var_state = var_answer.varStates.add()
             var_state.state_num = val_num
             var_state.probability =val
         
@@ -181,9 +181,10 @@ class BayesNetServicer(grpc_bt_grpc.BayesNetServicer):
           var_answer.var_num = var_num
           for var, val in val_dict.items():
             val_num = var_positions[var]
-            var_state = var_answer.explanations.add()
+            var_state = var_answer.varStates.add()
             var_state.state_num = val_num
             var_state.probability =val
+	
     else:
       answer.error_msg = error_msg
         
