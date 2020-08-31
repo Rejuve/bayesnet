@@ -30,8 +30,10 @@ if __name__ == "__main__":
             endpoint = "localhost:{}".format(registry["bayes_service"]["grpc"])
         bayesianNetwork = covid_bayes.covid_bayes()
         evidence = {}
-        outvars= ["emergency_treatment","covid_risk","covid_severity"]
-        query = create_query(evidence,outvars,bayesianNetwork)
+        outvars= ["social_distancing", "social_distancing_binary","emergency_treatment","covid_risk","covid_risk_binary","covid_severity","covid_severity_binary"]
+	explainvars= ["social_distancing", "social_distancing_binary","emergency_treatment","covid_risk","covid_risk_binary","covid_severity","covid_severity_binary"]
+	reverse_explainvars = ["social_distancing", "social_distancing_binary"]
+        query = create_query(bayesianNetwork,evidence,outvars,explainvars,reverse_explainvars)
         
         grpc_method = input("Method (stateless|statefull): ") if not test_flag else "statefull"
 
@@ -46,6 +48,8 @@ if __name__ == "__main__":
             response = stub.StatelessNet(bayesianNetworkQuery)
             print("response.varAnswers")
             print(response.varAnswers)
+            print("response.explanations")
+            print(response.explanations)
             print("response.error_msg")
             print(response.error_msg)
         elif grpc_method == "statefull":
@@ -60,6 +64,8 @@ if __name__ == "__main__":
             response = stub.AskNet(queryId)
             print("response.varAnswers")
             print(response.varAnswers)
+            print("response.explanations")
+            print(response.explanations)
             print("response.error_msg")
             print(response.error_msg)
         else:
