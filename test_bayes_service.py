@@ -34,8 +34,8 @@ if __name__ == "__main__":
         evidence["age"]= "elderly"
         evidence["diabetes"]= "diabetes"
         outvars= ["social_distancing", "social_distancing_binary","emergency_treatment","covid_risk","covid_risk_binary","covid_severity","covid_severity_binary"]
-	explainvars= ["social_distancing", "social_distancing_binary","emergency_treatment","covid_risk","covid_risk_binary","covid_severity","covid_severity_binary"]
-	reverse_explainvars = ["social_distancing", "social_distancing_binary"]
+        explainvars= ["social_distancing", "social_distancing_binary","emergency_treatment","covid_risk","covid_risk_binary","covid_severity","covid_severity_binary"]
+        reverse_explainvars = ["social_distancing", "social_distancing_binary"]
         query = create_query(bayesianNetwork,evidence,outvars,explainvars,reverse_explainvars)
         
         grpc_method = input("Method (stateless|statefull): ") if not test_flag else "statefull"
