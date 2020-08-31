@@ -3,6 +3,7 @@ syntax = "proto3";
 package sn_bayes;
 
  service BayesNet{
+  rpc EndNet(Id) returns (Id) {}
   rpc StartNet(BayesianNetwork) returns (Id) {}
   rpc AskNet(QueryId) returns (Answer) {}
   rpc StatelessNet(BayesianNetworkQuery) returns(Answer){}
@@ -76,7 +77,9 @@ message Query{
   }
   repeated Outvar outvars = 2;
   repeated Outvar explainvars =3;
-  repeated Anomaly timeseries=4;
+  repeated Outvar reverse_explainvars = 4;
+  repeated Outvar reverse_evidence = 5
+  repeated Anomaly timeseries=6;
 }
 
 
@@ -100,18 +103,9 @@ message Answer{
     repeated VarState varStates = 2;
   }
   
-  message Reason {
-  	VarAnswer var_answer = 1;
-	float weight = 2;
-  }
-  
-  message Explanation{
-	int32 var_num = 1;
-	repeated Reason reason = 2;
-  }
   
   repeated VarAnswer varAnswers = 1;
-  repeated Explanation explanations = 2;
+  repeated VarAnswer explanations = 2;
   string error_msg = 3;
 }
 
