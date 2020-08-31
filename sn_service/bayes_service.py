@@ -81,8 +81,8 @@ class BayesNetServicer(grpc_bt_grpc.BayesNetServicer):
   def EndNet(self, request, context):
     answer = Answer()
     if request.id in self.spec:
-	  self.spec.pop(request.id)
-	  self.baked.pop(request.id)
+      self.spec.pop(request.id)
+      self.baked.pop(request.id)
       self.spec_json = {}
       #todo: return id asynchronously without waiting to save, or save if guaranteed upon error
       for i, message in self.spec.items():
