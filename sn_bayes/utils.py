@@ -173,9 +173,10 @@ def get_evidence_and_outvars(query, bayesianNetwork):
 			var_val_name = var_val_names[var_name][e.response]
 			evidence_dict[var_name] = var_val_name 
 	outvar_list =[var_names[o.var_num] for o in query.outvars if o.var_num in var_names]
+	explainvars =[var_names[o.var_num] for o in query.explainvars if o.var_num in var_names]
 	reverse_explain_list =[var_names[o.var_num] for o in query.reverse_explainvars if o.var_num in var_names]
 	reverse_evidence =[var_names[o.var_num] for o in query.reverse_evidence if o.var_num in var_names]
-	return(evidence_dict, outvar_list, reverse_explain_list, reverse_evidence)
+	return(evidence_dict, outvar_list, explainvars, reverse_explain_list, reverse_evidence)
 
 	
 def create_query (bayesianNetwork,evidence_dict,outvar_list,explainvars=[],reverse_explainvars=[],reverse_evidence=[]):
