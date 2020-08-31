@@ -120,7 +120,7 @@ class BayesNetServicer(grpc_bt_grpc.BayesNetServicer):
   def AskNet(self, request, context):
     answer = Answer()
     if request.id in self.spec:
-       evidence,outvars,explainvars, reverse_explain_list, reverse_evidence = get_evidence_and_outvars(request.query, request.bayesianNetwork)
+      evidence,outvars,explainvars, reverse_explain_list, reverse_evidence = get_evidence_and_outvars(request.query, request.bayesianNetwork)
       answer_dict = query(net, request.bayesianNetwork, evidence,outvars)
 	  explain_dict= explain(net,request.bayesianNetwork,evidence,explainvars,reverse_explain_list, reverse_evidence)
       var_positions = get_var_positions(request.bayesianNetwork)
