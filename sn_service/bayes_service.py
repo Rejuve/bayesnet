@@ -77,6 +77,24 @@ class BayesNetServicer(grpc_bt_grpc.BayesNetServicer):
     return i
     
 
+  
+  def EndNet(self, request, context):
+    answer = Answer()
+    if request.id in self.spec:
+	  self.spec.pop(request.id)
+	  self.baked.pop(request.id)
+      self.spec_json = {}
+      #todo: return id asynchronously without waiting to save, or save if guaranteed upon error
+      for i, message in self.spec.items():
+        self.spec_json[i] = json_format.MessageToJson(message)
+      with open(self.spec_path, 'wb') as f:
+        pickle.dump(self.spec_json, f)
+        f.close()
+    else:
+      answer.error_msg = "Net {} does not exist".format(request.id)
+    return(answer)
+	
+	
   def StartNet(self, request, context):
     id = Id()
     not_too_complex,error_msg = complexity_check(request)
@@ -97,38 +115,14 @@ class BayesNetServicer(grpc_bt_grpc.BayesNetServicer):
       id.error_msg = error_msg
     return id
   
+  
 
   def AskNet(self, request, context):
     answer = Answer()
     if request.id in self.spec:
-      evidence,outvars = get_evidence_and_outvars(request.query, self.spec[request.id])
-      answer_dict = query(self.baked[request.id], self.spec[request.id], evidence,outvars)
-      var_positions = get_var_positions(self.spec[request.id])
-      var_val_positions = get_var_val_positions(self.spec[request.id])
-
-      for var, val_dict in answer_dict.items():
-        var_answer = answer.varAnswers.add()
-        if var in var_positions:
-          var_num = var_positions[var]
-          var_answer.var_num = var_num
-          for val, prob in val_dict.items():
-            val_num = var_val_positions[var][val]
-            var_state = var_answer.varStates.add()
-            var_state.state_num = val_num
-            var_state.probability =prob
-    else:
-      answer.error_msg = "Net {} does not exist".format(request.id)
-    return(answer)
-
-  def StatelessNet(self, request, context):
-    answer = Answer()
-    not_too_complex,error_msg = complexity_check(request.bayesianNetwork)
-    if not_too_complex:
-      net= bayesInitialize(request.bayesianNetwork)
-      net.bake()
-      evidence,outvars = get_evidence_and_outvars(request.query, request.bayesianNetwork)
+       evidence,outvars,explainvars, reverse_explain_list, reverse_evidence = get_evidence_and_outvars(request.query, request.bayesianNetwork)
       answer_dict = query(net, request.bayesianNetwork, evidence,outvars)
-
+	  explain_dict= explain(net,request.bayesianNetwork,evidence,explainvars,reverse_explain_list, reverse_evidence)
       var_positions = get_var_positions(request.bayesianNetwork)
       var_val_positions = get_var_val_positions(request.bayesianNetwork)
 
@@ -142,6 +136,53 @@ class BayesNetServicer(grpc_bt_grpc.BayesNetServicer):
             var_state = var_answer.varStates.add()
             var_state.state_num = val_num
             var_state.probability =prob
+      for var, val_dict in explain_dict.items():
+        var_answer = answer.explanations.add()
+        if var in var_positions:
+          var_num = var_positions[var]
+          var_answer.var_num = var_num
+          for var, val in val_dict.items():
+            val_num = var_positions[var]
+            var_state = var_answer.explanations.add()
+            var_state.state_num = val_num
+            var_state.probability =val
+        
+    else:
+      answer.error_msg = "Net {} does not exist".format(request.id)
+    return(answer)
+
+  def StatelessNet(self, request, context):
+    answer = Answer()
+    not_too_complex,error_msg = complexity_check(request.bayesianNetwork)
+    if not_too_complex:
+      net= bayesInitialize(request.bayesianNetwork)
+      net.bake()
+      evidence,outvars,explainvars, reverse_explain_list, reverse_evidence = get_evidence_and_outvars(request.query, request.bayesianNetwork)
+      answer_dict = query(net, request.bayesianNetwork, evidence,outvars)
+	  explain_dict= explain(net,request.bayesianNetwork,evidence,explainvars,reverse_explain_list, reverse_evidence)
+      var_positions = get_var_positions(request.bayesianNetwork)
+      var_val_positions = get_var_val_positions(request.bayesianNetwork)
+
+      for var, val_dict in answer_dict.items():
+        var_answer = answer.varAnswers.add()
+        if var in var_positions:
+          var_num = var_positions[var]
+          var_answer.var_num = var_num
+          for val, prob in val_dict.items():
+            val_num = var_val_positions[var][val]
+            var_state = var_answer.varStates.add()
+            var_state.state_num = val_num
+            var_state.probability =prob
+      for var, val_dict in explain_dict.items():
+        var_answer = answer.explanations.add()
+        if var in var_positions:
+          var_num = var_positions[var]
+          var_answer.var_num = var_num
+          for var, val in val_dict.items():
+            val_num = var_positions[var]
+            var_state = var_answer.explanations.add()
+            var_state.state_num = val_num
+            var_state.probability =val
     else:
       answer.error_msg = error_msg
         
