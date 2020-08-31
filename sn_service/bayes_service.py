@@ -121,8 +121,8 @@ class BayesNetServicer(grpc_bt_grpc.BayesNetServicer):
     answer = Answer()
     if request.id in self.spec:
       evidence,outvars,explainvars, reverse_explain_list, reverse_evidence = get_evidence_and_outvars(request.query, self.spec[request.id])
-      answer_dict = query(net, self.spec[request.id], evidence,outvars)
-      explain_dict= explain(net,self.spec[request.id],evidence,explainvars,reverse_explain_list, reverse_evidence)
+      answer_dict = query(self.baked[request.id], self.spec[request.id], evidence,outvars)
+      explain_dict= explain(self.baked[request.id],self.spec[request.id],evidence,explainvars,reverse_explain_list, reverse_evidence)
       var_positions = get_var_positions(self.spec[request.id])
       var_val_positions = get_var_val_positions(self.spec[request.id])
 
