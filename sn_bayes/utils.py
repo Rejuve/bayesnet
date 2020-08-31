@@ -245,7 +245,7 @@ def explain(baked_net, netspec, evidence,explain_list, reverse_explain_list = []
 		winner = max(val_dict,key=val_dict.get)
 		winner_val = val_dict[winner]
 		winners[key] = (winner,winner_val)
-		max_diff[key] = (winner,0)
+		#max_diff[key] = (winner,0)
 		explanation[key] = []
 	
 	for explaining_var, evidence in evidence_perturbations.items():
@@ -253,11 +253,12 @@ def explain(baked_net, netspec, evidence,explain_list, reverse_explain_list = []
 		for key in explain_list:
 			diff = result[key][winners[key][0]]-winners[key][1] if key in reverse_explain_list else winners[
 			key][1] - result[key][winners[key][0]]
-			if diff > max_diff[key][1]:
-				max_diff[key] = (max_diff[key][0],diff)
-				explanation[key].append((explaining_var, result, diff))
+			#if diff > max_diff[key][1]:
+				#max_diff[key] = (max_diff[key][0],diff)
+			if diff > 0:
+				explanation[key].append((explaining_var, diff))
 				
-	return max_diff, explanation
+	return explanation
 	
 	
 		
