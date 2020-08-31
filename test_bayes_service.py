@@ -30,6 +30,9 @@ if __name__ == "__main__":
             endpoint = "localhost:{}".format(registry["bayes_service"]["grpc"])
         bayesianNetwork = covid_bayes.covid_bayes()
         evidence = {}
+	evidence["body_temperature"]= "body_temperature_above_102F"
+	evidence["age"]= "elderly"
+	evidence["diabetes"]= "diabetes"
         outvars= ["social_distancing", "social_distancing_binary","emergency_treatment","covid_risk","covid_risk_binary","covid_severity","covid_severity_binary"]
 	explainvars= ["social_distancing", "social_distancing_binary","emergency_treatment","covid_risk","covid_risk_binary","covid_severity","covid_severity_binary"]
 	reverse_explainvars = ["social_distancing", "social_distancing_binary"]
