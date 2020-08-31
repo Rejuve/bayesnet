@@ -14,6 +14,7 @@ from sn_bayes.utils import get_evidence_and_outvars
 from sn_bayes.utils import get_var_positions
 from sn_bayes.utils import get_var_val_positions
 from sn_bayes.utils import complexity_check
+from sn_bayes.utils import explain
 import os
 import pickle
 import pomegranate
