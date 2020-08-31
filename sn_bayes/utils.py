@@ -173,7 +173,9 @@ def get_evidence_and_outvars(query, bayesianNetwork):
 			var_val_name = var_val_names[var_name][e.response]
 			evidence_dict[var_name] = var_val_name 
 	outvar_list =[var_names[o.var_num] for o in query.outvars if o.var_num in var_names]
-	return(evidence_dict, outvar_list)
+	reverse_explain_list =[var_names[o.var_num] for o in query.reverse_explainvars if o.var_num in var_names]
+	reverse_evidence =[var_names[o.var_num] for o in query.reverse_evidence if o.var_num in var_names]
+	return(evidence_dict, outvar_list, reverse_explain_list, reverse_evidence)
 		
 def create_query (evidence_dict, outvar_list,bayesianNetwork):
 	#print("evidence_dict")
@@ -246,7 +248,7 @@ def explain(baked_net, netspec, evidence,explain_list, reverse_explain_list = []
 		winner_val = val_dict[winner]
 		winners[key] = (winner,winner_val)
 		#max_diff[key] = (winner,0)
-		explanation[key] = []
+		explanation[key] = {}
 	
 	for explaining_var, evidence in evidence_perturbations.items():
 		result = query(baked_net,netspec,evidence,explain_list)
@@ -256,7 +258,7 @@ def explain(baked_net, netspec, evidence,explain_list, reverse_explain_list = []
 			#if diff > max_diff[key][1]:
 				#max_diff[key] = (max_diff[key][0],diff)
 			if diff > 0.05:
-				explanation[key].append((explaining_var, diff))
+				explanation[key][explaining_var] = diff
 				
 	return explanation
 	
