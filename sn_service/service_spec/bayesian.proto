@@ -78,7 +78,7 @@ message Query{
   repeated Outvar outvars = 2;
   repeated Outvar explainvars =3;
   repeated Outvar reverse_explainvars = 4;
-  repeated Outvar reverse_evidence = 5
+  repeated Outvar reverse_evidence = 5;
   repeated Anomaly timeseries=6;
 }
 
