@@ -136,6 +136,16 @@ def get_var_val_positions(bayesianNetwork):
 	return var_val_positions
 
 
+
+def get_internal_var_val_positions(bayesianNetwork):
+	var_val_positions = {}
+	for j,table in enumerate(bayesianNetwork.conditionalProbabilityTables):
+		var_val_positions[table.name] ={}
+		for pos,var in enumerate(table.outvars):
+			var_val_positions[table.name][var.name] = pos
+	return var_val_positions
+
+
 def get_var_names(bayesianNetwork):
 	var_names = {}
 	for i,dist in enumerate(bayesianNetwork.discreteDistributions):
@@ -250,27 +260,42 @@ def explain(baked_net, netspec, evidence,explain_list, reverse_explain_list = []
 			new_val = var_val_names[var][new_pos]
 			new_evidence[var]=new_val
 			evidence_perturbations[var]= new_evidence
+			
+	# add in the internal nodes that arent the input nodes
+	internal_var_val_positions = get_internal_var_val_positions(netspec)
+	exclusion_list = [var for var, val in internal_var_val_positions.items()]
+	internal_result = query(baked_net,netspec,evidence,exclusion_list)
 	
+	internal_winners = {}
+	for key,val_dict in internal_result.items():
+		winner = max(val_dict,key=val_dict.get)
+		winner_val = val_dict[winner]
+		internal_winners[key] = (winner,winner_val)
+	internal_evidence = {k:tup[0] for k,tup in internal_winners.items() }
+	
+	more_evidence = {}
+	for var, val in internal_evidence.items():
+		firsts = copy.deepcopy(evidence)
+		more_evidence[var] = firsts.update({var:val})
+	evidence_perturbations.update(more_evidence)
+		
 	#next run each, obtaining the values of vars to be explained.  
 	#find the difference between these outputvalues and the output values from the original evidence input
 	result = query(baked_net,netspec,evidence,explain_list)
 	winners = {}
-	max_diff = {}
 	explanation = {}
 	for key,val_dict in result.items():
 		winner = max(val_dict,key=val_dict.get)
 		winner_val = val_dict[winner]
 		winners[key] = (winner,winner_val)
-		#max_diff[key] = (winner,0)
 		explanation[key] = {}
+		
 	
 	for explaining_var, evidence in evidence_perturbations.items():
 		result = query(baked_net,netspec,evidence,explain_list)
 		for key in explain_list:
 			diff = result[key][winners[key][0]]-winners[key][1] if key in reverse_explain_list else winners[
 			key][1] - result[key][winners[key][0]]
-			#if diff > max_diff[key][1]:
-				#max_diff[key] = (max_diff[key][0],diff)
 			if diff > 0.05:
 				explanation[key][explaining_var] = diff
 				
