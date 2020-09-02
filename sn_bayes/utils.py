@@ -292,6 +292,10 @@ def explain(baked_net, netspec, evidence,explain_list, reverse_explain_list = []
 		
 	
 	for explaining_var, evidence in evidence_perturbations.items():
+		print("explaining_var")
+		print(explaining_var)
+		print("evidence")
+		print(evidence)
 		result = query(baked_net,netspec,evidence,explain_list)
 		for key in explain_list:
 			diff = result[key][winners[key][0]]-winners[key][1] if key in reverse_explain_list else winners[
