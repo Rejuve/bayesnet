@@ -274,6 +274,8 @@ def explain(baked_net, netspec, evidence,explain_list, reverse_explain_list = []
 	print('internal_winners')
 	print(internal_winners)
 	internal_evidence = {k:tup[0] for k,tup in internal_winners.items() }
+	print ('internal_evidence')
+	print(internal_evidence)
 	
 	more_evidence = {}
 	for var, val in internal_evidence.items():
