@@ -309,7 +309,7 @@ def explain(baked_net, netspec, evidence,explain_list, reverse_explain_list = []
 		result = query(baked_net,netspec,evidence,explain_list)
 		
 		for key in explain_list:
-			if key is in result:
+			if key in result:
 				diff = result[key][winners[key][0]]-winners[key][1] if key in reverse_explain_list else winners[
 					key][1] - result[key][winners[key][0]]
 				if diff > 0.05:
