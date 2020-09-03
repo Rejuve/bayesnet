@@ -279,6 +279,8 @@ def explain(baked_net, netspec, evidence,explain_list, reverse_explain_list = []
 	for var, val in internal_evidence.items():
 		firsts = copy.deepcopy(evidence)
 		more_evidence[var] = firsts.update({var:val})
+	print('more_evidence')
+	print(more_evidence)
 	evidence_perturbations.update(more_evidence)
 		
 	#next run each, obtaining the values of vars to be explained.  
