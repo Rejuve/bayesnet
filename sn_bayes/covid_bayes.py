@@ -527,7 +527,7 @@ def covid_bayes():
 	variable.name = "deliveries_no_sanitation_over_three_per_week"
 	variable.probability = 0.10
 	variable = discreteDistribution.variables.add()
-	variable.name = "deliveris_no_sanitation_once_or_more_per_week"
+	variable.name = "deliveries_no_sanitation_once_or_more_per_week"
 	variable.probability = 0.30
 	variable = discreteDistribution.variables.add()
 	variable.name = "deliveries_sanitation_two_or_three_per_week"
