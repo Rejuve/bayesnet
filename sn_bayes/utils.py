@@ -239,7 +239,8 @@ def query(baked_net, netspec, evidence,out_var_list):
 			answer[dist_name] = (json.loads(description[var_positions[dist_name]].to_json()))['parameters'][0]
 		except AttributeError as e:
 			#print(dist_name)
-			#print(e)	
+			#print(e)
+			pass
 	return answer
 
 	
