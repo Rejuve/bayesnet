@@ -235,7 +235,11 @@ def query(baked_net, netspec, evidence,out_var_list):
 	var_positions = get_var_positions(netspec)
 	description = baked_net.predict_proba(evidence)
 	for dist_name in out_var_list:
-		answer[dist_name] = (json.loads(description[var_positions[dist_name]].to_json()))['parameters'][0]
+		try:
+			answer[dist_name] = (json.loads(description[var_positions[dist_name]].to_json()))['parameters'][0]
+		except AttributeError as e:
+			print(dist_name)
+			print(e)	
 	return answer
 
 	
