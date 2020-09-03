@@ -271,18 +271,18 @@ def explain(baked_net, netspec, evidence,explain_list, reverse_explain_list = []
 		winner = max(val_dict,key=val_dict.get)
 		winner_val = val_dict[winner]
 		internal_winners[key] = (winner,winner_val)
-	print('internal_winners')
-	print(internal_winners)
+	#print('internal_winners')
+	#print(internal_winners)
 	internal_evidence = {k:tup[0] for k,tup in internal_winners.items() }
-	print ('internal_evidence')
-	print(internal_evidence)
+	#print ('internal_evidence')
+	##print(internal_evidence)
 	
 	more_evidence = {}
 	for var, val in internal_evidence.items():
-		firsts = copy.deepcopy(evidence)
-		more_evidence[var] = firsts.update({var:val})
-	print('more_evidence')
-	print(more_evidence)
+		more_evidence[var] = copy.deepcopy(evidence)
+		more_evidence[var].update({var:val})
+	#print('more_evidence')
+	#print(more_evidence)
 	evidence_perturbations.update(more_evidence)
 		
 	#next run each, obtaining the values of vars to be explained.  
