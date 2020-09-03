@@ -577,12 +577,12 @@ def covid_bayes():
 
 
 	discreteDistribution = bayesianNetwork.discreteDistributions.add()
-	discreteDistribution.name = "neighbors_social_distancing"
+	discreteDistribution.name = "daily_contacts_social_distancing"
 	variable = discreteDistribution.variables.add()
-	variable.name = "no_neighbors_social_distancing"
+	variable.name = "no_daily_contacts_social_distancing"
 	variable.probability = 0.40
 	variable = discreteDistribution.variables.add()
-	variable.name = "neighbors_social_distancing"
+	variable.name = "daily_contacts_social_distancing"
 	variable.probability = 0.60
 
 
