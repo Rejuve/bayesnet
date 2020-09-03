@@ -316,7 +316,8 @@ def explain(baked_net, netspec, evidence,explain_list, reverse_explain_list = []
 				if diff > 0.05:
 					explanation[key][explaining_var] = diff
 			else:
-				print("{0} not in query result with evidence{1}".format(key, evidence))
+				#print("{0} not in query result with evidence{1}".format(key, evidence))
+				pass
 				
 	return explanation
 	
