@@ -238,8 +238,8 @@ def query(baked_net, netspec, evidence,out_var_list):
 		try:
 			answer[dist_name] = (json.loads(description[var_positions[dist_name]].to_json()))['parameters'][0]
 		except AttributeError as e:
-			print(dist_name)
-			print(e)	
+			#print(dist_name)
+			#print(e)	
 	return answer
 
 	
@@ -302,10 +302,10 @@ def explain(baked_net, netspec, evidence,explain_list, reverse_explain_list = []
 		
 	
 	for explaining_var, evidence in evidence_perturbations.items():
-		print("explaining_var")
-		print(explaining_var)
-		print("evidence")
-		print(evidence)
+		#print("explaining_var")
+		#print(explaining_var)
+		#print("evidence")
+		#print(evidence)
 		result = query(baked_net,netspec,evidence,explain_list)
 		
 		for key in explain_list:
