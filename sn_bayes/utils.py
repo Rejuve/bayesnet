@@ -307,11 +307,15 @@ def explain(baked_net, netspec, evidence,explain_list, reverse_explain_list = []
 		print("evidence")
 		print(evidence)
 		result = query(baked_net,netspec,evidence,explain_list)
+		
 		for key in explain_list:
-			diff = result[key][winners[key][0]]-winners[key][1] if key in reverse_explain_list else winners[
-			key][1] - result[key][winners[key][0]]
-			if diff > 0.05:
-				explanation[key][explaining_var] = diff
+			if key is in result:
+				diff = result[key][winners[key][0]]-winners[key][1] if key in reverse_explain_list else winners[
+					key][1] - result[key][winners[key][0]]
+				if diff > 0.05:
+					explanation[key][explaining_var] = diff
+			else:
+				print("{0} not in query result with evidence{1}".format(key, evidence)
 				
 	return explanation
 	
