@@ -271,6 +271,8 @@ def explain(baked_net, netspec, evidence,explain_list, reverse_explain_list = []
 		winner = max(val_dict,key=val_dict.get)
 		winner_val = val_dict[winner]
 		internal_winners[key] = (winner,winner_val)
+	print('internal_winners')
+	print(internal_winners)
 	internal_evidence = {k:tup[0] for k,tup in internal_winners.items() }
 	
 	more_evidence = {}
