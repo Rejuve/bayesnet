@@ -956,9 +956,32 @@ def covid_bayes():
 		["high_covid", "medium_covid","low_covid","no_covid"]
 		) 
 
+	cpt["high_covid_risk"] =any(bayesianNetwork,cpt,
+		{
+		"covid_symptom_level":{"high_covid"},
+		"covid_test":{"positive_covid_test"},
+		"covid_environment":{"high_risk_covid_environment"}
+		},
+		["high_covid_risk","other_covid_risk"]
+		)
+	
+	cpt["medium_covid_risk"] =any(bayesianNetwork,cpt,
+		{
+		"covid_symptom_level":{"medium_covid"},
+		"covid_environment":{"medium_risk_covid_environment"}
+		},
+		["medium_covid_risk","other_covid_risk"]
+		)
+		
+	cpt["low_covid_risk"] =any(bayesianNetwork,cpt,
+		{	
+		"covid_symptom_level":{"low_covid"},
+		"covid_environment":{"low_risk_covid_environment"}
+		},
+		["low_covid_risk","other_covid_risk"]
+		)
 
-
-
+	
 	#output variable conditional probability distributions
 
 
@@ -973,15 +996,14 @@ def covid_bayes():
 
 
 
-	cpt["covid_risk"] = any(bayesianNetwork,cpt,
+	cpt["covid_risk"] = if_then_else(bayesianNetwork,cpt,
 		{
-		"covid_symptom_level":{"high_covid"},
-		"covid_environment":{"high_covid"},
-		"covid_test":{"positive_covid_test"}
+		"high_covid_risk":{"high_covid_risk"},
+		"medium_covid_risk":{"medium_covid_risk"},
+		"low_covid_risk":{"low_covid_risk"},
 		},
-		["covid_risk","no_covid_risk"]
-		)
-
+		["high_covid_risk", "medium_covid_risk","low_covid_risk","no_covid_risk"]
+		) 
 
 
 	cpt["covid_risk_binary"] = avg(bayesianNetwork,cpt,
