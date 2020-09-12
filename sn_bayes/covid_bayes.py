@@ -835,7 +835,7 @@ def covid_bayes():
 	cpt["social_distancing_environment"]= avg(bayesianNetwork,cpt,
 	[
 	"workplace_social_distancing",
-	"neighbors_social_distancing",
+	"daily_contacts_social_distancing",
 	"local_govt_social_distancing"
 	],
 	["no_social_distancing_environnment","some_social_distancing_environment","safe_social_distancing_environment"]
