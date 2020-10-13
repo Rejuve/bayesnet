@@ -2,3 +2,4 @@ grpcio>=1.14.2
 grpcio-tools>=1.14.1
 pomegranate>=0.13.4
 pandas
+adtk

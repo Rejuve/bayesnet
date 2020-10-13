@@ -167,26 +167,205 @@ def get_var_val_names(bayesianNetwork):
 			var_val_names[table.name][pos] = var.name
 	return var_val_names
 
+def parse_net(query, bayesianNetwork):
+        var_val_names = get_var_val_names(bayesianNetwork)
+        var_names = get_var_names(bayesianNetwork)
+        evidence_dict = {}
+        anomaly_tuples = {}
+        for e in query.evidence:
+            if e.var_num in var_names and var_names[e.var_num] in var_val_names and e.response in var_val_names[ var_names[e.var_num]]:
+                var_name = var_names[e.var_num]
+                var_val_name = var_val_names[var_name][e.response]
+                evidence_dict[var_name] = var_val_name 
+        outvar_list =[var_names[o.var_num] for o in query.outvars if o.var_num in var_names]
+        explainvars =[var_names[o.var_num] for o in query.explainvars if o.var_num in var_names]
+        reverse_explain_list =[var_names[o.var_num] for o in query.reverse_explainvars if o.var_num in var_names]
+        reverse_evidence =[var_names[o.var_num] for o in query.reverse_evidence if o.var_num in var_names]
+        for s in query.timeseries:
+            anomaly_tuples[var_names[s.varnum]] = [(t.val,t.interval)for t in s.timevals]
+        threshold_dict = {}
+        for o in query.anamolies:
+            threshold_dict[var_names[o.varName]]= {}
+            threshold_dict[var_names[o.varName]]['low'] = o.low
+            threshold_dict[var_names[o.varName]]['high'] = o.high
+            threshold_dict[var_names[o.varName]]['low_percent'] = o.low_percent
+            threshold_dict[var_names[o.varName]]['high_percent'] = o.high_percent
 
+        return(evidence_dict, outvar_list, explainvars, reverse_explain_list, reverse_evidence,anomaly_tuples,threshold_dict)
 
-def get_evidence_and_outvars(query, bayesianNetwork):
-	#print("query in get_evidence_and_outvars")
-	#print(query)
-	var_val_names = get_var_val_names(bayesianNetwork)
-	var_names = get_var_names(bayesianNetwork)
-	#print("var_names")
-	#print(var_names)
-	evidence_dict = {}
-	for e in query.evidence:
-		if e.var_num in var_names and var_names[e.var_num] in var_val_names and e.response in var_val_names[ var_names[e.var_num]]:
-			var_name = var_names[e.var_num]
-			var_val_name = var_val_names[var_name][e.response]
-			evidence_dict[var_name] = var_val_name 
-	outvar_list =[var_names[o.var_num] for o in query.outvars if o.var_num in var_names]
-	explainvars =[var_names[o.var_num] for o in query.explainvars if o.var_num in var_names]
-	reverse_explain_list =[var_names[o.var_num] for o in query.reverse_explainvars if o.var_num in var_names]
-	reverse_evidence =[var_names[o.var_num] for o in query.reverse_evidence if o.var_num in var_names]
-	return(evidence_dict, outvar_list, explainvars, reverse_explain_list, reverse_evidence)
+from adtk.data import validate_series	
+
+def detect_anomalies(anomaly_tuples,bayesianNetwork):
+        evidence = {}
+        anomaly_dict = {}
+        signal_dict ={}
+        var_val_names = get_var_val_names(bayesianNetwork)
+        var_names = get_var_names(bayesianNetwork)
+        df = pd.DataFrame(columns=['time','value'])
+        for var, time_tuples in anomaly_tuples.items():
+            anomaly_dict[var]={}
+            last_interval = 1
+            dti = pd.to_datetime('1/1/2018')
+            for tup in time_tuples:
+                val = float(tup[0])
+                interval = float(tup[1])
+                if interval == 0.0:
+                    interval = last_interval
+                last_interval = interval
+                if interval is not None and val is not None:
+                    dti += pd.Timedelta(f'{interval} seconds')
+                    if dti is not pd.NaT: 
+                        df = df.append({'time': dti, 'value':val }, ignore_index=True)
+            if not df.empty:
+                df=df.set_index('time')
+                s = validate_series(df)
+                if pd.NaT in s.index:
+                    s = s.drop(pd.NaT)
+                signal_dict[var]=s
+                try:
+                    from adtk.detector import AutoregressionAD
+                    autoregression_ad = AutoregressionAD(n_steps=7*2, step_size=24, c=12.0)
+                    anomaly_dict[var]["autoregression"]  = autoregression_ad.fit_detect(s)
+                except RuntimeError as e:
+                    print(f'AutoregressionAD-{var}')
+                    print(e)
+                except ValueError as e:
+                    print(f'AutoregressionAD-{var}')
+                    print(e)
+                    s.to_csv(f'{var}_time_series.csv')
+                else:
+                    dfa = anomaly_dict[var]["autoregression"].any()
+                    if dfa.loc['value']:
+                        evidence[var] = var_val_names[var][0] 
+                    elif  var not in evidence:
+                        evidence[var] = var_val_names[var][1]
+                try:
+                    from adtk.detector import InterQuartileRangeAD
+                    iqr_ad = InterQuartileRangeAD(c=12.0)
+                    anomaly_dict[var]["interquartile"] = iqr_ad.fit_detect(s)
+                except RuntimeError as e:
+                    print(f'InterQuartileRangeAD-{var}')
+                    print(e)
+                except Exception as e:
+                    print(f'InterQuartileRangeAD-{var}')
+                    print(e)
+                else:
+                    dfa = anomaly_dict[var]["interquartile"].any()
+                    if not dfa.loc['value'] or var not in evidence:
+                        evidence[var] = var_val_names[var][1] 
+        return (evidence,anomaly_dict,signal_dict)
+
+def detect_anomalies_threshold_and_baseline(anomaly_tuples,bayesianNetwork,threshold):
+        evidence = {}
+        anomaly_dict = {}
+        signal_dict ={}
+        var_val_names = get_var_val_names(bayesianNetwork)
+        var_names = get_var_names(bayesianNetwork)
+        df = pd.DataFrame(columns=['time','value'])
+        
+        
+        for var, time_tuples in anomaly_tuples.items():
+            anomaly_dict[var]={}
+            last_interval = 1
+            dti = pd.to_datetime('1/1/2018')
+            for tup in time_tuples:
+                val = float(tup[0])
+                interval = float(tup[1])
+                if interval == 0.0:
+                    interval = last_interval
+                last_interval = interval
+                if interval is not None and val is not None:
+                    dti += pd.Timedelta(f'{interval} seconds')
+                    if dti is not pd.NaT: 
+                        df = df.append({'time': dti, 'value':val }, ignore_index=True)
+            if not df.empty:
+                df=df.set_index('time')
+                s = validate_series(df)
+                if pd.NaT in s.index:
+                    s = s.drop(pd.NaT)
+                signal_dict[var]=s
+                try:
+                    from adtk.detector import QuantileAD
+                    quantile_ad = QuantileAD(high=threshold[var]['high_percent'], low=threshold[var]['low_percent'])
+                    anomaly_dict[var]["quantile"] = quantile_ad.fit_detect(s)
+                except RuntimeError as e:
+                    print(f'QuantileAD-{var}')
+                    print(e)
+                except ValueError as e:
+                    print(f'QuantileAD-{var}')
+                    print(e)
+                    s.to_csv(f'{var}_time_series.csv')
+                else:
+                    dfa = anomaly_dict[var]["quantile"].any()
+                    if dfa.loc['value']:
+                        evidence[var] = var_val_names[var][0] 
+                    elif  var not in evidence:
+                        evidence[var] = var_val_names[var][1]
+        
+        
+                try:
+                    from adtk.detector import ThresholdAD
+                    threshold_ad = ThresholdAD(high=threshold[var]['high'], low=threshold[var]['low'])
+                    anomaly_dict[var]["threshold"] = threshold_ad.detect(s)
+                except RuntimeError as e:
+                    print(f'ThresholdAD-{var}')
+                    print(e)
+                except ValueError as e:
+                    print(f'ThresholdAD-{var}')
+                    print(e)
+                    s.to_csv(f'{var}_time_series.csv')
+                else:
+                    dfa = anomaly_dict[var]["threshold"].any()
+                    if not dfa.loc['value'] or var not in evidence:
+                        evidence[var] = var_val_names[var][1] 
+        return (evidence,anomaly_dict,signal_dict)
+	
+def detect_anomalies_threshold(anomaly_tuples,bayesianNetwork,threshold):
+        evidence = {}
+        anomaly_dict = {}
+        signal_dict ={}
+        var_val_names = get_var_val_names(bayesianNetwork)
+        var_names = get_var_names(bayesianNetwork)
+        df = pd.DataFrame(columns=['time','value'])
+        for var, time_tuples in anomaly_tuples.items():
+            anomaly_dict[var]={}
+            last_interval = 1
+            dti = pd.to_datetime('1/1/2018')
+            for tup in time_tuples:
+                val = float(tup[0])
+                interval = float(tup[1])
+                if interval == 0.0:
+                    interval = last_interval
+                last_interval = interval
+                if interval is not None and val is not None:
+                    dti += pd.Timedelta(f'{interval} seconds')
+                    if dti is not pd.NaT: 
+                        df = df.append({'time': dti, 'value':val }, ignore_index=True)
+            if not df.empty:
+                df=df.set_index('time')
+                s = validate_series(df)
+                if pd.NaT in s.index:
+                    s = s.drop(pd.NaT)
+                signal_dict[var]=s
+                try:
+                    from adtk.detector import ThresholdAD
+                    threshold_ad = ThresholdAD(high=threshold[var]['high'], low=threshold[var]['low'])
+                    anomaly_dict[var]["threshold"] = threshold_ad.detect(s)
+                except RuntimeError as e:
+                    print(f'ThresholdAD-{var}')
+                    print(e)
+                except ValueError as e:
+                    print(f'ThresholdAD-{var}')
+                    print(e)
+                    s.to_csv(f'{var}_time_series.csv')
+                else:
+                    dfa = anomaly_dict[var]["threshold"].any()
+                    if dfa.loc['value']:
+                        evidence[var] = var_val_names[var][0] 
+                    elif  var not in evidence:
+                        evidence[var] = var_val_names[var][1]
+        return (evidence,anomaly_dict,signal_dict)
+			
 
 	
 def create_query (bayesianNetwork,evidence_dict,outvar_list,explainvars=[],reverse_explainvars=[],reverse_evidence=[]):

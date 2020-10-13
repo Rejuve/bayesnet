@@ -49,7 +49,18 @@ message BayesianNetwork{
     repeated OutVar outvars = 4;
   }
   repeated ConditionalProbabilityTable conditionalProbabilityTables = 2;
+
+ 
+  message Anomaly{
+	string varName = 1;
+	float high = 2;
+	float low = 3;
+	float high_percent = 4;
+	float low_percent = 5;
+  }
   
+  repeated Anomaly anomalies = 3;
+ 
 }
 
 message Id{

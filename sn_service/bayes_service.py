@@ -10,11 +10,15 @@ from google.protobuf import json_format
 
 from sn_bayes.utils import bayesInitialize
 from sn_bayes.utils import query
-from sn_bayes.utils import get_evidence_and_outvars
+from sn_bayes.utils import parse_net 
 from sn_bayes.utils import get_var_positions
 from sn_bayes.utils import get_var_val_positions
 from sn_bayes.utils import complexity_check
 from sn_bayes.utils import explain
+from sn_bayes.utils import detect_anomalies
+from sn_bayes.utils import detect_anomalies_threshold
+from sn_bayes.utils import detect_anomalies_threshold_and_baseline
+  
 import os
 import pickle
 import pomegranate
@@ -118,10 +122,22 @@ class BayesNetServicer(grpc_bt_grpc.BayesNetServicer):
   
   
 
-  def AskNet(self, request, context):
+
+def AskNet(self, request, context):
     answer = Answer()
     if request.id in self.spec:
-      evidence,outvars,explainvars, reverse_explain_list, reverse_evidence = get_evidence_and_outvars(request.query, self.spec[request.id])
+      evidence,outvars,explainvars, reverse_explain_list, reverse_evidence,anomaly_tuples, threshold_dict = parse_net(request.query, request.bayesianNetwork)
+      for var,thres in threshold_dict.items():
+        new_dict = {var:thres}
+        if threshold_dict['low'] and threshold_dict['high']:
+          if threshold_dict[var]['low_threshold'] and threshold_dict[var]['high_threshold']:
+            wearable_evidence,anomaly_dict,signal_dict = detect_anomalies_threshold_and_baseline(anomaly_tuples,bayesianNetwork,new_dict)
+          else: 
+            wearable_evidence,anomaly_dict,signal_dict = detect_anomalies_threshold(anomaly_tuples,bayesianNetwork,new_dict)
+        else:
+            wearable_evidence,anomaly_dict,signal_dict = detect_anomalies(anomaly_tuples,bayesianNetwork)
+        evidence.update(wearable_evidence)    
+
       answer_dict = query(self.baked[request.id], self.spec[request.id], evidence,outvars)
       explain_dict= explain(self.baked[request.id],self.spec[request.id],evidence,explainvars,reverse_explain_list, reverse_evidence)
       var_positions = get_var_positions(self.spec[request.id])
@@ -147,18 +163,29 @@ class BayesNetServicer(grpc_bt_grpc.BayesNetServicer):
             var_state = var_answer.varStates.add()
             var_state.state_num = val_num
             var_state.probability =val
+			
         
     else:
       answer.error_msg = "Net {} does not exist".format(request.id)
     return(answer)
 
-  def StatelessNet(self, request, context):
+def StatelessNet(self, request, context):
     answer = Answer()
     not_too_complex,error_msg = complexity_check(request.bayesianNetwork)
     if not_too_complex:
       net= bayesInitialize(request.bayesianNetwork)
       net.bake()
-      evidence,outvars,explainvars, reverse_explain_list, reverse_evidence = get_evidence_and_outvars(request.query, request.bayesianNetwork)
+      evidence,outvars,explainvars, reverse_explain_list, reverse_evidence,anomaly_tuples, threshold_dict = parse_net(request.query, request.bayesianNetwork)
+      for var,thres in threshold_dict.items():
+        new_dict = {var:thres}
+        if threshold_dict['low'] and threshold_dict['high']:
+          if threshold_dict[var]['low_threshold'] and threshold_dict[var]['high_threshold']:
+            wearable_evidence,anomaly_dict,signal_dict = detect_anomalies_threshold_and_baseline(anomaly_tuples,bayesianNetwork,new_dict)
+          else: 
+            wearable_evidence,anomaly_dict,signal_dict = detect_anomalies_threshold(anomaly_tuples,bayesianNetwork,new_dict)
+        else:
+            wearable_evidence,anomaly_dict,signal_dict = detect_anomalies(anomaly_tuples,bayesianNetwork)
+        evidence.update(wearable_evidence)    
       answer_dict = query(net, request.bayesianNetwork, evidence,outvars)
       explain_dict= explain(net,request.bayesianNetwork,evidence,explainvars,reverse_explain_list, reverse_evidence)
       var_positions = get_var_positions(request.bayesianNetwork)
