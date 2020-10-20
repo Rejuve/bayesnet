@@ -904,7 +904,8 @@ def covid_bayes():
 	
 	cpt["covid_symptoms"] = avg(bayesianNetwork,cpt,
 	[
-	"gastrointestinal_symptoms",
+	"sore_throat",
+        "gastrointestinal_symptoms",
         "cold_symptoms",
 	"head_and_neck_symptoms"
 	],
