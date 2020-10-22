@@ -14,11 +14,13 @@ Finally, Bayesian networks are transparant and thus explainable.  We offer an ex
 
 
 
-## Functions that help to enter data with examples
+## Functions that help to enter data
+
+We present functions, each with one example that occurs in our covid project.
 
 The user creates a protobuf bayesian network in a python file.  There is an option, StartNet (and EndNet) with the service to save the bayesian network users create.  Before it is saved  or used it must pass a complexity check, that it is no bigger than 300 nodes and that each variable has less than 10 values, and depends on 4 or fewer other variables for speeds sake. Then the user can add evidence and query values of interest on the saved net with AskNet.  There is a stateless version in which the net is not saved, but has to be reconstructed with every query, StatelessNet.  
 
-Conditional Probability Tables (CPTs) are notoriously hard to fill in by hand.  We offer 4 functions (in util.py)  with which to express knowledge on the probabilistic relations between variables. A good example of how these are used is in file covid_bayes.py, which creates the net that is used in notebook covid_bayes.ipynb.  Discrete distributions are made with protobuf functions, that tell the probability of "leaf" variables that are not derived from other variables.  
+Conditional Probability Tables (CPTs) are notoriously hard to fill in by hand.  We offer 4 functions (in util.py)  with which to express knowledge on the probabilistic relations between variables. A good example of how these are used is in file covid_bayes.py, which creates the net that is used in notebook covid_bayesnet.ipynb.  Discrete distributions are made with protobuf functions, that tell the probability of "leaf" variables that are not derived from other variables, given no other information (the "priors").  
 
 discreteDistribution = bayesianNetwork.discreteDistributions.add()
 	discreteDistribution.name = "cough"
@@ -37,7 +39,7 @@ discreteDistribution = bayesianNetwork.discreteDistributions.add()
 
 
 
-CPTs are made from these variables and the variables in other CPTs.  We offer an all function, which is true when all of the input variables have values stated in a list:  
+CPTs are made from these variables and the variables in other CPTs.  We offer an "all" function, which is true when all of the input variables have values stated in a list (in this case, a python set).  This and the other functions list the output values.  If all have values in their respective lists, then the first value is true, else the second value.  "all" can thus have only two output values:  
 
 cpt["testing_compliance"] = all (bayesianNetwork,cpt,
         {
@@ -49,7 +51,7 @@ cpt["testing_compliance"] = all (bayesianNetwork,cpt,
 
 
 
-and an any function that is true if any of the input variables have values stated in a list:  
+we also offer an  "any" function that is true if any of the input variables have values stated in a list.  The "any" function can only have two values:  
 
 cpt["high_covid_risk"] =any(bayesianNetwork,cpt,
 		{
@@ -73,7 +75,7 @@ cpt["covid_symptom_level"] = if_then_else(bayesianNetwork,cpt,
 		) 
 
 
-We offer an average function , that requires that all the input variable values represent increasing quantities and  are all put in the same "direction"  (for example, values that lower the variable of interest are on the left and those that increase the variables of interest are on the right) .  As many bins as are values in the output variable are made, and for each row in a cartesian product of row values, the number of values in each position is added to the corresponding bins.  The value for the row is the max bin, or the middle of the two farthest apart but max bins in case more than one are the same value.  For example, if the output var has 5 values, and there are 2 boolean input variables, and the row has the first row as a false and the second as a true, the middle output variable 2  would be set to true.  This is because the input var 1's "false" would add a 1 to output var bins 0, 1, and 2, and input var 2's "true" would add a 1 to output var bins 2, 3, and 4, so that bin 2 would be worth 2 and the rest worth 1.  
+We offer an average function "avg" , that requires that all the input variable values represent increasing or decreasing quantities and  are all put in the same "direction"  (for example, values that lower the variable of interest are on the left and those that increase the variables of interest are on the right) .  The output variable can have any number of output values.  As many bins as are values in the output variable are made, and for each row in a cartesian product of row values, the number of values in each position is added to corresponding bins.  The computed output value for the row is the max bin, or the middle of the two farthest apart but max bins in case more than one are the same max value.  For example, if the output var has 5 values, and there are 2 boolean input variables, and we are computing the output value for a row which has the first input variable as a false and the second as a true, the middle output variable 2  would be set to true.  This is because the first input var's "false" would add a 1 to output var bins 0, 1, and 2, and the second input var's "true" would add a 1 to output var bins 2, 3, and 4, so that bin 2 would be worth 2 and the rest worth 1.  
 
 cpt["cold_symptoms"] = avg(bayesianNetwork,cpt,
 	[
