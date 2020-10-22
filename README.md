@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This Bayesian Net GRPC service creates a pomegranate Bayesian neural network in python, with functions to simplify the expression of manually entered rules, augment with adtk anomaly detection, and explain the result. A detailed example of its use in healthcare, specifically Covid-19, is given in the covid_bayes.ipynb jupyter notebook.  
+This Bayesian Net GRPC service creates a pomegranate Bayesian neural network in python, with functions to simplify the expression of manually entered rules, augment with adtk anomaly detection, and explain the result. A detailed example of its use in healthcare, specifically Covid-19, is given in the covid_bayesnet.ipynb jupyter notebook.  
 
 Bayesian networks keep track of probabilities in data, in particular, how they have change given known facts.  The main advantage of a Baysian network is the ability to express causal relations and perform causal types of inference on them, for example, counterfactual reasoning or "explaining away".  These type of inferences are of interest to medicine and any science in which causal reasoning is needed to determine best policy.  It works on a small abount of data, and if the relations between data are set up right, can impute data that the user has not filled in, guessing based on the data that the user has filled in.
 
