@@ -66,14 +66,15 @@ we also offer an  "any" function that is true if any of the input variables have
 
 We also offer an if_then_else function in which the existance of the first input variable in a stated list would set the first output value to true, and if not present, the next would be tested, etc, with the last output var set to true if none of the input were true:
 
-	cpt["covid_symptom_level"] = if_then_else(bayesianNetwork,cpt,
-			{
-			"high_covid":{"high_covid"},
-			"medium_covid":{"medium_covid"},
-			"low_covid":{"low_covid"},
-			},
-			["high_covid", "medium_covid","low_covid","no_covid"]
-			) 
+	 cpt["covid_risk"] = if_then_else(bayesianNetwork,cpt,
+                {
+                "high_covid":{"high_covid"},
+                "medium_exposure":{"medium_exposure"},
+                "covid_environment":{"high_risk_covid_environment","medium_risk_covid_environment,low_risk_covid_environment"}
+                },
+                ["high_covid_risk", "medium_covid_risk","low_covid_risk","no_covid_risk"]
+                )
+
 
 
 We offer an average function "avg" , that requires that all the input variable values represent increasing or decreasing quantities and  are all put in the same "direction"  (for example, values that lower the variable of interest are on the left and those that increase the variables of interest are on the right) .  The output variable can have any number of output values.  As many bins as are values in the output variable are made, and for each row in a cartesian product of row values, the number of values in each position is added to corresponding bins.  The computed output value for the row is the max bin, or the middle of the two farthest apart but max bins in case more than one are the same max value.  For example, if the output var has 5 values, and there are 2 boolean input variables, and we are computing the output value for a row which has the first input variable as a false and the second as a true, the middle output variable 2  would be set to true.  This is because the first input var's "false" would add a 1 to output var bins 0, 1, and 2, and the second input var's "true" would add a 1 to output var bins 2, 3, and 4, so that bin 2 would be worth 2 and the rest worth 1.  
