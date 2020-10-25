@@ -79,8 +79,7 @@ def complexity_check(bayesianNetwork,
 #todo: check obscenity		
 	max_size_in_bytes = 2560000,	     
 	allowed_number_nodes = 300,
-	allowed_number_variables= 4,
-	allowed_number_variable_values= 9):
+	allowed_number_variables=6, allowed_number_variable_values= 9):
 
 	passes = True
 	messages = []

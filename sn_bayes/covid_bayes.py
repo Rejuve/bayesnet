@@ -575,7 +575,7 @@ def covid_bayes():
 	variable.name = "no_isolation_space"
 	variable.probability = 0.20
 	variable = discreteDistribution.variables.add()
-	variable.name = "have_isolation_space"
+	variable.name = "isolation_space"
 	variable.probability = 0.80
 
 
@@ -863,6 +863,16 @@ def covid_bayes():
 	["inflammation_symptoms","no_inflammation_symptoms"]
 	)
 	
+	cpt["head_and_neck_symptoms"] = any(bayesianNetwork,cpt,
+                {
+            "neck_stiffness":{"neck_stiffness"},
+            "pink_eye":{"new_or_worse_or_severe_pink_eye"},
+            "headache":{"new_or_worse_or_severe_headache"}
+        },
+	[ "head_and_neck_symptoms","no_head_and_neck_symptoms"]
+	)
+
+
 
 	cpt["cold_symptoms"] = avg(bayesianNetwork,cpt,
 	[
@@ -870,7 +880,8 @@ def covid_bayes():
 	"congestion",
 	"feeling_well",
 	"inflammation_symptoms",
-	"breathing_problems_at_night"
+	"breathing_problems_at_night",
+        "head_and_neck_symptoms"
 	],
 	[ "significant_cold_symptoms","mild_cold_symptoms","no_cold_symptoms"]
 	)
@@ -882,34 +893,25 @@ def covid_bayes():
 	[ "significant_specific_covid_symptoms","mild_specific_covid_symptoms","no_specific_covid_symptoms"]
 	)
 
-	cpt["head_and_neck_symptoms"] = avg(bayesianNetwork,cpt,
-	[
-	"neck_stiffness",
-	"pink_eye",
-	"headache"
-	],
-	[ "significant_head_and_neck_symptoms","mild_head_and_neck_symptoms","no_head_and_neck_symptoms"]
-	)
 
-	cpt["gastrointestinal_symptoms"] = avg(bayesianNetwork,cpt,
-	[
-	"low_urine",
-	"nausea",
-	"vomiting",
-	"abdominal_pain"
-	],
-	[ "significant_gastrointestinal_symptoms","mild_gastrointestinal_symptoms","no_gastrointestinal_symptoms"]
+	cpt["gastrointestinal_symptoms"] = any(bayesianNetwork,cpt,
+        {
+            "low_urine":{"low_urine"},
+            "nausea":{"new_or_worse_or_severe_nausea"},
+            "vomiting":{"vomiting"},
+	    "abdominal_pain":{"abdominal_pain"}
+        },
+	[ "gastrointestinal_symptoms","no_gastrointestinal_symptoms"]
 	)
 	
 	
-	cpt["covid_symptoms"] = avg(bayesianNetwork,cpt,
-	[
-	"sore_throat",
-        "gastrointestinal_symptoms",
-        "cold_symptoms",
-	"head_and_neck_symptoms"
-	],
-	[ "significant_covid_symptoms","no_significant_covid_symptoms"]
+	cpt["covid_symptoms"] = any(bayesianNetwork,cpt,
+        {	
+            "sore_throat":{"new_or_worse_or_severe_sore_throat"},
+            "gastrointestinal_symptoms":{"gastrointestinal_symptoms"},
+            "cold_symptoms":{"significant_cold_symptoms"}
+        },
+	[ "covid_symptoms","no_covid_symptoms"]
 	)
 		
 	cpt["delivery_safety"] = avg(bayesianNetwork,cpt,
@@ -932,7 +934,6 @@ def covid_bayes():
 
 	cpt["personal_social_distancing"]= avg(bayesianNetwork,cpt,
 	[
-	"isolation_space",
 	"delivery_safety",
 	"mask",
 	"wash_hands_per_day",
@@ -944,14 +945,15 @@ def covid_bayes():
 
 
 
-	cpt["social_distancing_connectedness"]= avg(bayesianNetwork,cpt,
-	[
-	"visits_per_week",
-	"leaving_house_per_day",
-	"high_risk_place_safety",
-	"public_transportation_per_two_weeks"
-	],
-	["no_social_distancing_connectedness","some_social_distancing_connectedness","safe_social_distancing_connectedness"]
+	cpt["social_distancing_connectedness"]= any(bayesianNetwork,cpt,
+        {
+            "visits_per_week":{"visits_more_than_twice_per_week"},
+            "leaving_house_per_day":{"leaving_house_more_than_twice_per_day"},
+            "high_risk_place_safety":{"no_high_risk_place_safety"},
+            "public_transportation_per_two_weeks":{"public_transportation_over_three_per_two_weeks"},
+            "employment_risk":{"health_care_worker_or_first_responder","high_volume_employment"}
+        },
+	["no_social_distancing_connectedness","social_distancing_connectedness"]
 	)
 
 
@@ -989,7 +991,7 @@ def covid_bayes():
 	"oxygen_anomaly":{"oxygen_anomaly"},
 	"heart_rate_anomaly":{"heart_rate_anomaly"}
 	},
-	["anomalous","normal"]
+	["anomalous_wearables","normal_wearables"]
 	)
 
 
@@ -1018,11 +1020,11 @@ def covid_bayes():
 
 
 	cpt["covid_vulnerabilities"] = avg(bayesianNetwork,cpt,
-		[
+                {		
 		"covid_symptoms",
 		"social_distancing",
 		"wearables"
-		],
+                },
 		["severe_covid_vulnerabilities", "moderate_covid_vulnerabilites","some_covid_vulnerabilites", "insignificant_covid_vulnerabilities"]
 		)
 
@@ -1038,62 +1040,93 @@ def covid_bayes():
 
 		)
 
-	cpt["exposure"]= any(bayesianNetwork,cpt,
-		{
-		"known_exposure":{"known_exposure"},
-		"employment_risk":{"health_care_worker_or_first_responder","high_volume_employment"}
-		},
-		["exposure","no_exposure"]
-		)
-
 
 	cpt["covid_environment"] = avg(bayesianNetwork,cpt,
 		[
-		"exposure",
-		"hotspot_anomaly"
+		"social_distancing",
+                "employment_risk",
+		"covid_symptom_level"
 		],
 		["high_risk_covid_environment", "medium_risk_covid_environment", "low_risk_covid_environment","no_risk_covid_environment"]
 		) 
 
+	cpt["high_exposure"] = all(bayesianNetwork,cpt,
+                {
+                    "hotspot_anomaly":{"hotspot_anomaly"},
+                    "covid_environment":{"high_risk_covid_environment"}
+                },
+        ["high_exposure","other_than_high_exposure"]
+        )
+
+	cpt["high_covid"] = any(bayesianNetwork,cpt,
+        {
+            "known_exposure":{"known_exposure"},
+            "covid_test":{"positive_covid_test"},
+            "high_exposure":{"high_exposure"}
+        },
+        ["high_covid","other_than_high_covid"]
+        )
+
+	cpt["medium_exposure"]= all (bayesianNetwork,cpt,
+                {
+                    "hotspot_anomaly":{"hotspot_anomaly"},
+                    "covid_environment":{"medium_risk_covid_environment"}
+                },
+        ["medium_exposure","other_than_medium_exposure"]
+        )
+
+
+	cpt["cardiopulmonary_emergency"] = any(bayesianNetwork,cpt,
+         {
+        "breathing_problems_at_night":{"breathing_problems_at_night_relieved_with_pillows"},
+        "chest_pain_independent_of_breath":{"chest_pain_independent_of_breath"},
+        "cough":{"cough_up_blood"},
+        "serious_shortness_of_breath":{"serious_shortness_of_breath"}       
+	}, 
+        ["cardiopulmonary_emergency","no_cardiopulmonary_emergency"]
+        )
+
+	cpt["other_emergency"] = any(bayesianNetwork,cpt,
+         {
+        "muscle_weakness":{"new_or_worse_or_severe_muscle_weakness"},
+	"possible_dehydration":{"possible_dehydration"},
+	"possible_meningitis":{"possible_meningitis"},
+        "vomiting":{"new_or_worse_or_severe_vomiting"},
+	},
+        ["other_emergency","no_other_emergency"]
+        )
+        
 
 	
 	#output variable conditional probability distributions
 
 
 	cpt["emergency_treatment"] = any(bayesianNetwork,cpt,
-	{
-        "muscle_weakness":{"new_or_worse_or_severe_muscle_weakness"},
-        "breathing_problems_at_night":{"breathing_problems_at_night_relieved_with_pillows"},
-	"possible_dehydration":{"possible_dehydration"},
-	"possible_meningitis":{"possible_meningitis"},
-        "chest_pain_independent_of_breath":{"chest_pain_independent_of_breath"},
-        "cough":{"cough_up_blood"},
-        "vomiting":{"new_or_worse_or_severe_vomiting"},
-        "serious_shortness_of_breath":{"serious_shortness_of_breath"}       
+        {
+        "cardiopulmonary_emergency":{"cardiopulmonary_emergency"},
+        "other_emergency":{"other_emergency"}       
 	},
 	["emergency_treatment","no_emergency_treatment"]
 	)
 
-         
-	cpt["covid_risk"] = avg(bayesianNetwork,cpt,
-		[
-		"covid_symptom_level",
-                "covid_test",
-		"covid_environment"
-		],
-
+	cpt["covid_risk"] = if_then_else(bayesianNetwork,cpt,
+		{
+		"high_covid":{"high_covid"},
+		"medium_exposure":{"medium_exposure"},
+		"covid_environment":{"high_risk_covid_environment","medium_risk_covid_environment,low_risk_covid_environment"}
+		},
 		["high_covid_risk", "medium_covid_risk","low_covid_risk","no_covid_risk"]
 		) 
+        
 
 
 	cpt["covid_risk_binary"] = avg(bayesianNetwork,cpt,
 		[
-		"covid_symptom_level",
-                "covid_test",
-		"covid_environment"
+		"covid_risk"
 		],
+
 		["covid_risk","no_covid_risk"]
-		)
+		) 
 
 	cpt["testing_compliance"] = all (bayesianNetwork,cpt,
         {
@@ -1120,6 +1153,7 @@ def covid_bayes():
 
 	cpt["self_care"] = any (bayesianNetwork,cpt,
         {
+        "isolation_space":{"no_isolation_space"},
         "testing_compliance":{"poor_testing_compliance"},
         "quarantine_compliance":{"poor_quarantine_compliance"},
         "own_thermometer":{"dont_own_thermometer"}
@@ -1139,7 +1173,8 @@ def covid_bayes():
 
 	cpt["covid_severity"] = avg(bayesianNetwork,cpt,
         	[	
-		"covid_severity_binary"
+		"age",
+                "comorbidities"
 		],
 		["high_covid_severity","medium_covid_severity","low_covid_severity","no_covid_severity"]
 		)
