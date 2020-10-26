@@ -239,7 +239,7 @@ def covid_bayes():
 	variable.name = "cough_up_blood"
 	variable.probability = 0.01
 	variable = discreteDistribution.variables.add()
-	variable.name = "cough_with_green_phlegm"
+	variable.name = "dry_cough_or_cough_with_green_phlegm"
 	variable.probability = 0.04
 	variable = discreteDistribution.variables.add()
 	variable.name = "cough_with_clear_spitum"
@@ -455,10 +455,10 @@ def covid_bayes():
 	discreteDistribution.name = "own_thermometer"
 	variable = discreteDistribution.variables.add()
 	variable.name = "dont_own_thermometer"
-	variable.probability = 0.40
+	variable.probability = 0.01
 	variable = discreteDistribution.variables.add()
 	variable.name = "own_thermometer"
-	variable.probability = 0.60
+	variable.probability = 0.99
 	
 
 	discreteDistribution = bayesianNetwork.discreteDistributions.add()
