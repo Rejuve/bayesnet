@@ -977,9 +977,7 @@ def covid_bayes():
 	
 	cpt["social_distancing_binary"]= avg(bayesianNetwork,cpt,
 	[
-	"social_distancing_environment",
-	"personal_social_distancing",
-	"social_distancing_connectedness"	
+	"social_distancing"	
 	],
 	["no_social_distancing", "social_distancing"]
 	)
@@ -1161,24 +1159,24 @@ def covid_bayes():
         ["poor_self_care","self_care"]
         )
 
-		
-	cpt["covid_severity_binary"] = all(bayesianNetwork,cpt,
-		{
-                    "age":{"elderly"},
-                    "comorbidities":{"comorbidities"}
-                },
-		["covid_severity","no_covid_severity"]
-		)
-
 
 	cpt["covid_severity"] = avg(bayesianNetwork,cpt,
         	[	
 		"age",
-                "comorbidities"
+                "comorbidities",
+                "covid_risk"
 		],
 		["high_covid_severity","medium_covid_severity","low_covid_severity","no_covid_severity"]
 		)
 		
+
+		
+	cpt["covid_severity_binary"] = avg(bayesianNetwork,cpt,
+		[
+                    "covid_severity"
+                ],
+		["covid_severity","no_covid_severity"]
+		)
 
 
 

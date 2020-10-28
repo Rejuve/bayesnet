@@ -636,29 +636,25 @@ def avg(bayesianNetwork, cpt, invars, outvars):
 					var_number = j
 			num_invars = len(varlist)
 			addset = nmap[num_invars][num_outvars][var_number]
+			incr = 1./len(addset)
 			for p in addset:
 				if p not in bins:
 					bins[p] = 0
-				bins[p]+= 1
+				bins[p]+= incr
 		#print("c")
 		#print(c)
 		#print("bins")
 		#print(bins)
-		maxv = 0
-		maxk = 0
+
+		area = sum(bins.values())
+		mean = area/2.
+		cummu = 0. 
 		for k,v in bins.items():
-			if v > maxv:
-				maxv = v
-				maxk = k
-		mink = len(outvars)
-		maxkinline = 0
-		for k,v in bins.items():
-			if v == maxv and k < mink:
-				mink = k
-			if v == maxv and k > maxkinline:
-				maxkinline = k
-		winner = int( (mink + maxkinline)/2.)
-			
+			cummu +=v
+			if cummu > mean:
+				winner = k
+				break
+
 		for i,o in enumerate(outvars):
 			cpt_row = []
 			cpt_row.extend(c)
