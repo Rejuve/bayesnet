@@ -181,9 +181,9 @@ def parse_net(query, bayesianNetwork):
         reverse_explain_list =[var_names[o.var_num] for o in query.reverse_explainvars if o.var_num in var_names]
         reverse_evidence =[var_names[o.var_num] for o in query.reverse_evidence if o.var_num in var_names]
         for s in query.timeseries:
-            anomaly_tuples[var_names[s.varnum]] = [(t.val,t.interval)for t in s.timevals]
+            anomaly_tuples[var_names[s.var_num]] = [(t.val,t.interval)for t in s.timevals]
         threshold_dict = {}
-        for o in query.timeseries:
+        for o in bayesianNetwork.anomalies:
             threshold_dict[var_names[o.varName]]= {}
             threshold_dict[var_names[o.varName]]['low'] = o.low
             threshold_dict[var_names[o.varName]]['high'] = o.high
