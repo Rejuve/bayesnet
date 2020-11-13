@@ -183,7 +183,7 @@ def parse_net(query, bayesianNetwork):
         for s in query.timeseries:
             anomaly_tuples[var_names[s.varnum]] = [(t.val,t.interval)for t in s.timevals]
         threshold_dict = {}
-        for o in query.anomalies:
+        for o in query.timeseries:
             threshold_dict[var_names[o.varName]]= {}
             threshold_dict[var_names[o.varName]]['low'] = o.low
             threshold_dict[var_names[o.varName]]['high'] = o.high
