@@ -126,7 +126,8 @@ class BayesNetServicer(grpc_bt_grpc.BayesNetServicer):
   def AskNet(self, request, context):
     answer = Answer()
     if request.id in self.spec:
-      evidence,outvars,explainvars, reverse_explain_list, reverse_evidence,anomaly_tuples, threshold_dict = parse_net(request.query, request.bayesianNetwork)
+      bayesianNetwork = self.spec[request.id]
+      evidence,outvars,explainvars, reverse_explain_list, reverse_evidence,anomaly_tuples, threshold_dict = parse_net(request.query, bayesianNetwork)
       for var,thres in threshold_dict.items():
         new_dict = {var:thres}
         if threshold_dict['low'] and threshold_dict['high']:
