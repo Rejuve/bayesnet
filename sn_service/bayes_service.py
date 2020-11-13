@@ -123,7 +123,7 @@ class BayesNetServicer(grpc_bt_grpc.BayesNetServicer):
   
 
 
-def AskNet(self, request, context):
+  def AskNet(self, request, context):
     answer = Answer()
     if request.id in self.spec:
       evidence,outvars,explainvars, reverse_explain_list, reverse_evidence,anomaly_tuples, threshold_dict = parse_net(request.query, request.bayesianNetwork)
@@ -169,7 +169,7 @@ def AskNet(self, request, context):
       answer.error_msg = "Net {} does not exist".format(request.id)
     return(answer)
 
-def StatelessNet(self, request, context):
+  def StatelessNet(self, request, context):
     answer = Answer()
     not_too_complex,error_msg = complexity_check(request.bayesianNetwork)
     if not_too_complex:
