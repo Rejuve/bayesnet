@@ -128,10 +128,12 @@ class BayesNetServicer(grpc_bt_grpc.BayesNetServicer):
     if request.id in self.spec:
       bayesianNetwork = self.spec[request.id]
       evidence,outvars,explainvars, reverse_explain_list, reverse_evidence,anomaly_tuples, threshold_dict = parse_net(request.query, bayesianNetwork)
+      #print("threshold_dict")
+      #print(threshold_dict)
       for var,thres in threshold_dict.items():
         new_dict = {var:thres}
-        if threshold_dict['low'] and threshold_dict['high']:
-          if threshold_dict[var]['low_threshold'] and threshold_dict[var]['high_threshold']:
+        if threshold_dict[var]['low'] and threshold_dict[var]['high']:
+          if threshold_dict[var]['low_percent'] and threshold_dict[var]['high_percent']:
             wearable_evidence,anomaly_dict,signal_dict = detect_anomalies_threshold_and_baseline(anomaly_tuples,bayesianNetwork,new_dict)
           else: 
             wearable_evidence,anomaly_dict,signal_dict = detect_anomalies_threshold(anomaly_tuples,bayesianNetwork,new_dict)

@@ -184,11 +184,11 @@ def parse_net(query, bayesianNetwork):
             anomaly_tuples[var_names[s.var_num]] = [(t.val,t.interval)for t in s.timevals]
         threshold_dict = {}
         for o in bayesianNetwork.anomalies:
-            threshold_dict[var_names[o.varName]]= {}
-            threshold_dict[var_names[o.varName]]['low'] = o.low
-            threshold_dict[var_names[o.varName]]['high'] = o.high
-            threshold_dict[var_names[o.varName]]['low_percent'] = o.low_percent
-            threshold_dict[var_names[o.varName]]['high_percent'] = o.high_percent
+            threshold_dict[o.varName]= {}
+            threshold_dict[o.varName]['low'] = o.low
+            threshold_dict[o.varName]['high'] = o.high
+            threshold_dict[o.varName]['low_percent'] = o.low_percent
+            threshold_dict[o.varName]['high_percent'] = o.high_percent
 
         return(evidence_dict, outvar_list, explainvars, reverse_explain_list, reverse_evidence,anomaly_tuples,threshold_dict)
 
