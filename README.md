@@ -40,28 +40,29 @@ Conditional Probability Tables (CPTs) are notoriously hard to fill in by hand.  
 
 
 
-CPTs are made from these variables and the variables in other CPTs.  We offer an "all" function, which is true when all of the input variables have values stated in a list (in this case, a python set).  This and the other functions list the output values.  If all have values in their respective lists, then the first value is true, else the second value.  "all" can thus have only two output values:  
+CPTs are made from these variables and the variables in other CPTs.  We offer an "all_of" function, which is true when all of the input variables have values stated in a list (in this case, a python set).  This and the other functions list the output values.  If all have values in their respective lists, then the first value is true, else the second value.  "all_of" can thus have only two output values:  
 
-	cpt["testing_compliance"] = all (bayesianNetwork,cpt,
-		{
-		"tested":{"not_tested"},
-		"covid_risk":{"high_covid_risk"}
-		},
-		["poor_testing_compliance","testing_compliance"]
-		)
+	cpt["testing_compliance"] = all_of(bayesianNetwork,cpt,
+        {
+        "tested":{"not_tested"},
+        "covid_risk":{"high_covid_risk"}
+        },
+        ["poor_testing_compliance","testing_compliance"]
+        )
 
 
+we also offer an  "any_of" function that is true if any of the input variables have values stated in a list.  The "any_of" function can only have two values:  
 
-we also offer an  "any" function that is true if any of the input variables have values stated in a list.  The "any" function can only have two values:  
+	cpt["self_care"] = any_of(bayesianNetwork,cpt,
+        {
+        "isolation_space":{"no_isolation_space"},
+        "testing_compliance":{"poor_testing_compliance"},
+        "quarantine_compliance":{"poor_quarantine_compliance"},
+        "own_thermometer":{"dont_own_thermometer"}
+        },
+        ["poor_self_care","self_care"]
+        )
 
-	cpt["high_covid_risk"] =any(bayesianNetwork,cpt,
-			{
-			"covid_symptom_level":{"high_covid"},
-			"covid_test":{"positive_covid_test"},
-			"covid_environment":{"high_risk_covid_environment"}
-			},
-			["high_covid_risk","other_covid_risk"]
-			)
 
 
 We also offer an if_then_else function in which the existance of the first input variable in a stated list would set the first output value to true, and if not present, the next would be tested, etc, with the last output var set to true if none of the input were true:
@@ -103,30 +104,48 @@ The explanation function, "explain", tests the effect of each other variable in 
 
 ## The Anomaly Detection function
 
-To detect anomalies use detect_anomalies, a routine which will detect an anomaly in any or all of four ways: autoregression for cycle based anomaly detection, interquartile algorithms for traditional anomaly detection, hard threshold, and percentile based threshold for rule based anomaly. The user may indicate more than one, and also that an anomaly must be considered an anomaly by any of the algoritms listed or by all the algorithms listed to be output as an anomaly. The user can adjust the parameters based on the data, for example hourly readings may require a step size of 24 for autoregression cycles every 24 hours, and 7 steps may be required for a weeks worth of hourly data. The c parameter tells how far outside the sample we may want to define an anomaly. The routines output a high and low which are the percentiles it is set to find in an individual's data, or the individual's normal range as defined by the interquartile algorithms. These values are returned for explanations. The bayes net is set to have an anomaly only if there exist an anomaly in the n most recent readings. To do simple rule based threshold, set "ThresholdAD" as a detector in detect_anomalies , and to do either a threshold or a percent over a baseline, use both "ThresholdAD" and "QuantileAD", with hard threshold entered through 'high' and 'low', and percentile thresholds entered through 'high_percent' and 'low_percent', settin "is_all" to False (the default) so as to ensure that an anomaly in either algorithm would be flagged as an anomaly. This combination is useful to medicine, for example, oxygen SPO3 should be above 90, or in the case of a chronic condition, 3% above baseline. All these parameters are set in the protofile. See the ADTK documentation for more information on the parameters.  
-
+To detect anomalies use detect_anomalies, a routine which will detect an anomaly in any or all of four ways: autoregression for cycle based anomaly detection, interquartile algorithms for traditional anomaly detection, hard threshold, and percentile based threshold for rule based anomaly. The user may indicate more than one, and also that an anomaly must be considered an anomaly by any of the algoritms listed or by all the algorithms listed to be output as an anomaly. The user can adjust the parameters based on the data, for example hourly readings may require a step size of 24 for autoregression cycles every 24 hours, and 7 steps may be required for a weeks worth of hourly data. The c parameter tells how far outside the sample we may want to define an anomaly. The routines output a high and low which are the percentiles it is set to find in an individual's data, or the individual's normal range as defined by the interquartile algorithms. These values are returned for explanations. The bayes net is set to have an anomaly only if there exist an anomaly in the n most recent readings.
 
 	anomaly = bayesianNetwork.anomalies.add()
 	anomaly.varName = "heart_rate_anomaly"
-	
+	anomaly.n_steps = 14
+	anomaly.step_size = 24
+	anomaly.c = 12.0
+	anomaly.n = 72
+	anomaly.is_all = True
+	detectors = anomaly.detectors.add()
+	detectors.name = "AutoregressionAD"
+	detectors = anomaly.detectors.add()
+	detectors.name = "InterQuartileRangeAD"
 
-
+ To do simple rule based threshold, set "ThresholdAD" as a detector in detect_anomalies:
 
 
 	anomaly = bayesianNetwork.anomalies.add()
 	anomaly.varName = "hotspot_anomaly"
 	anomaly.low = -1
 	anomaly.high = 0.00007 # percent new daily cases
+	anomaly.n = 72
+	detectors = anomaly.detectors.add()
+	detectors.name = "ThresholdAD"
 
 
-
+To do either a threshold or a percent over a baseline, use both "ThresholdAD" and "QuantileAD", with hard threshold entered through 'high' and 'low', and percentile thresholds entered through 'high_percent' and 'low_percent', setting "is_all" to False (the default) so as to ensure that an anomaly in either algorithm would be flagged as an anomaly. This combination is useful to medicine, for example, oxygen SPO3 should be above 90, or in the case of a chronic condition, 3% above baseline. All these parameters are set in the protofile. See the ADTK documentation for more information on the parameters.  
 
 	anomaly = bayesianNetwork.anomalies.add()
 	anomaly.varName = "oxygen_anomaly"
 	anomaly.high = 200
 	anomaly.low =93
 	anomaly.high_percent = 0.99
-	anomaly.low_percent = 0.01
+	anomaly.low_percent = 0.10
+	anomaly.n = 72
+	anomaly.is_all = True
+	detectors = anomaly.detectors.add()
+	detectors.name = "QuantileAD"
+	detectors = anomaly.detectors.add()
+	detectors.name = "ThresholdAD"
+	anomaly = bayesianNetwork.anomalies.add()
+	anomaly.varName = "heart_rate_anomaly"
 	
 	
 	
