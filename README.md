@@ -103,14 +103,14 @@ The explanation function, "explain", tests the effect of each other variable in 
 
 ## The Anomaly Detection function
 
-We offer three functions from the ADTK, which are sufficient for basic medical signal problems.  As no patient data is ever saved, all the data must be sent through the protobuf for individual detection.  If an anomaly is detected, a designated variable in the bayesian network is set to true (and can be observed if this variable is output). The first function, "detect_anomalies" is traditional anomaly detection, using two functions that must both have an anomaly for the anomaly to set a variable in the Bayesian network to true.    One is the interquartile, the most often used method, and the next is an autoregression, that works with cyclic data such as day and night, by subtracting off the cyclic phonemena to see the residual alone.  This is useful on signals that are very individual for a person, such as heart rate in wearables.  
+To detect anomalies use detect_anomalies, a routine which will detect an anomaly in any or all of four ways: autoregression for cycle based anomaly detection, interquartile algorithms for traditional anomaly detection, hard threshold, and percentile based threshold for rule based anomaly. The user may indicate more than one, and also that an anomaly must be considered an anomaly by any of the algoritms listed or by all the algorithms listed to be output as an anomaly. The user can adjust the parameters based on the data, for example hourly readings may require a step size of 24 for autoregression cycles every 24 hours, and 7 steps may be required for a weeks worth of hourly data. The c parameter tells how far outside the sample we may want to define an anomaly. The routines output a high and low which are the percentiles it is set to find in an individual's data, or the individual's normal range as defined by the interquartile algorithms. These values are returned for explanations. The bayes net is set to have an anomaly only if there exist an anomaly in the n most recent readings. To do simple rule based threshold, set "ThresholdAD" as a detector in detect_anomalies , and to do either a threshold or a percent over a baseline, use both "ThresholdAD" and "QuantileAD", with hard threshold entered through 'high' and 'low', and percentile thresholds entered through 'high_percent' and 'low_percent', settin "is_all" to False (the default) so as to ensure that an anomaly in either algorithm would be flagged as an anomaly. This combination is useful to medicine, for example, oxygen SPO3 should be above 90, or in the case of a chronic condition, 3% above baseline. All these parameters are set in the protofile. See the ADTK documentation for more information on the parameters.  
 
 
 	anomaly = bayesianNetwork.anomalies.add()
 	anomaly.varName = "heart_rate_anomaly"
 	
 
-The second function is called from the protobuf if you send it a threshold range, and it is a straight threshold that is good for signals that are relatively consistent across people, like temperature.  
+
 
 
 	anomaly = bayesianNetwork.anomalies.add()
@@ -118,7 +118,7 @@ The second function is called from the protobuf if you send it a threshold range
 	anomaly.low = -1
 	anomaly.high = 0.00007 # percent new daily cases
 
-If you send both a threshold and a percent range, it uses both the threshold and the percent over a personal baseline, for signals like SPO2 that have a normal amount, but can be calculated from a baseline for exceptions, in this case, those with chronic conditions.  
+
 
 
 	anomaly = bayesianNetwork.anomalies.add()
@@ -127,6 +127,8 @@ If you send both a threshold and a percent range, it uses both the threshold and
 	anomaly.low =93
 	anomaly.high_percent = 0.99
 	anomaly.low_percent = 0.01
+	
+	
 	
 ## References
 
