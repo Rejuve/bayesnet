@@ -2,6 +2,7 @@ import sys
 import grpc
 import sn_bayes
 from sn_bayes.utils import create_query
+import pandas as pd
 
 
 	
@@ -24,7 +25,6 @@ if __name__ == "__main__":
             if sys.argv[1] == "auto":
                 test_flag = True
 
-        # Example Service - Arithmetic
         endpoint = input("Endpoint (localhost:{}): ".format(registry["bayes_service"]["grpc"])) if not test_flag else ""
         if endpoint == "":
             endpoint = "localhost:{}".format(registry["bayes_service"]["grpc"])
@@ -35,7 +35,26 @@ if __name__ == "__main__":
         outvars= ["social_distancing", "social_distancing_binary","emergency_treatment","covid_risk","covid_risk_binary","covid_severity","covid_severity_binary"]
         explainvars= ["social_distancing", "social_distancing_binary","emergency_treatment","covid_risk","covid_risk_binary","covid_severity","covid_severity_binary"]
         reverse_explainvars = ["social_distancing", "social_distancing_binary"]
-        query = create_query(bayesianNetwork,evidence,outvars,explainvars,reverse_explainvars)
+        timeseries = []
+        oxygen = {}
+        timeseries.append(oxygen)
+        oxygen["var"] = "heart_rate_anomaly"
+        timevals = []
+        oxygen["timevals"] = timevals
+
+        heart_rate_df = pd.read_csv(f'./data/sleep-accel/heart_rate/1066528_heartrate.txt')
+        firstrow = None
+        lastrow = None
+        for index, row in heart_rate_df.iterrows():
+            if firstrow is None:
+                firstrow= row[0]
+            thisrow = row[0]-lastrow if lastrow is not None else row[0]-firstrow
+            lastrow = row[0]
+            reading = {}
+            reading["val"] = row[1]
+            reading["interval"] = thisrow
+            timevals.append(reading)
+        query = create_query(bayesianNetwork,evidence,outvars,explainvars,reverse_explainvars,timeseries)
         
         grpc_method = input("Method (stateless|statefull): ") if not test_flag else "statefull"
 
@@ -52,6 +71,8 @@ if __name__ == "__main__":
             print(response.varAnswers)
             print("response.explanations")
             print(response.explanations)
+            print("response.anomalies")
+            print(response.anomalies)
             print("response.error_msg")
             print(response.error_msg)
         elif grpc_method == "statefull":
@@ -68,8 +89,11 @@ if __name__ == "__main__":
             print(response.varAnswers)
             print("response.explanations")
             print(response.explanations)
+            print("response.anomalies")
+            print(response.anomalies)
             print("response.error_msg")
             print(response.error_msg)
+            response = stub.EndNet(queryId)
         else:
             print("Invalid method!")
             exit(1)

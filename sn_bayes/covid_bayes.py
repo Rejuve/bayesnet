@@ -1,6 +1,6 @@
 import sn_bayes
-from sn_bayes.utils import any
-from sn_bayes.utils import all
+from sn_bayes.utils import any_of
+from sn_bayes.utils import all_of
 from sn_bayes.utils import avg
 from sn_bayes.utils import if_then_else
 from sn_bayes.utils import bayesInitialize
@@ -26,22 +26,49 @@ def covid_bayes():
 	anomaly.high = 200
 	anomaly.low =93
 	anomaly.high_percent = 0.99
-	anomaly.low_percent = 0.01
-	
+	anomaly.low_percent = 0.10
+	anomaly.n = 72
+	anomaly.is_all = True
+	detectors = anomaly.detectors.add()
+	detectors.name = "QuantileAD"
+	detectors = anomaly.detectors.add()
+	detectors.name = "ThresholdAD"
+
+
 	anomaly = bayesianNetwork.anomalies.add()
 	anomaly.varName = "heart_rate_anomaly"
-	
+	anomaly.n_steps = 14
+	anomaly.step_size = 24
+	anomaly.c = 12.0
+	anomaly.n = 72
+	anomaly.is_all = True
+	detectors = anomaly.detectors.add()
+	detectors.name = "AutoregressionAD"
+	detectors = anomaly.detectors.add()
+	detectors.name = "InterQuartileRangeAD"
+
+
 	anomaly = bayesianNetwork.anomalies.add()
 	anomaly.varName = "hotspot_anomaly"
 	anomaly.low = -1
 	anomaly.high = 0.00007 # percent new daily cases
-	
+	anomaly.n = 72
+	detectors = anomaly.detectors.add()
+	detectors.name = "ThresholdAD"
+
+
 	anomaly = bayesianNetwork.anomalies.add()
-	anomaly.varName = "heart_rate_variability_anomaly"	
-
-
+	anomaly.varName = "heart_rate_variability_anomaly"
+	anomaly.n_steps = 14
+	anomaly.step_size = 24
+	anomaly.c = 12.0
+	anomaly.n = 72
+	anomaly.is_all = True
+	detectors = anomaly.detectors.add()
+	detectors.name = "AutoregressionAD"
+	detectors = anomaly.detectors.add()
+	detectors.name = "InterQuartileRangeAD"
 	
-
 	# basics/demographics questions 
 
 
@@ -810,7 +837,7 @@ def covid_bayes():
 	cpt ={} 
 
 	
-	cpt["covid_test"] = any(bayesianNetwork,cpt,
+	cpt["covid_test"] = any_of(bayesianNetwork,cpt,
 	{
 	"swab_test":{"swab_test_positive"},
 	"antibody_test":{"antibody_test_positive"},
@@ -821,7 +848,7 @@ def covid_bayes():
 	)
 	
 	
-	cpt["metabolic_disease"] = any(bayesianNetwork,cpt,
+	cpt["metabolic_disease"] = any_of(bayesianNetwork,cpt,
 	{
 	"cardiovascular_disease":{"cardiovascular_disease"},
 	"diabetes":{"diabetes"},
@@ -832,7 +859,7 @@ def covid_bayes():
 	)
 	
 	
-	cpt["chronic_conditions"] = any(bayesianNetwork,cpt,
+	cpt["chronic_conditions"] = any_of(bayesianNetwork,cpt,
 	{
 	"lung_disease":{"lung_disease"},
 	"cancer":{"cancer"},
@@ -844,7 +871,7 @@ def covid_bayes():
 	)
 
 	
-	cpt["comorbidities"] = any(bayesianNetwork,cpt,
+	cpt["comorbidities"] = any_of(bayesianNetwork,cpt,
 	{
 	"chronic_conditions":{"chronic_conditions"},
 	"metabolic_disease":{"metabolic_disease"},
@@ -854,7 +881,7 @@ def covid_bayes():
 
 	)
 	
-	cpt["inflammation_symptoms"] = any(bayesianNetwork,cpt,
+	cpt["inflammation_symptoms"] = any_of(bayesianNetwork,cpt,
 	{
 	"rash_or_skin_discoloration":{"rash_or_skin_discoloration"},
 	"muscle_aches_or_body_pain":{"muscle_aches_or_body_pain"},
@@ -863,7 +890,7 @@ def covid_bayes():
 	["inflammation_symptoms","no_inflammation_symptoms"]
 	)
 	
-	cpt["head_and_neck_symptoms"] = any(bayesianNetwork,cpt,
+	cpt["head_and_neck_symptoms"] = any_of(bayesianNetwork,cpt,
                 {
             "neck_stiffness":{"neck_stiffness"},
             "pink_eye":{"new_or_worse_or_severe_pink_eye"},
@@ -894,7 +921,7 @@ def covid_bayes():
 	)
 
 
-	cpt["gastrointestinal_symptoms"] = any(bayesianNetwork,cpt,
+	cpt["gastrointestinal_symptoms"] = any_of(bayesianNetwork,cpt,
         {
             "low_urine":{"low_urine"},
             "nausea":{"new_or_worse_or_severe_nausea"},
@@ -905,7 +932,7 @@ def covid_bayes():
 	)
 	
 	
-	cpt["covid_symptoms"] = any(bayesianNetwork,cpt,
+	cpt["covid_symptoms"] = any_of(bayesianNetwork,cpt,
         {	
             "sore_throat":{"new_or_worse_or_severe_sore_throat"},
             "gastrointestinal_symptoms":{"gastrointestinal_symptoms"},
@@ -945,7 +972,7 @@ def covid_bayes():
 
 
 
-	cpt["social_distancing_connectedness"]= any(bayesianNetwork,cpt,
+	cpt["social_distancing_connectedness"]= any_of(bayesianNetwork,cpt,
         {
             "visits_per_week":{"visits_more_than_twice_per_week"},
             "leaving_house_per_day":{"leaving_house_more_than_twice_per_day"},
@@ -983,7 +1010,7 @@ def covid_bayes():
 	)
 
 
-	cpt["wearables"] = any(bayesianNetwork,cpt,
+	cpt["wearables"] = any_of(bayesianNetwork,cpt,
 	{
 	"heart_rate_variability_anomaly":{"heart_rate_variability_anomaly"},
 	"oxygen_anomaly":{"oxygen_anomaly"},
@@ -993,7 +1020,7 @@ def covid_bayes():
 	)
 
 
-	cpt["possible_dehydration"] = any(bayesianNetwork,cpt,
+	cpt["possible_dehydration"] = any_of(bayesianNetwork,cpt,
 	{
 	"low_urine":{"low_urine"},
 	"vomiting":{"vomiting"},
@@ -1003,14 +1030,14 @@ def covid_bayes():
 	)
 
 
-	cpt["possible_meningitis"] = all(bayesianNetwork,cpt,
+	cpt["possible_meningitis"] = all_of(bayesianNetwork,cpt,
 		{"neck_stiffness":{"neck_stiffness"}, 
 		"body_temperature":{"body_temperature_above_102F","body_temperature_above_99F"}},
 		["possible_meningitis","no_meningitis"]
 		)
 
 
-	cpt["serious_shortness_of_breath"] = all(bayesianNetwork,cpt,
+	cpt["serious_shortness_of_breath"] = all_of(bayesianNetwork,cpt,
 		{"shortness_of_breath":{"new_or_worse_painful_shortness_of_breath","new_or_worse_shortness_of_breath"}, 
 		"comorbidities":{"comorbidities"}},
 		["serious_shortness_of_breath","no_serious_shortness_of_breath"]
@@ -1048,7 +1075,7 @@ def covid_bayes():
 		["high_risk_covid_environment", "medium_risk_covid_environment", "low_risk_covid_environment","no_risk_covid_environment"]
 		) 
 
-	cpt["high_exposure"] = all(bayesianNetwork,cpt,
+	cpt["high_exposure"] = all_of(bayesianNetwork,cpt,
                 {
                     "hotspot_anomaly":{"hotspot_anomaly"},
                     "covid_environment":{"high_risk_covid_environment"}
@@ -1056,7 +1083,7 @@ def covid_bayes():
         ["high_exposure","other_than_high_exposure"]
         )
 
-	cpt["high_covid"] = any(bayesianNetwork,cpt,
+	cpt["high_covid"] = any_of(bayesianNetwork,cpt,
         {
             "known_exposure":{"known_exposure"},
             "covid_test":{"positive_covid_test"},
@@ -1065,7 +1092,7 @@ def covid_bayes():
         ["high_covid","other_than_high_covid"]
         )
 
-	cpt["medium_exposure"]= all (bayesianNetwork,cpt,
+	cpt["medium_exposure"]= all_of(bayesianNetwork,cpt,
                 {
                     "hotspot_anomaly":{"hotspot_anomaly"},
                     "covid_environment":{"medium_risk_covid_environment"}
@@ -1074,7 +1101,7 @@ def covid_bayes():
         )
 
 
-	cpt["cardiopulmonary_emergency"] = any(bayesianNetwork,cpt,
+	cpt["cardiopulmonary_emergency"] = any_of(bayesianNetwork,cpt,
          {
         "breathing_problems_at_night":{"breathing_problems_at_night_relieved_with_pillows"},
         "chest_pain_independent_of_breath":{"chest_pain_independent_of_breath"},
@@ -1084,7 +1111,7 @@ def covid_bayes():
         ["cardiopulmonary_emergency","no_cardiopulmonary_emergency"]
         )
 
-	cpt["other_emergency"] = any(bayesianNetwork,cpt,
+	cpt["other_emergency"] = any_of(bayesianNetwork,cpt,
          {
         "muscle_weakness":{"new_or_worse_or_severe_muscle_weakness"},
 	"possible_dehydration":{"possible_dehydration"},
@@ -1099,7 +1126,7 @@ def covid_bayes():
 	#output variable conditional probability distributions
 
 
-	cpt["emergency_treatment"] = any(bayesianNetwork,cpt,
+	cpt["emergency_treatment"] = any_of(bayesianNetwork,cpt,
         {
         "cardiopulmonary_emergency":{"cardiopulmonary_emergency"},
         "other_emergency":{"other_emergency"}       
@@ -1126,7 +1153,7 @@ def covid_bayes():
 		["covid_risk","no_covid_risk"]
 		) 
 
-	cpt["testing_compliance"] = all (bayesianNetwork,cpt,
+	cpt["testing_compliance"] = all_of(bayesianNetwork,cpt,
         {
         "tested":{"not_tested"},
         "covid_risk":{"high_covid_risk"}
@@ -1137,7 +1164,7 @@ def covid_bayes():
 
  
 
-	cpt["quarantine_compliance"] = any (bayesianNetwork,cpt,
+	cpt["quarantine_compliance"] = any_of(bayesianNetwork,cpt,
         {
         "self_quarantine_two_weeks":{"no_self_quarantine_two_weeks"},
         "covid_risk":{"high_covid_risk"}
@@ -1149,7 +1176,7 @@ def covid_bayes():
   
  
 
-	cpt["self_care"] = any (bayesianNetwork,cpt,
+	cpt["self_care"] = any_of(bayesianNetwork,cpt,
         {
         "isolation_space":{"no_isolation_space"},
         "testing_compliance":{"poor_testing_compliance"},
