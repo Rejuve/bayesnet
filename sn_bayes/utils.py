@@ -245,7 +245,6 @@ def iqr(s,c):
 def detect_anomalies(anomaly_tuples,bayesianNetwork,anomaly_params):
         evidence = {}
         anomaly_dict = {}
-        
         signal_dict ={}
         combined_signals={}
         fitted={}
@@ -262,7 +261,6 @@ def detect_anomalies(anomaly_tuples,bayesianNetwork,anomaly_params):
             anomaly_dict[var]={}
             combined_signals[var] ={}
             fitted[var] = {}
-            anomaly_out[var] = {}
             last_interval = 1
             dti = pd.to_datetime('1/1/2018')
             for tup in time_tuples:
@@ -283,8 +281,7 @@ def detect_anomalies(anomaly_tuples,bayesianNetwork,anomaly_params):
                 signal_dict[var]=s
                 detector_set = set(anomaly_params[var]["detectors"])
                 for detector in detector_set:
-
-                    if detector is "AutoregressionAD":
+                    if detector == "AutoregressionAD":
                         try:
                             from adtk.detector import AutoregressionAD
                             autoregression_ad = AutoregressionAD(n_steps=anomaly_params[var]["n_steps"], 
@@ -292,30 +289,27 @@ def detect_anomalies(anomaly_tuples,bayesianNetwork,anomaly_params):
                             anomaly_dict[var][detector]  = autoregression_ad.fit_detect(s)
                             #if  "low" not in fitted:
                             fitted[var]["low"],fitted[var]["high"] = iqr(s,anomaly_params[var]["c"])                            
-
                         except RuntimeError as e:
-                            print(f'AutoregressionAD-{var}')
+                            print(f'AutoregressionAD-{var} RuntimeError')
                             print(e)
                         except ValueError as e:
-                            print(f'AutoregressionAD-{var}')
+                            print(f'AutoregressionAD-{var} ValueError')
                             print(e)
-
-                    elif detector is "InterQuartileRangeAD":
+                    elif detector == "InterQuartileRangeAD":
                         try:
                             from adtk.detector import InterQuartileRangeAD
                             iqr_ad = InterQuartileRangeAD(c=anomaly_params[var]["c"])
                             anomaly_dict[var][detector] = iqr_ad.fit_detect(s)
                             #if "low" not in fitted:
                             fitted[var]["low"],fitted[var]["high"] = iqr(s,anomaly_params[var]["c"])                            
-
                         except RuntimeError as e:
-                            print(f'InterQuartileRangeAD-{var}')
+                            print(f'InterQuartileRangeAD-{var} RuntimeError')
                             print(e)
-                        except Exception as e:
-                            print(f'InterQuartileRangeAD-{var}')
+                        except ValueError as e:
+                            print(f'InterQuartileRangeAD-{var} ValueError')
                             print(e)
-   
-                    elif detector is "QuantileAD":
+
+                    elif detector == "QuantileAD":
                         try:
                             from adtk.detector import QuantileAD
                             quantile_ad = QuantileAD(high=anomaly_params[var]['high_percent'], low=anomaly_params[var]['low_percent'])
@@ -330,7 +324,7 @@ def detect_anomalies(anomaly_tuples,bayesianNetwork,anomaly_params):
                             print(f'QuantileAD-{var}')
                             print(e)
 
-                    elif detector is "ThresholdAD":          
+                    elif detector == "ThresholdAD":          
                         try:
                             from adtk.detector import ThresholdAD
                             threshold_ad = ThresholdAD(high=anomaly_params[var]['high'], low=anomaly_params[var]['low'])
@@ -346,10 +340,6 @@ def detect_anomalies(anomaly_tuples,bayesianNetwork,anomaly_params):
                 firsttime = True
                 for detector,df in anomaly_dict[var].items():
                     if firsttime:
-                        #print("detector")
-                        #print(detector)
-                        #print("df")
-                        #print(df)
                         combined_df = df
                         combined_df = combined_df.rename(columns={'value': detector})
                         firsttime = False
@@ -359,23 +349,6 @@ def detect_anomalies(anomaly_tuples,bayesianNetwork,anomaly_params):
 
                 is_anomalous = combined_df[['value']].tail(anomaly_params[var]["n"])['value'].any()
                 evidence[var] = var_val_names[var][0] if is_anomalous else var_val_names[var][1]
-
-                #for detector, df in anomaly_dict[var].items():
-                 #   the_list = df['value'].tolist()
-                  #  if len(combined_signals[var]) == 0:
-                   #     combined_signals [var]= the_list
-                    #elif len(combined_signals[var]) == len(the_list):
-                     #   if anomaly_params[var]["is_all"]:
-                      #      combined_signals[var] = [a and b for a,b in zip (the_list,combined_signals[var])]
-                       # else:
-                        #    combined_signals[var] = [a or b for a,b in zip (the_list,combined_signals[var])]
-
-                #n=anomaly_params[var]["n"]
-                #list_to_check = combined_signals[var][:-n] if len(combined_signals[var]) >=n else combined_signals[var]
-                #if any(list_to_check):
-                 #   evidence[var] = var_val_names[var][0] 
-                #else:
-                 #   evidence[var] = var_val_names[var][1]
             anomaly_out['signal'][var] = signal_dict[var]
             anomaly_out['anomalies'][var] = combined_df[['value']]   #combined_signals
             anomaly_out['fitted'][var] = fitted[var]

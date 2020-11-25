@@ -82,6 +82,8 @@ class BayesNetServicer(grpc_bt_grpc.BayesNetServicer):
 
   
   def EndNet(self, request, context):
+    print (request)
+    print (self.spec)
     answer = Answer()
     if request.id in self.spec:
       self.spec.pop(request.id)
@@ -134,8 +136,8 @@ class BayesNetServicer(grpc_bt_grpc.BayesNetServicer):
         #print ("anomaly_out")
         #print (anomaly_out)
       anomaly_out = detect_anomalies(anomaly_tuples,bayesianNetwork,anomaly_params_dict)
-      print ("anomaly_out")
-      print (anomaly_out)
+      #print ("anomaly_out")
+      #print (anomaly_out)
       evidence.update(anomaly_out['evidence'])    
       answer_dict = query(self.baked[request.id], self.spec[request.id], evidence,outvars)
       explain_dict= explain(self.baked[request.id],self.spec[request.id],evidence,explainvars,reverse_explain_list, reverse_evidence)
@@ -170,7 +172,7 @@ class BayesNetServicer(grpc_bt_grpc.BayesNetServicer):
           for var, val in val_dict.items():
             var_state = var_answer.fitStates.add()
             var_state.fitted = var
-            var_state.probability =val
+            var_state.val =val
 
         
     else:
@@ -183,7 +185,7 @@ class BayesNetServicer(grpc_bt_grpc.BayesNetServicer):
     if not_too_complex:
       net= bayesInitialize(request.bayesianNetwork)
       net.bake()
-      evidence,outvars,explainvars, reverse_explain_list, reverse_evidence,anomaly_tuples, anomaly_params_dict = parse_net(request.query, bayesianNetwork)
+      evidence,outvars,explainvars, reverse_explain_list, reverse_evidence,anomaly_tuples, anomaly_params_dict = parse_net(request.query, request.bayesianNetwork)
       #print("anomaly_params_dict")
       #print(anomaly_params_dict)
       #for var,params in anomaly_params_dict.items():
@@ -191,7 +193,7 @@ class BayesNetServicer(grpc_bt_grpc.BayesNetServicer):
        # anomaly_out = detect_anomalies(anomaly_tuples,bayesianNetwork,new_dict)
         #print ("anomaly_out")
         #print (anomaly_out)
-      anomaly_out = detect_anomalies(anomaly_tuples,bayesianNetwork,anomaly_params_dict)
+      anomaly_out = detect_anomalies(anomaly_tuples,request.bayesianNetwork,anomaly_params_dict)
       evidence.update(anomaly_out['evidence'])    
       answer_dict = query(net, request.bayesianNetwork, evidence,outvars)
       explain_dict= explain(net,request.bayesianNetwork,evidence,explainvars,reverse_explain_list, reverse_evidence)
@@ -227,7 +229,7 @@ class BayesNetServicer(grpc_bt_grpc.BayesNetServicer):
           for var, val in val_dict.items():
             var_state = var_answer.fitStates.add()
             var_state.fitted = var
-            var_state.probability =val
+            var_state.val =val
 
 
     else:

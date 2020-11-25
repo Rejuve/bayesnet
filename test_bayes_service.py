@@ -54,7 +54,7 @@ if __name__ == "__main__":
             reading["val"] = row[1]
             reading["interval"] = thisrow
             timevals.append(reading)
-        query = create_query(bayesianNetwork,evidence,outvars,explainvars,reverse_explainvars,timeseries)
+        query = create_query(bayesianNetwork,evidence,outvars,explainvars,reverse_explainvars,[],timeseries)
         
         grpc_method = input("Method (stateless|statefull): ") if not test_flag else "statefull"
 
@@ -75,6 +75,9 @@ if __name__ == "__main__":
             print(response.anomalies)
             print("response.error_msg")
             print(response.error_msg)
+            id_num = Id()
+            id_num.id = queryId.id
+            response = stub.EndNet(id_num)
         elif grpc_method == "statefull":
             response = stub.StartNet(bayesianNetwork)
             print("response.id")
@@ -93,7 +96,9 @@ if __name__ == "__main__":
             print(response.anomalies)
             print("response.error_msg")
             print(response.error_msg)
-            response = stub.EndNet(queryId)
+            id_num = Id()
+            id_num.id = queryId.id
+            response = stub.EndNet(id_num)
         else:
             print("Invalid method!")
             exit(1)
