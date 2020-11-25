@@ -1164,7 +1164,7 @@ def covid_bayes():
 
  
 
-	cpt["quarantine_compliance"] = any_of(bayesianNetwork,cpt,
+	cpt["quarantine_compliance"] = all_of(bayesianNetwork,cpt,
         {
         "self_quarantine_two_weeks":{"no_self_quarantine_two_weeks"},
         "covid_risk":{"high_covid_risk"}
