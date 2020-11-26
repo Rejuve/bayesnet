@@ -1,4 +1,4 @@
-# Bayesian Network Service
+# Bayesian Network and Anomaly Detection Service
 
 ## Introduction
 
