@@ -1,4 +1,4 @@
-# Bayesian Network Service
+# Bayesian Network and Anomaly Detection Service
 
 ## Introduction
 
@@ -147,6 +147,42 @@ To do either a threshold or a percent over a baseline, use both "ThresholdAD" an
 	anomaly = bayesianNetwork.anomalies.add()
 	anomaly.varName = "heart_rate_anomaly"
 	
+
+## Practical Example of Anomaly Detection
+
+Suppose we want to raise an anomaly to the user based on heart rate, such as:  
+
+"There is a potential anomaly in our latest {heart_rate_anomaly.in.n} readings of your heart rate. Your heart rate of {heart_rate_anomaly.calc} is very near the top of your personal range, of {heart_rate_anomaly.out.high}, based on your measured history"
+
+The "in" here refers to the input values to the anomaly detection service for this variable.  For heart_rate_anomaly they are, in covid_bayes.py, this:
+
+	anomaly = bayesianNetwork.anomalies.add()	
+	anomaly.varName = "heart_rate_anomaly"	
+	anomaly.n_steps = 14	
+	anomaly.step_size = 24	
+	anomaly.c = 12.0	
+	anomaly.n = 72	
+	anomaly.is_all = True	
+	detectors = anomaly.detectors.add()	
+	detectors.name = "AutoregressionAD"	
+	detectors = anomaly.detectors.add()	
+	detectors.name = "InterQuartileRangeAD"
+
+
+This rule says that an anomaly occurs when both the Autoregression Anomaly Detector and the Inter Quartile Range Anomaly Detector in ADTK detect an anomaly in the n=72 most recent readings. We know it is both because is_all is set to True, otherwise the default of False would cause the anomaly to register if either detector fires. We assume we are taking hourly readings for two weeks, and this goes into the anomaly detector, so this would fire if both anomalies were registered within 3 days (72 hours) of each other.  For InterQuartileRange, a common detector, the median of the data is taken, and then for each half, the median is taken again, creating a .25 quartile and a .75 quartile.  The individual high value of  the individuals last 72 readings are  individual value at .75 + (individual value at .75. - individual value at .25)* c.
+
+The best value for c depends on the type of data.  Here c is 12 because the IQR of individuals is typically only about 6.  Under 72 beats per minute over the .75 value would fire the anomaly detector too often. 
+
+Here is what we see with c=12.  The red dots are anomalies
+![Alt text](C12.PNG?raw=true "Heart Rate with C of 12")
+
+
+With more data collected on steps we could make a rule that says to fire an anomaly if there is an anomaly in the heartrate over the past 5 hours and not an anomaly in the steps, in the bayesian network rules.
+
+Autoregression anomaly detector does an IQR but also looks at it on a cyclic basis.
+
+In the aove example, the step_size is 24, which is from the assumption that we are taking hourly readings  - if this assumption isnt true, then this will change.  It takes every step_size readings, and takes them for n_steps, thus the data look like heart rate at 8 pm for the last 2 weeks, the heart rate at 9 pm for the last 2 weeks, etc.
+
 	
 	
 ## References
