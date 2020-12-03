@@ -62,10 +62,12 @@ message BayesianNetwork{
 	int32 step_size = 5;
 	float c = 6;
 	int32 n = 7;
-	float high = 8;
-	float low = 9;
-	float high_percent = 10;
-	float low_percent = 11;
+	int32 window = 8;
+	string side = 9;
+	float high = 10;
+	float low = 11;
+	float high_percent = 12;
+	float low_percent = 13;
   }
   
   repeated Anomaly anomalies = 3;

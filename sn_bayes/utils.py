@@ -194,6 +194,8 @@ def parse_net(query, bayesianNetwork):
             anomaly_params_dict[o.varName]['step_size'] = o.step_size
             anomaly_params_dict[o.varName]['c'] = o.c
             anomaly_params_dict[o.varName]['n'] = o.n
+            anomaly_params_dict[o.varName]['side'] = o.side
+            anomaly_params_dict[o.varName]['window'] = o.window
             anomaly_params_dict[o.varName]['detectors'] = []
             for d in o.detectors:
                 anomaly_params_dict[o.varName]['detectors'].append(d.name)
@@ -287,27 +289,43 @@ def detect_anomalies(anomaly_tuples,bayesianNetwork,anomaly_params):
                             autoregression_ad = AutoregressionAD(n_steps=anomaly_params[var]["n_steps"], 
                                     step_size=anomaly_params[var]["step_size"], c=anomaly_params[var]["c"])
                             anomaly_dict[var][detector]  = autoregression_ad.fit_detect(s)
-                            #if  "low" not in fitted:
-                            fitted[var]["low"],fitted[var]["high"] = iqr(s,anomaly_params[var]["c"])                            
+                            if  "low" not in fitted[var]:
+                                fitted[var]["low"],fitted[var]["high"] = iqr(s,anomaly_params[var]["c"])                            
                         except RuntimeError as e:
                             print(f'AutoregressionAD-{var} RuntimeError')
                             print(e)
                         except ValueError as e:
                             print(f'AutoregressionAD-{var} ValueError')
                             print(e)
+                    elif detector == "LevelShiftAD":
+                        try:
+                            from adtk.detector import LevelShiftAD
+                            ls_ad = LevelShiftAD(c=anomaly_params[var]["c"],
+                                    side=anomaly_params[var]["side"],window=anomaly_params[var]["window"])
+                            anomaly_dict[var][detector] = ls_ad.fit_detect(s)
+                            if "low" not in fitted[var]:
+                                fitted[var]["low"],fitted[var]["high"] = iqr(s,anomaly_params[var]["c"])                            
+                        except RuntimeError as e:
+                            print(f'LevelShiftAD-{var} RuntimeError')
+                            print(e)
+                        except ValueError as e:
+                            print(f'LevelShiftAD-{var} ValueError')
+                            print(e)
+
                     elif detector == "InterQuartileRangeAD":
                         try:
                             from adtk.detector import InterQuartileRangeAD
                             iqr_ad = InterQuartileRangeAD(c=anomaly_params[var]["c"])
                             anomaly_dict[var][detector] = iqr_ad.fit_detect(s)
-                            #if "low" not in fitted:
-                            fitted[var]["low"],fitted[var]["high"] = iqr(s,anomaly_params[var]["c"])                            
+                            if "low" not in fitted[var]:
+                                fitted[var]["low"],fitted[var]["high"] = iqr(s,anomaly_params[var]["c"])                            
                         except RuntimeError as e:
                             print(f'InterQuartileRangeAD-{var} RuntimeError')
                             print(e)
                         except ValueError as e:
                             print(f'InterQuartileRangeAD-{var} ValueError')
                             print(e)
+
 
                     elif detector == "QuantileAD":
                         try:

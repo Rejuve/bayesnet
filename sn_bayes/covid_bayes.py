@@ -27,7 +27,7 @@ def covid_bayes():
 	anomaly.low =93
 	anomaly.high_percent = 0.99
 	anomaly.low_percent = 0.10
-	anomaly.n = 72
+	anomaly.n = 24
 	anomaly.is_all = True
 	detectors = anomaly.detectors.add()
 	detectors.name = "QuantileAD"
@@ -40,19 +40,40 @@ def covid_bayes():
 	anomaly.n_steps = 14
 	anomaly.step_size = 24
 	anomaly.c = 12.0
-	anomaly.n = 72
-	anomaly.is_all = True
+	anomaly.n = 24
+	anomaly.window = 24
+	anomaly.side = "positive"
+	anomaly.is_all = False
 	detectors = anomaly.detectors.add()
 	detectors.name = "AutoregressionAD"
 	detectors = anomaly.detectors.add()
 	detectors.name = "InterQuartileRangeAD"
+	detectors = anomaly.detectors.add()
+	detectors.name = "LevelShiftAD"
+
+
+	anomaly = bayesianNetwork.anomalies.add()
+	anomaly.varName = "steps_anomaly"
+	anomaly.n_steps = 14
+	anomaly.step_size = 24
+	anomaly.c = 12.0
+	anomaly.n = 24
+	anomaly.window = 24
+	anomaly.side = "positive"
+	anomaly.is_all = False 
+	detectors = anomaly.detectors.add()
+	detectors.name = "AutoregressionAD"
+	detectors = anomaly.detectors.add()
+	detectors.name = "InterQuartileRangeAD"
+	detectors = anomaly.detectors.add()
+	detectors.name = "LevelShiftAD"
 
 
 	anomaly = bayesianNetwork.anomalies.add()
 	anomaly.varName = "hotspot_anomaly"
 	anomaly.low = -1
 	anomaly.high = 0.00007 # percent new daily cases
-	anomaly.n = 72
+	anomaly.n = 30 
 	detectors = anomaly.detectors.add()
 	detectors.name = "ThresholdAD"
 
@@ -61,13 +82,31 @@ def covid_bayes():
 	anomaly.varName = "heart_rate_variability_anomaly"
 	anomaly.n_steps = 14
 	anomaly.step_size = 24
-	anomaly.c = 12.0
-	anomaly.n = 72
-	anomaly.is_all = True
+	anomaly.c = 12.0 
+	anomaly.n = 24
+	anomaly.window = 24
+	anomaly.side = "positive"
+	anomaly.is_all = False 
 	detectors = anomaly.detectors.add()
 	detectors.name = "AutoregressionAD"
 	detectors = anomaly.detectors.add()
 	detectors.name = "InterQuartileRangeAD"
+	detectors = anomaly.detectors.add()
+	detectors.name = "LevelShiftAD"
+
+
+        #tests
+
+
+	discreteDistribution = bayesianNetwork.discreteDistributions.add()
+	discreteDistribution.name = "cough_test"
+	variable = discreteDistribution.variables.add()
+	variable.name = "positive_cough_test"
+	variable.probability = 0.05
+	variable = discreteDistribution.variables.add()
+	variable.name = "negative_cough_test"
+	variable.probability = 0.95
+
 	
 	# basics/demographics questions 
 
@@ -802,7 +841,7 @@ def covid_bayes():
 	variable.name = "no_hotspot_anomaly"
 	variable.probability = 0.85
 	
-	
+		
 	discreteDistribution = bayesianNetwork.discreteDistributions.add()
 	discreteDistribution.name = "heart_rate_anomaly"
 	variable = discreteDistribution.variables.add()
@@ -811,6 +850,16 @@ def covid_bayes():
 	variable = discreteDistribution.variables.add()
 	variable.name = "no_heart_rate_anomaly"
 	variable.probability = 0.95
+
+
+	discreteDistribution = bayesianNetwork.discreteDistributions.add()
+	discreteDistribution.name = "steps_anomaly"
+	variable = discreteDistribution.variables.add()
+	variable.name = "steps_anomaly"
+	variable.probability = 0.15
+	variable = discreteDistribution.variables.add()
+	variable.name = "no_steps_anomaly"
+	variable.probability = 0.85
 	
 	
 	discreteDistribution = bayesianNetwork.discreteDistributions.add()
@@ -1010,11 +1059,19 @@ def covid_bayes():
 	)
 
 
+	cpt["normal_activity_heart_rate_anomaly"] = all_of(bayesianNetwork,cpt,
+		{"heart_rate_anomaly":{"heart_rate_anomaly"}, 
+		"steps_anomaly":{"no_steps_anomaly"}},
+		["normal_activity_heart_rate_anomaly","no_normal_activity_heart_rate_anomaly"]
+		)
+
+
+
 	cpt["wearables"] = any_of(bayesianNetwork,cpt,
 	{
 	"heart_rate_variability_anomaly":{"heart_rate_variability_anomaly"},
 	"oxygen_anomaly":{"oxygen_anomaly"},
-	"heart_rate_anomaly":{"heart_rate_anomaly"}
+	"normal_activity_heart_rate_anomaly":{"normal_activity_heart_rate_anomaly"}
 	},
 	["anomalous_wearables","normal_wearables"]
 	)
@@ -1087,7 +1144,8 @@ def covid_bayes():
         {
             "known_exposure":{"known_exposure"},
             "covid_test":{"positive_covid_test"},
-            "high_exposure":{"high_exposure"}
+            "high_exposure":{"high_exposure"},
+            "cough_test":{"positive_cough_test"}
         },
         ["high_covid","other_than_high_covid"]
         )
