@@ -27,7 +27,7 @@ def covid_bayes():
 	anomaly.low =93
 	anomaly.high_percent = 0.99
 	anomaly.low_percent = 0.10
-	anomaly.n = 24
+	anomaly.n = 2
 	anomaly.is_all = True
 	detectors = anomaly.detectors.add()
 	detectors.name = "QuantileAD"
@@ -41,7 +41,7 @@ def covid_bayes():
 	anomaly.step_size = 24
 	anomaly.c = 12.0
 	anomaly.n = 24
-	anomaly.window = 24
+	anomaly.window = 5
 	anomaly.side = "positive"
 	anomaly.is_all = False
 	detectors = anomaly.detectors.add()
@@ -57,8 +57,8 @@ def covid_bayes():
 	anomaly.n_steps = 14
 	anomaly.step_size = 24
 	anomaly.c = 12.0
-	anomaly.n = 24
-	anomaly.window = 24
+	anomaly.n = 2
+	anomaly.window = 4
 	anomaly.side = "positive"
 	anomaly.is_all = False 
 	detectors = anomaly.detectors.add()
@@ -84,7 +84,7 @@ def covid_bayes():
 	anomaly.step_size = 24
 	anomaly.c = 12.0 
 	anomaly.n = 24
-	anomaly.window = 24
+	anomaly.window = 5
 	anomaly.side = "positive"
 	anomaly.is_all = False 
 	detectors = anomaly.detectors.add()
@@ -1067,14 +1067,22 @@ def covid_bayes():
 
 
 
-	cpt["wearables"] = any_of(bayesianNetwork,cpt,
-	{
-	"heart_rate_variability_anomaly":{"heart_rate_variability_anomaly"},
-	"oxygen_anomaly":{"oxygen_anomaly"},
-	"normal_activity_heart_rate_anomaly":{"normal_activity_heart_rate_anomaly"}
-	},
-	["anomalous_wearables","normal_wearables"]
+	cpt["wearables"] = avg(bayesianNetwork,cpt,
+	[
+        "heart_rate_variability_anomaly",
+	"oxygen_anomaly",
+	"normal_activity_heart_rate_anomaly"
+	],
+	["high_anomalous_wearables","medium_anomalous_wearables","low_anomalous_wearables","no_anomalous_wearables"]
 	)
+
+	cpt["wearables_binary"] = avg(bayesianNetwork,cpt,
+	[
+	"wearables"
+	],
+	["anomalous_wearables","no_anomalous_wearables"]
+	)
+
 
 
 	cpt["possible_dehydration"] = any_of(bayesianNetwork,cpt,
@@ -1126,7 +1134,6 @@ def covid_bayes():
 	cpt["covid_environment"] = avg(bayesianNetwork,cpt,
 		[
 		"social_distancing",
-                "employment_risk",
 		"covid_symptom_level"
 		],
 		["high_risk_covid_environment", "medium_risk_covid_environment", "low_risk_covid_environment","no_risk_covid_environment"]
