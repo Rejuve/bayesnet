@@ -1038,7 +1038,7 @@ def covid_bayes():
 	"workplace_social_distancing",
 	"daily_contacts_social_distancing"
 	],
-	["no_social_distancing_environnment","some_social_distancing_environment","safe_social_distancing_environment"]
+	["no_social_distancing_environment","some_social_distancing_environment","safe_social_distancing_environment"]
 	)
 
 
