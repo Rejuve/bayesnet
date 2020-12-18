@@ -1067,7 +1067,7 @@ def covid_bayes():
 
 
 
-	cpt["wearables"] = avg(bayesianNetwork,cpt,
+	cpt["anomalous_wearables"] = avg(bayesianNetwork,cpt,
 	[
         "heart_rate_variability_anomaly",
 	"oxygen_anomaly",
@@ -1076,9 +1076,9 @@ def covid_bayes():
 	["high_anomalous_wearables","medium_anomalous_wearables","low_anomalous_wearables","no_anomalous_wearables"]
 	)
 
-	cpt["wearables_binary"] = avg(bayesianNetwork,cpt,
+	cpt["anomalous_wearables_binary"] = avg(bayesianNetwork,cpt,
 	[
-	"wearables"
+	"anomalous_wearables"
 	],
 	["anomalous_wearables","no_anomalous_wearables"]
 	)
@@ -1113,7 +1113,7 @@ def covid_bayes():
                 {		
 		"covid_symptoms",
 		"social_distancing",
-		"wearables"
+		"anomalous_wearables"
                 },
 		["severe_covid_vulnerabilities", "moderate_covid_vulnerabilites","some_covid_vulnerabilites", "insignificant_covid_vulnerabilities"]
 		)
