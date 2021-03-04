@@ -179,6 +179,17 @@ def covid_bayes():
 	variable.probability = 0.25
 
 
+#psychological_disorders 9%
+
+	discreteDistribution = bayesianNetwork.discreteDistributions.add()
+	discreteDistribution.name = "psychological_disorders"
+	variable = discreteDistribution.variables.add()
+	variable.name = "psychological_disorders"
+	variable.probability = 0.09
+	variable = discreteDistribution.variables.add()
+	variable.name = "no_psychological_disorders"
+	variable.probability = 0.91
+	
 
 #cardiovascular_disease 9%
 #https://www.sciencedaily.com/releases/2019/01/190131084238.htm
@@ -913,7 +924,8 @@ def covid_bayes():
 	"lung_disease":{"lung_disease"},
 	"cancer":{"cancer"},
 	"kidney_disease":{"kidney_disease"},
-	"immunocompromised":{"immunocompromised"}
+	"immunocompromised":{"immunocompromised"},
+        "psychological_disorders":{"psychological_disorders"}
 	},
 	["chronic_conditions","no_chronic_conditions"]
 
