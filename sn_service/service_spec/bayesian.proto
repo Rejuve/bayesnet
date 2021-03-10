@@ -75,7 +75,7 @@ message BayesianNetwork{
 }
 
 message Id{
-  int32 id = 1;
+  string id = 1;
   string error_msg = 2;
   }
 
@@ -106,7 +106,7 @@ message Query{
 
 
 message QueryId{
-  int32 id = 1;
+  string id = 1;
   Query query = 2;
 }
 
