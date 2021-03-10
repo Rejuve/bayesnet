@@ -108,6 +108,22 @@ def covid_bayes():
 	variable.probability = 0.95
 
 	
+	discreteDistribution = bayesianNetwork.discreteDistributions.add()
+	discreteDistribution.name = "positive_cough_test_type"
+	variable = discreteDistribution.variables.add()
+	variable.name = "positive_moderate"
+	variable.probability = 0.02
+	variable = discreteDistribution.variables.add()
+	variable.name = "positive_mild"
+	variable.probability = 0.03
+	variable = discreteDistribution.variables.add()
+	variable.name = "positive_asymp"
+	variable.probability = 0.05
+	variable = discreteDistribution.variables.add()
+	variable.name = "healthy"
+	variable.probability = 0.90
+
+	
 	# basics/demographics questions 
 
 
@@ -1268,7 +1284,8 @@ def covid_bayes():
         	[	
 		"age",
                 "comorbidities",
-                "covid_risk"
+                "covid_risk",
+		"positive_cough_test_type"
 		],
 		["high_covid_severity","medium_covid_severity","low_covid_severity","no_covid_severity"]
 		)
