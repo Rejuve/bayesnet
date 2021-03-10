@@ -4,6 +4,7 @@ print(sys.path)
 import logging
 
 import grpc
+import uuid
 import concurrent.futures as futures
 from google.protobuf import json_format
 
@@ -74,10 +75,10 @@ class BayesNetServicer(grpc_bt_grpc.BayesNetServicer):
     log.debug("BayesServicer created")
     
   def getUniqueID(self):
-    i=1
-    while i in self.baked or i in self.spec:
-      i += 1
-    return i
+    #i=1
+    #while i in self.baked or i in self.spec:
+      #i += 1
+    return str(uuid.uuid4())
     
 
   
