@@ -1,6 +1,6 @@
 import sys
-print("sys.path")
-print(sys.path)
+#print("sys.path")
+#print(sys.path)
 import logging
 
 import grpc
@@ -35,8 +35,6 @@ from sn_service.service_spec.bayesian_pb2 import Id
 logging.basicConfig(level=10, format="%(asctime)s - [%(levelname)8s] - %(name)s - %(message)s")
 log = logging.getLogger("example_service")
 
-import sys
-print (sys.path)
 """
 Bayesian net service, where you can either send a Bayesian net, and a query, and
 have an answer without saving your net saved, or you can send a net to be saved,
@@ -78,13 +76,16 @@ class BayesNetServicer(grpc_bt_grpc.BayesNetServicer):
     #i=1
     #while i in self.baked or i in self.spec:
       #i += 1
-    return str(uuid.uuid4())
+    uniq = str(uuid.uuid4())
+    #print ("uniq")
+    #print (uniq)
+    return uniq
     
 
   
   def EndNet(self, request, context):
-    print (request)
-    print (self.spec)
+    #print (request)
+    #print (self.spec)
     answer = Answer()
     if request.id in self.spec:
       self.spec.pop(request.id)

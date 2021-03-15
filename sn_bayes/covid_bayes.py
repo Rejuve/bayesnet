@@ -101,26 +101,19 @@ def covid_bayes():
 	discreteDistribution = bayesianNetwork.discreteDistributions.add()
 	discreteDistribution.name = "cough_test"
 	variable = discreteDistribution.variables.add()
-	variable.name = "positive_cough_test"
-	variable.probability = 0.05
-	variable = discreteDistribution.variables.add()
-	variable.name = "negative_cough_test"
-	variable.probability = 0.95
-
-	
-	discreteDistribution = bayesianNetwork.discreteDistributions.add()
-	discreteDistribution.name = "positive_cough_test_type"
-	variable = discreteDistribution.variables.add()
-	variable.name = "positive_moderate"
+	variable.name = "strong_positive_cough_test"
 	variable.probability = 0.02
 	variable = discreteDistribution.variables.add()
-	variable.name = "positive_mild"
+	variable.name = "positive_moderate_cough_test"
+	variable.probability = 0.02
+	variable = discreteDistribution.variables.add()
+	variable.name = "positive_mild_cough_test"
 	variable.probability = 0.03
 	variable = discreteDistribution.variables.add()
-	variable.name = "positive_asymp"
-	variable.probability = 0.05
+	variable.name = "positive_asymp_cough_test"
+	variable.probability = 0.03
 	variable = discreteDistribution.variables.add()
-	variable.name = "healthy"
+	variable.name = "healthy_cough_test"
 	variable.probability = 0.90
 
 	
@@ -1180,7 +1173,7 @@ def covid_bayes():
             "known_exposure":{"known_exposure"},
             "covid_test":{"positive_covid_test"},
             "high_exposure":{"high_exposure"},
-            "cough_test":{"positive_cough_test"}
+            "cough_test":{"strong_positive_cough_test","positive_moderate_cough_test"}
         },
         ["high_covid","other_than_high_covid"]
         )
@@ -1285,7 +1278,7 @@ def covid_bayes():
 		"age",
                 "comorbidities",
                 "covid_risk",
-		"positive_cough_test_type"
+		"cough_test"
 		],
 		["high_covid_severity","medium_covid_severity","low_covid_severity","no_covid_severity"]
 		)
