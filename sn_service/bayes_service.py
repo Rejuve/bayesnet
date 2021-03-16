@@ -104,6 +104,8 @@ class BayesNetServicer(grpc_bt_grpc.BayesNetServicer):
 	
   def StartNet(self, request, context):
     id = Id()
+    #print("id")
+    #print(id)
     not_too_complex,error_msg = complexity_check(request)
     if not_too_complex:
       uniqueID = self.getUniqueID()
@@ -117,6 +119,8 @@ class BayesNetServicer(grpc_bt_grpc.BayesNetServicer):
       with open(self.spec_path, 'wb') as f:
         pickle.dump(self.spec_json, f)
         f.close()
+     #print("self.spec")
+      #print(self.spec)
       id.id = uniqueID
     else:
       id.error_msg = error_msg

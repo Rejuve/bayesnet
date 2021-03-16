@@ -292,7 +292,7 @@ def covid_bayes():
 	discreteDistribution = bayesianNetwork.discreteDistributions.add()
 	discreteDistribution.name = "body_temperature"
 	variable = discreteDistribution.variables.add()
-	variable.name = "body_temperature_above_102F"
+	variable.name = "body_temperature_above_102F_or_long_lasting"
 	variable.probability = 0.015
 	variable = discreteDistribution.variables.add()
 	variable.name = "body_temperature_above_100F"
@@ -306,13 +306,13 @@ def covid_bayes():
 	discreteDistribution = bayesianNetwork.discreteDistributions.add()
 	discreteDistribution.name = "shortness_of_breath"
 	variable = discreteDistribution.variables.add()
-	variable.name = "new_or_worse_painful_shortness_of_breath"
+	variable.name = "painful_shortness_of_breath"
 	variable.probability = 0.01
 	variable = discreteDistribution.variables.add()
-	variable.name = "new_or_worse_shortness_of_breath"
+	variable.name = "moderate_shortness_of_breath"
 	variable.probability = 0.04
 	variable = discreteDistribution.variables.add()
-	variable.name = "new_or_worse_shortness_of_breath_after_activity"
+	variable.name = "shortness_of_breath_after_activity"
 	variable.probability = 0.05
 	variable = discreteDistribution.variables.add()
 	variable.name = "no_shortness_of_breath"
@@ -566,19 +566,19 @@ def covid_bayes():
 	discreteDistribution = bayesianNetwork.discreteDistributions.add()
 	discreteDistribution.name = "bmi"
 	variable = discreteDistribution.variables.add()
-	variable.name = "morbidly_obese"
+	variable.name = "bmi_over_40_high_risk"
 	variable.probability = 0.05
 	variable = discreteDistribution.variables.add()
-	variable.name = "obese"
+	variable.name = "bmi_35_to_39_moderate_risk"
 	variable.probability = 0.1
 	variable = discreteDistribution.variables.add()
-	variable.name = "overweight"
+	variable.name = "bmi_30_to_34_low_risk"
 	variable.probability = 0.25
 	variable = discreteDistribution.variables.add()
-	variable.name = "normal"
+	variable.name = "bmi_25_to_29_overweight"
 	variable.probability = 0.5
 	variable = discreteDistribution.variables.add()
-	variable.name = "underweight"
+	variable.name = "bmi_under_25_healthy"
 	variable.probability = 0.1
 
 
@@ -616,10 +616,13 @@ def covid_bayes():
 	discreteDistribution.name = "social_distancing_following"
 	variable = discreteDistribution.variables.add()
 	variable.name = "no_social_distancing_following"
+	variable.probability = 0.30
+	variable = discreteDistribution.variables.add()
+	variable.name = "sometimes_social_distancing_following"
 	variable.probability = 0.50
 	variable = discreteDistribution.variables.add()
 	variable.name = "social_distance_following"
-	variable.probability = 0.50
+	variable.probability = 0.20
 	
 	
 
@@ -945,7 +948,7 @@ def covid_bayes():
 	{
 	"chronic_conditions":{"chronic_conditions"},
 	"metabolic_disease":{"metabolic_disease"},
-	"bmi":{"obese","morbidly_obese"}
+	"bmi":{"bmi_over_40_high_risk","bmi_35_to_39_moderate_risk"}
 	},
 	["comorbidities","no_comorbidities"]
 
@@ -1118,13 +1121,13 @@ def covid_bayes():
 
 	cpt["possible_meningitis"] = all_of(bayesianNetwork,cpt,
 		{"neck_stiffness":{"neck_stiffness"}, 
-		"body_temperature":{"body_temperature_above_102F","body_temperature_above_99F"}},
+		"body_temperature":{"body_temperature_above_102F_or_long_lasting","body_temperature_above_99F"}},
 		["possible_meningitis","no_meningitis"]
 		)
 
 
 	cpt["serious_shortness_of_breath"] = all_of(bayesianNetwork,cpt,
-		{"shortness_of_breath":{"new_or_worse_painful_shortness_of_breath","new_or_worse_shortness_of_breath"}, 
+		{"shortness_of_breath":{"painful_shortness_of_breath","moderate_shortness_of_breath"}, 
 		"comorbidities":{"comorbidities"}},
 		["serious_shortness_of_breath","no_serious_shortness_of_breath"]
 		)
