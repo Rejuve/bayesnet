@@ -679,7 +679,8 @@ def avg(bayesianNetwork, cpt, invars, outvars):
 			cpt_row = []
 			cpt_row.extend(c)
 			cpt_row.append(o)
-			val = 1.0 if (winner == i) else 0.0
+			#val = 1.0 if (winner == i) else 0.0)
+			val = bins[i]/area if i in bins else 0.0 #not in winner take all version
 			cpt_row.append(val)
 			cpt_rows.append(cpt_row)
 	return (cpt_rows,keylist,outvars)

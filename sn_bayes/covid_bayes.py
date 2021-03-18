@@ -376,10 +376,10 @@ def covid_bayes():
 	discreteDistribution.name = "neck_stiffness"
 	variable = discreteDistribution.variables.add()
 	variable.name = "new_or_worse_or_severe_neck_stiffness"
-	variable.probability = 0.05
+	variable.probability = 0.01
 	variable = discreteDistribution.variables.add()
 	variable.name = "moderate_neck_stiffness"
-	variable.probability = 0.05
+	variable.probability = 0.09
 	variable = discreteDistribution.variables.add()
 	variable.name = "no_neck_stiffness"
 	variable.probability = 0.90
@@ -402,10 +402,10 @@ def covid_bayes():
 	discreteDistribution.name = "frequent_diarrhea"
 	variable = discreteDistribution.variables.add()
 	variable.name = "new_or_worse_or_severe_frequent_diarrhea"
-	variable.probability = 0.05
+	variable.probability = 0.01
 	variable = discreteDistribution.variables.add()
 	variable.name = "moderate_frequent_diarrhea"
-	variable.probability = 0.05
+	variable.probability = 0.09
 	variable = discreteDistribution.variables.add()
 	variable.name = "not_frequent_diarrhea"
 	variable.probability = 0.90
@@ -428,10 +428,10 @@ def covid_bayes():
 	discreteDistribution.name = "vomiting"
 	variable = discreteDistribution.variables.add()
 	variable.name = "new_or_worse_or_severe_vomiting"
-	variable.probability =0.05
+	variable.probability =0.01
 	variable = discreteDistribution.variables.add()
 	variable.name = "moderate_vomiting"
-	variable.probability = 0.05
+	variable.probability = 0.09
 	variable = discreteDistribution.variables.add()
 	variable.name = "no_vomiting"
 	variable.probability = 0.90
@@ -621,7 +621,7 @@ def covid_bayes():
 	variable.name = "sometimes_social_distancing_following"
 	variable.probability = 0.50
 	variable = discreteDistribution.variables.add()
-	variable.name = "social_distance_following"
+	variable.name = "social_distancing_following"
 	variable.probability = 0.20
 	
 	
@@ -642,10 +642,10 @@ def covid_bayes():
 	discreteDistribution.name = "chest_pain_independent_of_breath"
 	variable = discreteDistribution.variables.add()
 	variable.name = "chest_pain_independent_of_breath"
-	variable.probability = 0.02
+	variable.probability = 0.01
 	variable = discreteDistribution.variables.add()
 	variable.name = "no_chest_pain_independent_of_breath"
-	variable.probability = 0.98
+	variable.probability = 0.99
 	
 	
 	discreteDistribution = bayesianNetwork.discreteDistributions.add()
@@ -996,9 +996,9 @@ def covid_bayes():
 
 	cpt["gastrointestinal_symptoms"] = any_of(bayesianNetwork,cpt,
         {
-            "low_urine":{"low_urine"},
+            "low_urine":{"new_or_worse_or_severe_low_urine"},
             "nausea":{"new_or_worse_or_severe_nausea"},
-            "vomiting":{"vomiting"},
+            "vomiting":{"new_or_worse_or_severe_vomiting"},
 	    "abdominal_pain":{"abdominal_pain"}
         },
 	[ "gastrointestinal_symptoms","no_gastrointestinal_symptoms"]
@@ -1111,23 +1111,23 @@ def covid_bayes():
 
 	cpt["possible_dehydration"] = any_of(bayesianNetwork,cpt,
 	{
-	"low_urine":{"low_urine"},
-	"vomiting":{"vomiting"},
-	"frequent_diarrhea":{"frequent_diarrhea"}
+	"low_urine":{"new_or_worse_or_severe_low_urine"},
+	"vomiting":{"new_or_worse_or_severe_vomiting"},
+	"frequent_diarrhea":{"new_or_worse_or_severe_frequent_diarrhea"}
 	},
 	["possible_dehydration","no_dehydration"]
 	)
 
 
 	cpt["possible_meningitis"] = all_of(bayesianNetwork,cpt,
-		{"neck_stiffness":{"neck_stiffness"}, 
+		{"neck_stiffness":{"new_or_worse_or_severe_neck_stiffness"}, 
 		"body_temperature":{"body_temperature_above_102F_or_long_lasting","body_temperature_above_99F"}},
 		["possible_meningitis","no_meningitis"]
 		)
 
 
 	cpt["serious_shortness_of_breath"] = all_of(bayesianNetwork,cpt,
-		{"shortness_of_breath":{"painful_shortness_of_breath","moderate_shortness_of_breath"}, 
+		{"shortness_of_breath":{"painful_shortness_of_breath"}, 
 		"comorbidities":{"comorbidities"}},
 		["serious_shortness_of_breath","no_serious_shortness_of_breath"]
 		)
@@ -1280,7 +1280,6 @@ def covid_bayes():
         	[	
 		"age",
                 "comorbidities",
-                "covid_risk",
 		"cough_test"
 		],
 		["high_covid_severity","medium_covid_severity","low_covid_severity","no_covid_severity"]
