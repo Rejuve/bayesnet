@@ -116,6 +116,27 @@ def covid_bayes():
 	variable.name = "healthy_cough_test"
 	variable.probability = 0.90
 
+
+	discreteDistribution = bayesianNetwork.discreteDistributions.add()
+	discreteDistribution.name = "vaccination"
+	variable = discreteDistribution.variables.add()
+	variable.name = "no_vaccination"
+	variable.probability = 0.80
+	variable = discreteDistribution.variables.add()
+	variable.name = "incomplete_vaccination"
+	variable.probability = 0.05
+	variable = discreteDistribution.variables.add()
+	variable.name = "complete_unknown_other_Janssen_Sinovac"
+	variable.probability = 0.05
+	variable = discreteDistribution.variables.add()
+	variable.name = "complete_Astrozeneca_Covaxin_Sinopharm"
+	variable.probability = 0.05
+	variable = discreteDistribution.variables.add()
+	variable.name = "complete_Pfizer_Moderna_Sputnik"
+	variable.probability = 0.05
+
+
+
 	
 	# basics/demographics questions 
 
@@ -919,37 +940,86 @@ def covid_bayes():
 
 	)
 	
+        #cpt["metabolic_disease"] = any_of(bayesianNetwork,cpt,
+	#{
+	#"cardiovascular_disease":{"cardiovascular_disease"},
+	#"diabetes":{"diabetes"},
+	#"hypertension":{"hypertension"}
+	#},
+	#["metabolic_disease","no_metabolic_disease"]
+
+	#)
 	
-	cpt["metabolic_disease"] = any_of(bayesianNetwork,cpt,
-	{
-	"cardiovascular_disease":{"cardiovascular_disease"},
-	"diabetes":{"diabetes"},
-	"hypertension":{"hypertension"}
-	},
+	
+	cpt["metabolic_disease"] = avg(bayesianNetwork,cpt,
+	[
+	"cardiovascular_disease",
+	"diabetes",
+	"hypertension"
+	],
 	["metabolic_disease","no_metabolic_disease"]
 
 	)
 	
-	
-	cpt["chronic_conditions"] = any_of(bayesianNetwork,cpt,
+	#cpt["chronic_conditions"] = any_of(bayesianNetwork,cpt,
+	#{
+	#"lung_disease":{"lung_disease"},
+	#"cancer":{"cancer"},
+	#"kidney_disease":{"kidney_disease"},
+	#"immunocompromised":{"immunocompromised"},
+        #"psychological_disorders":{"psychological_disorders"}
+	#},
+	#["chronic_conditions","no_chronic_conditions"]
+
+	#)
+
+
+	cpt["cancer_related"] = avg(bayesianNetwork,cpt,
+	[
+	"cancer",
+	"immunocompromised",
+	],
+	["cancer_related","no_cancer_related"]
+
+	)
+
+
+	cpt["lung_or_kidney_disease"] = any_of(bayesianNetwork,cpt,
 	{
 	"lung_disease":{"lung_disease"},
-	"cancer":{"cancer"},
 	"kidney_disease":{"kidney_disease"},
-	"immunocompromised":{"immunocompromised"},
+	},
+	["lung_or_kidney_disease","no_lung_or_kidney_disease"]
+
+	)
+
+
+	cpt["chronic_conditions"] = any_of(bayesianNetwork,cpt,
+	{
+	"lung_or_kidney_disease":{"lung_or_kidney_disease"},
+	"cancer_related":{"cancer_related"},
         "psychological_disorders":{"psychological_disorders"}
 	},
 	["chronic_conditions","no_chronic_conditions"]
 
 	)
 
-	
-	cpt["comorbidities"] = any_of(bayesianNetwork,cpt,
-	{
-	"chronic_conditions":{"chronic_conditions"},
-	"metabolic_disease":{"metabolic_disease"},
-	"bmi":{"bmi_over_40_high_risk","bmi_35_to_39_moderate_risk"}
-	},
+		
+	#cpt["comorbidities"] = any_of(bayesianNetwork,cpt,
+	#{
+	#"chronic_conditions":{"chronic_conditions"},
+	#"metabolic_disease":{"metabolic_disease"},
+	#"bmi":{"bmi_over_40_high_risk","bmi_35_to_39_moderate_risk"}
+	#},
+	#["comorbidities","no_comorbidities"]
+	#)
+
+	cpt["comorbidities"] = avg(bayesianNetwork,cpt,
+	[
+	"chronic_conditions",
+	"metabolic_disease",
+	"bmi"
+	],
 	["comorbidities","no_comorbidities"]
 
 	)
@@ -1121,7 +1191,7 @@ def covid_bayes():
 
 	cpt["possible_meningitis"] = all_of(bayesianNetwork,cpt,
 		{"neck_stiffness":{"new_or_worse_or_severe_neck_stiffness"}, 
-		"body_temperature":{"body_temperature_above_102F_or_long_lasting","body_temperature_above_99F"}},
+		"body_temperature":{"body_temperature_above_102F_or_long_lasting","body_temperature_above_100F"}},
 		["possible_meningitis","no_meningitis"]
 		)
 
@@ -1161,19 +1231,53 @@ def covid_bayes():
 		"covid_symptom_level"
 		],
 		["high_risk_covid_environment", "medium_risk_covid_environment", "low_risk_covid_environment","no_risk_covid_environment"]
-		) 
+		)
 
+	cpt["high_risk_covid_environment_unvaccinated"] = all_of (bayesianNetwork,cpt,
+                {
+                    "covid_environment":{"high_risk_covid_environment"},
+                    "vaccination":{"no_vaccination"}
+                    },
+                ["high_risk_covid_environment_unvaccinated","other_than_high_risk_covid_environment_unvaccinated"]
+                )
+
+	cpt["medium_risk_covid_environment_unvaccinated"] = all_of (bayesianNetwork,cpt,
+                {
+                    "covid_environment":{"medium_risk_covid_environment"},
+                    "vaccination":{"no_vaccination"}
+                    },
+                ["medium_risk_covid_environment_unvaccinated","other_than_medium_risk_covid_environment_unvaccinated"]
+                )
+
+	cpt["low_risk_covid_environment_unvaccinated"] = all_of (bayesianNetwork,cpt,
+                {
+                    "covid_environment":{"low_risk_covid_environment"},
+                    "vaccination":{"no_vaccination"}
+                    },
+                ["low_risk_covid_environment_unvaccinated","other_than_low_risk_covid_environment_unvaccinated"]
+                )
+
+ 
+                    
 	cpt["high_exposure"] = all_of(bayesianNetwork,cpt,
                 {
                     "hotspot_anomaly":{"hotspot_anomaly"},
-                    "covid_environment":{"high_risk_covid_environment"}
+                    "high_risk_covid_environment_unvaccinated":{"high_risk_covid_environment_unvaccinated"}
                 },
         ["high_exposure","other_than_high_exposure"]
         )
 
+	cpt["known_exposure_unvaccinated"] = all_of(bayesianNetwork,cpt,
+                {
+                    "known_exposure":{"known_exposure"},
+                    "vaccination":{"no_vaccination"}
+                },
+                ["known_exposure_unvaccinated", "not_known_exposure_unvaccinated"]
+        )
+
 	cpt["high_covid"] = any_of(bayesianNetwork,cpt,
         {
-            "known_exposure":{"known_exposure"},
+            "known_exposure_unvaccinated":{"known_exposure_unvaccinated"},
             "covid_test":{"positive_covid_test"},
             "high_exposure":{"high_exposure"},
             "cough_test":{"strong_positive_cough_test","positive_moderate_cough_test"}
@@ -1184,7 +1288,7 @@ def covid_bayes():
 	cpt["medium_exposure"]= all_of(bayesianNetwork,cpt,
                 {
                     "hotspot_anomaly":{"hotspot_anomaly"},
-                    "covid_environment":{"medium_risk_covid_environment"}
+                    "medium_risk_covid_environment_unvaccinated":{"medium_risk_covid_environment_unvaccinated"}
                 },
         ["medium_exposure","other_than_medium_exposure"]
         )
@@ -1227,7 +1331,7 @@ def covid_bayes():
 		{
 		"high_covid":{"high_covid"},
 		"medium_exposure":{"medium_exposure"},
-		"covid_environment":{"high_risk_covid_environment","medium_risk_covid_environment,low_risk_covid_environment"}
+		"low_risk_covid_environment_unvaccinated":{"low_risk_covid_environment_unvaccinated"}
 		},
 		["high_covid_risk", "medium_covid_risk","low_covid_risk","no_covid_risk"]
 		) 
