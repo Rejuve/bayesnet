@@ -137,6 +137,21 @@ def covid_bayes():
 
 
 
+	discreteDistribution = bayesianNetwork.discreteDistributions.add()
+	discreteDistribution.name = "local_caserate"
+	variable = discreteDistribution.variables.add()
+	variable.name = "many_new_local_cases"
+	variable.probability = 0.05
+	variable = discreteDistribution.variables.add()
+	variable.name = "moderate_new_local_cases"
+	variable.probability = 0.15
+	variable = discreteDistribution.variables.add()
+	variable.name = "few_new_local_cases"
+	variable.probability = 0.30
+	variable = discreteDistribution.variables.add()
+	variable.name = "no_new_local_cases"
+	variable.probability = 0.50
+
 	
 	# basics/demographics questions 
 
@@ -1257,11 +1272,20 @@ def covid_bayes():
                 ["low_risk_covid_environment_unvaccinated","other_than_low_risk_covid_environment_unvaccinated"]
                 )
 
- 
+  
+                    
+	cpt["local_cases"] = any_of(bayesianNetwork,cpt,
+                {
+                    "hotspot_anomaly":{"hotspot_anomaly"},
+                    "local_caserate":{"many_new_local_cases", "moderate_new_local_cases"}
+                },
+        ["local_cases","no_local_cases"]
+        )
+
                     
 	cpt["high_exposure"] = all_of(bayesianNetwork,cpt,
                 {
-                    "hotspot_anomaly":{"hotspot_anomaly"},
+                    "local_cases":{"local_cases"},
                     "high_risk_covid_environment_unvaccinated":{"high_risk_covid_environment_unvaccinated"}
                 },
         ["high_exposure","other_than_high_exposure"]
@@ -1287,7 +1311,7 @@ def covid_bayes():
 
 	cpt["medium_exposure"]= all_of(bayesianNetwork,cpt,
                 {
-                    "hotspot_anomaly":{"hotspot_anomaly"},
+                    "local_cases":{"local_cases"},
                     "medium_risk_covid_environment_unvaccinated":{"medium_risk_covid_environment_unvaccinated"}
                 },
         ["medium_exposure","other_than_medium_exposure"]
