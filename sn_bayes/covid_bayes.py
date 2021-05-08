@@ -1328,14 +1328,12 @@ def covid_bayes():
         ["cardiopulmonary_emergency","no_cardiopulmonary_emergency"]
         )
 
-	cpt["other_emergency"] = any_of(bayesianNetwork,cpt,
+	cpt["possible_dehydration_or_meningitis"] = any_of(bayesianNetwork,cpt,
          {
-        "muscle_weakness":{"new_or_worse_or_severe_muscle_weakness"},
 	"possible_dehydration":{"possible_dehydration"},
 	"possible_meningitis":{"possible_meningitis"},
-        "vomiting":{"new_or_worse_or_severe_vomiting"},
 	},
-        ["other_emergency","no_other_emergency"]
+        ["possible_dehydration_or_meningitis","no_possible_dehydration_or_meningitus"]
         )
         
 
@@ -1343,11 +1341,21 @@ def covid_bayes():
 	#output variable conditional probability distributions
 
 
-	cpt["emergency_treatment"] = any_of(bayesianNetwork,cpt,
-        {
-        "cardiopulmonary_emergency":{"cardiopulmonary_emergency"},
-        "other_emergency":{"other_emergency"}       
-	},
+	#cpt["emergency_treatment"] = any_of(bayesianNetwork,cpt,
+        #{
+        #"cardiopulmonary_emergency":{"cardiopulmonary_emergency"},
+        #"possible_dehydration_or_meningitis":{"possible_dehydration_or_meningitis"}       
+	#},
+	#["emergency_treatment","no_emergency_treatment"]
+	#)
+
+
+
+	cpt["emergency_treatment"] = avg(bayesianNetwork,cpt,
+        [
+        "cardiopulmonary_emergency",
+        "possible_dehydration_or_meningitis"       
+	],
 	["emergency_treatment","no_emergency_treatment"]
 	)
 
@@ -1392,14 +1400,25 @@ def covid_bayes():
 
   
  
+	#cpt["self_care"] = any_of(bayesianNetwork,cpt,
+        #{
+        #"isolation_space":{"no_isolation_space"},
+        #"testing_compliance":{"poor_testing_compliance"},
+        #"quarantine_compliance":{"poor_quarantine_compliance"},
+        #"own_thermometer":{"dont_own_thermometer"}
+        #},
+        #["poor_self_care","self_care"]
+        #)
 
-	cpt["self_care"] = any_of(bayesianNetwork,cpt,
-        {
-        "isolation_space":{"no_isolation_space"},
-        "testing_compliance":{"poor_testing_compliance"},
-        "quarantine_compliance":{"poor_quarantine_compliance"},
-        "own_thermometer":{"dont_own_thermometer"}
-        },
+
+
+	cpt["self_care"] = avg(bayesianNetwork,cpt,
+        [
+        "isolation_space",
+        "testing_compliance",
+        "quarantine_compliance",
+        "own_thermometer"
+        ],
         ["poor_self_care","self_care"]
         )
 

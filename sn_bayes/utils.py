@@ -483,7 +483,15 @@ def explain(baked_net, netspec, evidence,explain_list, reverse_explain_list = []
 	more_evidence = {}
 	for var, val in internal_evidence.items():
 		more_evidence[var] = copy.deepcopy(evidence)
-		more_evidence[var].update({var:val})
+		new_pos = None
+		old_pos = var_val_positions[var][val]
+		if var in reverse_evidence and old_pos > 0:
+			new_pos = old_pos-1
+		elif var not in reverse_evidence and old_pos < len(var_val_positions[var])-1: 
+			new_pos = old_pos+ 1
+		if new_pos is not None:
+			new_val = var_val_names[var][new_pos]
+			more_evidence[var].update({var:new_val})
 	#print('more_evidence')
 	#print(more_evidence)
 	evidence_perturbations.update(more_evidence)
@@ -491,6 +499,8 @@ def explain(baked_net, netspec, evidence,explain_list, reverse_explain_list = []
 	#next run each, obtaining the values of vars to be explained.  
 	#find the difference between these outputvalues and the output values from the original evidence input
 	result = query(baked_net,netspec,evidence,explain_list)
+	#print ("result (without changes)")
+	#print(result)
 	winners = {}
 	explanation = {}
 	for key,val_dict in result.items():
@@ -506,7 +516,8 @@ def explain(baked_net, netspec, evidence,explain_list, reverse_explain_list = []
 		#print("evidence")
 		#print(evidence)
 		result = query(baked_net,netspec,evidence,explain_list)
-		
+		#print("result")
+		#print(result)
 		for key in explain_list:
 			if key in result:
 				diff = result[key][winners[key][0]]-winners[key][1] if key in reverse_explain_list else winners[key][1] - result[key][winners[key][0]]
