@@ -644,24 +644,18 @@ def covid_bayes():
 	variable = discreteDistribution.variables.add()
 	variable.name = "low_employment_risk"
 	variable.probability = 0.70
-	
-	
 
-
-	discreteDistribution = bayesianNetwork.discreteDistributions.add()
-	discreteDistribution.name = "social_distancing_following"
-	variable = discreteDistribution.variables.add()
-	variable.name = "no_social_distancing_following"
-	variable.probability = 0.30
-	variable = discreteDistribution.variables.add()
-	variable.name = "sometimes_social_distancing_following"
-	variable.probability = 0.50
-	variable = discreteDistribution.variables.add()
-	variable.name = "social_distancing_following"
-	variable.probability = 0.20
-	
-	
-
+	#discreteDistribution = bayesianNetwork.discreteDistributions.add()
+	#discreteDistribution.name = "social_distancing_following"
+	#variable = discreteDistribution.variables.add()
+	#variable.name = "no_social_distancing_following"
+	#variable.probability = 0.30
+	#variable = discreteDistribution.variables.add()
+	#variable.name = "sometimes_social_distancing_following"
+	#variable.probability = 0.50
+	#variable = discreteDistribution.variables.add()
+	#variable.name = "social_distancing_following"
+	#variable.probability = 0.20
 	
 
 	discreteDistribution = bayesianNetwork.discreteDistributions.add()
@@ -708,39 +702,39 @@ def covid_bayes():
 	discreteDistribution.name = "leaving_house_per_day"
 	variable = discreteDistribution.variables.add()
 	variable.name = "leave_house_more_than_twice_per_day"
-	variable.probability = 0.20
+	variable.probability = 0.10
 	variable = discreteDistribution.variables.add()
 	variable.name = "leave_house_once_or_twice_per_day"
-	variable.probability = 0.70
+	variable.probability = 0.40
 	variable = discreteDistribution.variables.add()
 	variable.name = "leave_house_zero_per_day"
-	variable.probability = 0.10
+	variable.probability = 0.50
 
 
 	discreteDistribution = bayesianNetwork.discreteDistributions.add()
 	discreteDistribution.name = "high_risk_place_per_week"
 	variable = discreteDistribution.variables.add()
 	variable.name = "high_risk_place_over_three_per_week"
-	variable.probability = 0.30
+	variable.probability = 0.10
 	variable = discreteDistribution.variables.add()
 	variable.name = "high_risk_place_two_or_three_per_week"
-	variable.probability = 0.40
-	variable = discreteDistribution.variables.add()
-	variable.name = "high_risk_place_once_per_week"
 	variable.probability = 0.20
 	variable = discreteDistribution.variables.add()
+	variable.name = "high_risk_place_once_per_week"
+	variable.probability = 0.30
+	variable = discreteDistribution.variables.add()
 	variable.name = "high_risk_place_zero_per_week"
-	variable.probability = 0.10
+	variable.probability = 0.40
 
 
 	discreteDistribution = bayesianNetwork.discreteDistributions.add()
 	discreteDistribution.name = "disinfection_of_communal_objects_or_hand_sanitizer"
 	variable = discreteDistribution.variables.add()
 	variable.name = "no_disinfection_of_communal_objects_or_hand_sanitizer"
-	variable.probability = 0.60
+	variable.probability = 0.25
 	variable = discreteDistribution.variables.add()
 	variable.name = "disinfection_of_communal_objects_or_hand_sanitizer"
-	variable.probability = 0.40
+	variable.probability = 0.75
 
 
 
@@ -748,16 +742,16 @@ def covid_bayes():
 	discreteDistribution.name = "deliveries_per_week"
 	variable = discreteDistribution.variables.add()
 	variable.name = "deliveries_over_three_per_week"
-	variable.probability = 0.30
+	variable.probability = 0.10
 	variable = discreteDistribution.variables.add()
 	variable.name = "deliveries_two_or_three_per_week"
-	variable.probability = 0.40
-	variable = discreteDistribution.variables.add()
-	variable.name = "deliveries_once_per_week"
 	variable.probability = 0.20
 	variable = discreteDistribution.variables.add()
+	variable.name = "deliveries_once_per_week"
+	variable.probability = 0.30
+	variable = discreteDistribution.variables.add()
 	variable.name = "deliveries_zero_per_week"
-	variable.probability = 0.10
+	variable.probability = 0.40
 
 
 
@@ -765,10 +759,10 @@ def covid_bayes():
 	discreteDistribution.name = "sanitization_of_deliveries"
 	variable = discreteDistribution.variables.add()
 	variable.name = "no_sanitization_of_deliveries"
-	variable.probability = 0.60
+	variable.probability = 0.40
 	variable = discreteDistribution.variables.add()
 	variable.name = "sanitization_of_deliveries"
-	variable.probability = 0.40
+	variable.probability = 0.60
 
 
 
@@ -776,23 +770,23 @@ def covid_bayes():
 	discreteDistribution.name = "mask"
 	variable = discreteDistribution.variables.add()
 	variable.name = "no_mask"
-	variable.probability = 0.40
+	variable.probability = 0.25
 	variable = discreteDistribution.variables.add()
 	variable.name = "surgical_mask_or_untrained_n95"
-	variable.probability = 0.50
+	variable.probability = 0.35
 	variable = discreteDistribution.variables.add()
 	variable.name = "n95_mask"
-	variable.probability = 0.10
+	variable.probability = 0.40
 
 
 	discreteDistribution = bayesianNetwork.discreteDistributions.add()
 	discreteDistribution.name = "public_transportation_per_two_weeks"
 	variable = discreteDistribution.variables.add()
 	variable.name = "public_transportation_over_three_per_two_weeks"
-	variable.probability = 0.20
+	variable.probability = 0.10
 	variable = discreteDistribution.variables.add()
 	variable.name = "public_transportation_one_to_three_per_two_weeks"
-	variable.probability = 0.10
+	variable.probability = 0.20
 	variable = discreteDistribution.variables.add()
 	variable.name = "public_transportation_zero_per_two_weeks"
 	variable.probability = 0.70
@@ -814,10 +808,10 @@ def covid_bayes():
 	discreteDistribution.name = "daily_contacts_social_distancing"
 	variable = discreteDistribution.variables.add()
 	variable.name = "no_daily_contacts_social_distancing"
-	variable.probability = 0.40
+	variable.probability = 0.30
 	variable = discreteDistribution.variables.add()
 	variable.name = "daily_contacts_social_distancing"
-	variable.probability = 0.60
+	variable.probability = 0.70
 
 
 	discreteDistribution = bayesianNetwork.discreteDistributions.add()
@@ -827,10 +821,10 @@ def covid_bayes():
 	variable.probability = 0.25
 	variable = discreteDistribution.variables.add()
 	variable.name = "visits_once_or_twice_per_week"
-	variable.probability = 0.50
+	variable.probability = 0.35
 	variable = discreteDistribution.variables.add()
 	variable.name = "visits_zero_per_week"
-	variable.probability = 0.25
+	variable.probability = 0.4
 
 
 	discreteDistribution = bayesianNetwork.discreteDistributions.add()
@@ -840,10 +834,10 @@ def covid_bayes():
 	variable.probability = 0.20
 	variable = discreteDistribution.variables.add()
 	variable.name = "wash_hands_once_or_twice_per_day"
-	variable.probability = 0.30
+	variable.probability = 0.20
 	variable = discreteDistribution.variables.add()
 	variable.name = "wash_hands_three_to_five_per_day"
-	variable.probability = 0.30
+	variable.probability = 0.40
 	variable = discreteDistribution.variables.add()
 	variable.name = "wash_hands_over_five_per_day"
 	variable.probability = 0.20
@@ -1050,7 +1044,7 @@ def covid_bayes():
 	
 	cpt["head_and_neck_symptoms"] = any_of(bayesianNetwork,cpt,
                 {
-            "neck_stiffness":{"neck_stiffness"},
+            "neck_stiffness":{"new_or_worse_or_severe_neck_stiffness"},
             "pink_eye":{"new_or_worse_or_severe_pink_eye"},
             "headache":{"new_or_worse_or_severe_headache"}
         },
@@ -1058,22 +1052,39 @@ def covid_bayes():
 	)
 
 
-
 	cpt["cold_symptoms"] = avg(bayesianNetwork,cpt,
 	[
 	"fatigue",
 	"congestion",
-	"feeling_well",
-	"inflammation_symptoms",
-	"breathing_problems_at_night",
-        "head_and_neck_symptoms"
+	"feeling_well"
 	],
 	[ "significant_cold_symptoms","mild_cold_symptoms","no_cold_symptoms"]
 	)
 	
+
+	cpt["flu_symptoms"] = avg(bayesianNetwork,cpt,
+	[
+	"inflammation_symptoms",
+	"breathing_problems_at_night",
+        "head_and_neck_symptoms"
+	],
+	[ "significant_flu_symptoms","mild_flu_symptoms","no_flu_symptoms"]
+	)
+	
+
+
+	cpt["cold_and_flu_symptoms"] = avg(bayesianNetwork,cpt,
+	[
+        "cold_symptoms",
+        "flu_symptoms"
+	],
+	[ "significant_cold_and_flu_symptoms","mild_cold_and_flu_symptoms","no_cold_and_flu_symptoms"]
+	)
+	
 	cpt["specific_covid_symptoms"] = avg(bayesianNetwork,cpt,
 	[
-	"decreased_smell_or_taste"
+	"decreased_smell_or_taste",
+        "shortness_of_breath"
 	],
 	[ "significant_specific_covid_symptoms","mild_specific_covid_symptoms","no_specific_covid_symptoms"]
 	)
@@ -1081,7 +1092,6 @@ def covid_bayes():
 
 	cpt["gastrointestinal_symptoms"] = any_of(bayesianNetwork,cpt,
         {
-            "low_urine":{"new_or_worse_or_severe_low_urine"},
             "nausea":{"new_or_worse_or_severe_nausea"},
             "vomiting":{"new_or_worse_or_severe_vomiting"},
 	    "abdominal_pain":{"abdominal_pain"}
@@ -1094,7 +1104,7 @@ def covid_bayes():
         {	
             "sore_throat":{"new_or_worse_or_severe_sore_throat"},
             "gastrointestinal_symptoms":{"gastrointestinal_symptoms"},
-            "cold_symptoms":{"significant_cold_symptoms"}
+            "cold_and_flu_symptoms":{"significant_cold_and_flu_symptoms"}
         },
 	[ "covid_symptoms","no_covid_symptoms"]
 	)
@@ -1121,24 +1131,41 @@ def covid_bayes():
 	[
 	"delivery_safety",
 	"mask",
-	"wash_hands_per_day",
-	"social_distancing_following",
-	"close_contact_unknown_exposure"
+	"wash_hands_per_day"
 	],
 	["no_personal_social_distancing","some_personal_social_distancing","safe_personal_social_distancing"]
 	)
 
 
 
-	cpt["social_distancing_connectedness"]= any_of(bayesianNetwork,cpt,
+	cpt["public_social_distancing_connectedness"]= any_of(bayesianNetwork,cpt,
         {
-            "visits_per_week":{"visits_more_than_twice_per_week"},
-            "leaving_house_per_day":{"leaving_house_more_than_twice_per_day"},
             "high_risk_place_safety":{"no_high_risk_place_safety"},
             "public_transportation_per_two_weeks":{"public_transportation_over_three_per_two_weeks"},
             "employment_risk":{"health_care_worker_or_first_responder","high_volume_employment"}
         },
-	["no_social_distancing_connectedness","social_distancing_connectedness"]
+	["public_social_distancing_connectedness","no_public_social_distancing_connectedness"]
+	)
+
+
+
+	cpt["private_social_distancing_connectedness"]= any_of(bayesianNetwork,cpt,
+        {
+            "visits_per_week":{"visits_more_than_twice_per_week"},
+            "leaving_house_per_day":{"leaving_house_more_than_twice_per_day"},
+            "close_contact_unknown_exposure":{"close_contact_unknown_exposure"}
+        },
+	["private_social_distancing_connectedness","no_private_social_distancing_connectedness"]
+	)
+
+
+
+	cpt["social_distancing_connectedness"]= any_of(bayesianNetwork,cpt,
+        {
+            "private_social_distancing_connectedness":{"private_social_distancing_connectedness"},
+            "public_social_distancing_connectedness":{"public_social_distancing_connectedness"}
+        },
+	["social_distancing_connectedness","no_social_distancing_connectedness"]
 	)
 
 
@@ -1150,14 +1177,33 @@ def covid_bayes():
 	["no_social_distancing_environment","some_social_distancing_environment","safe_social_distancing_environment"]
 	)
 
+#change this back to social_distancing when social_distancing_following rule is removed, and get rid of the following rules. 
 
-	cpt["social_distancing"]= avg(bayesianNetwork,cpt,
+	#cpt["social_distancing"]= avg(bayesianNetwork,cpt,
+	#[
+	#"social_distancing_environment",
+	#"personal_social_distancing",
+	#"social_distancing_connectedness"	
+	#],
+	#["no_social_distancing","low_social_distancing","medium_social_distancing", "high_social_distancing"]
+	#)
+	
+	cpt["social_distancing_following"]= avg(bayesianNetwork,cpt,
 	[
 	"social_distancing_environment",
 	"personal_social_distancing",
 	"social_distancing_connectedness"	
 	],
-	["no_social_distancing","low_social_distancing","medium_social_distancing", "high_social_distancing"]
+	["no_social_distancing_following","sometimes_social_distancing_following", "social_distancing_following"]
+	)
+	
+
+
+	cpt["social_distancing"]= avg(bayesianNetwork,cpt,
+            [
+                "social_distancing_following"
+            ],
+	["low_social_distancing","medium_social_distancing", "high_social_distancing"]
 	)
 	
 	cpt["social_distancing_binary"]= avg(bayesianNetwork,cpt,
@@ -1221,7 +1267,7 @@ def covid_bayes():
 	cpt["covid_vulnerabilities"] = avg(bayesianNetwork,cpt,
                 {		
 		"covid_symptoms",
-		"social_distancing",
+		"specific_covid_symptoms",
 		"anomalous_wearables"
                 },
 		["severe_covid_vulnerabilities", "moderate_covid_vulnerabilites","some_covid_vulnerabilites", "insignificant_covid_vulnerabilities"]
@@ -1229,10 +1275,8 @@ def covid_bayes():
 
 	cpt["covid_symptom_level"] = avg(bayesianNetwork,cpt,
 		[
-                "serious_shortness_of_breath",
 		"body_temperature",
 		"cough",
-                "specific_covid_symptoms",
 		"covid_vulnerabilities"
 		],
 		["high_covid", "medium_covid","low_covid","no_covid"]
@@ -1362,8 +1406,8 @@ def covid_bayes():
 	cpt["covid_risk"] = if_then_else(bayesianNetwork,cpt,
 		{
 		"high_covid":{"high_covid"},
-		"medium_exposure":{"medium_exposure"},
-		"low_risk_covid_environment_unvaccinated":{"low_risk_covid_environment_unvaccinated"}
+		"medium_exposure":{"medium_exposure"}#,
+	#	"low_risk_covid_environment_unvaccinated":{"low_risk_covid_environment_unvaccinated"}
 		},
 		["high_covid_risk", "medium_covid_risk","low_covid_risk","no_covid_risk"]
 		) 
