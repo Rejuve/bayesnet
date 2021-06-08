@@ -596,6 +596,20 @@ def any_of(bayesianNetwork, cpt, invars, outvars):
 	#print (outvars)
 	import itertools
 
+        
+	description = "{0} has the value of " + outvars[0] + " if "
+	firsttime = True
+	for var,vals in invars.items():
+		phrase = "" if firsttime else ", OR "
+		firsttime = False
+		description = description + phrase + var + " has the value of "
+		firsttime2 = True
+		for val in vals:
+			phrase = "" if firsttime2 else " or " 
+			firsttime2 = False
+			description = description + phrase + val
+	description = description + "; otherwise {0} has the value of " + outvars[1]+"."
+
 	vdict = dictVarsAndValues(bayesianNetwork, cpt)
 	vlist = [vdict[v] for v in invars.keys()]
 	cartesian = list(itertools.product(*vlist))
@@ -617,13 +631,27 @@ def any_of(bayesianNetwork, cpt, invars, outvars):
 			val = 1.0 if (i == 0 and qany) or (i == 1 and not qany) else 0.0
 			cpt_row.append(val)
 			cpt_rows.append(cpt_row)
-	return (cpt_rows,keylist, outvars)
+	return (cpt_rows,keylist, outvars,description)
 
 
 
 def all_of(bayesianNetwork, cpt, invars, outvars):
 	#print (outvars)
 	import itertools
+
+        
+	description = "{0} has the value of " + outvars[0] + " if "
+	firsttime = True
+	for var,vals in invars.items():
+		phrase = "" if firsttime else ", AND "
+		firsttime = False
+		description = description + phrase + var + " has the value of "
+		firsttime2 = True
+		for val in vals:
+			phrase = "" if firsttime2 else " or " 
+			firsttime2 = False
+			description = description + phrase + val
+	description = description + "; otherwise {0} has the value of " + outvars[1]+"."
 
 	vdict = dictVarsAndValues(bayesianNetwork, cpt)
 	vlist = [vdict[v] for v in invars.keys()]
@@ -643,11 +671,29 @@ def all_of(bayesianNetwork, cpt, invars, outvars):
 			val = 1.0 if (i == 0 and qall) or (i == 1 and not qall) else 0.0
 			cpt_row.append(val)
 			cpt_rows.append(cpt_row)
-	return (cpt_rows,keylist,outvars)
+
+	return (cpt_rows,keylist,outvars, description)
 
 
 def avg(bayesianNetwork, cpt, invars, outvars):
-	#print (outvars)
+	clause = ""	
+	description = ""
+	veryfirsttime = True
+	for outvar in outvars:
+		description = description + "{0} has the value of " + outvar + " if the values of "
+		if veryfirsttime:
+			firsttime = True
+			for var in invars:
+				phrase = "" if firsttime else " and "
+				firsttime = False
+				clause = clause + phrase + var 
+		level = "" if veryfirsttime else "next "
+		veryfirsttime = False
+		description = description + clause + " average to the " + level + "highest level of risk. "
+
+
+    
+    #print (outvars)
 	import itertools
 	nmap = make_nmap()
 	#print(nmap)
@@ -694,7 +740,8 @@ def avg(bayesianNetwork, cpt, invars, outvars):
 			val = bins[i]/area if i in bins else 0.0 #not in winner take all version
 			cpt_row.append(val)
 			cpt_rows.append(cpt_row)
-	return (cpt_rows,keylist,outvars)
+
+	return (cpt_rows,keylist,outvars,description)
 
 
 
@@ -702,6 +749,20 @@ def avg(bayesianNetwork, cpt, invars, outvars):
 def if_then_else(bayesianNetwork, cpt, invars, outvars):
 	#print (outvars)
 	import itertools
+ 
+	description = "" 
+	firsttime = True
+	for i, (var,vals) in enumerate(invars.items()):
+		phrase = "" if firsttime else "; otherwise "
+		description = description + phrase +"{0} has the value of " + outvars[i] + " if " + var + " has the value "
+		firsttime = False
+		firsttime2 = True
+		for val in vals:
+			phrase = "" if firsttime2 else " or " 
+			firsttime2 = False
+			description = description + phrase + val
+	description = description + "; otherwise {0} has the value of " + outvars[-1]+"."
+
 
 	vdict = dictVarsAndValues(bayesianNetwork, cpt)
 	vlist = [vdict[v] for v in invars.keys()]
@@ -731,13 +792,15 @@ def if_then_else(bayesianNetwork, cpt, invars, outvars):
 			val = 1.0 if (o == result) else 0.0
 			cpt_row.append(val)
 			cpt_rows.append(cpt_row)
-	return (cpt_rows,keylist,outvars)
+	return (cpt_rows,keylist,outvars,description)
 
 
 
 
 
 def addCpt(bayesianNetwork, cpt):
+
+	outstring= ""
 
 	for name, cpt_tuple in cpt.items():
 		#print (name)
@@ -758,6 +821,10 @@ def addCpt(bayesianNetwork, cpt):
 		for outvar in cpt_tuple[2]:
 			out = conditionalProbabilityTable.outvars.add()
 			out.name = outvar
+		outstring = outstring +  cpt_tuple[3].format(name) + "\n\n"
+
+	return outstring
+
 				
 	
 

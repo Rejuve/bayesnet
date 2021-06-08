@@ -1487,8 +1487,8 @@ def covid_bayes():
 
 
 
-	addCpt(bayesianNetwork,cpt)
-	return(bayesianNetwork)
+	outstr = addCpt(bayesianNetwork,cpt)
+	return(bayesianNetwork,outstr)
 
 if __name__ == '__main__':
 	covid_bayes()

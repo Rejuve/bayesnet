@@ -28,7 +28,7 @@ if __name__ == "__main__":
         endpoint = input("Endpoint (localhost:{}): ".format(registry["bayes_service"]["grpc"])) if not test_flag else ""
         if endpoint == "":
             endpoint = "localhost:{}".format(registry["bayes_service"]["grpc"])
-        bayesianNetwork = covid_bayes.covid_bayes()
+        bayesianNetwork,outstr = covid_bayes.covid_bayes()
         evidence = {}
         evidence["age"]= "elderly"
         evidence["diabetes"]= "diabetes"
