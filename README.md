@@ -21,7 +21,7 @@ We present functions, each with one example that occurs in our covid project.  A
 
 The user creates a protobuf bayesian network in a python file.  There is an option, StartNet (and EndNet) with the service to save the bayesian network users create.  Before it is saved  or used it must pass a complexity check, that it is no bigger than 300 nodes and that each variable has less than 10 values, and depends on 4 or fewer other variables for speeds sake. Then the user can add evidence and query values of interest on the saved net with AskNet.  There is a stateless version in which the net is not saved, but has to be reconstructed with every query, StatelessNet.  
 
-Conditional Probability Tables (CPTs) are notoriously hard to fill in by hand.  We offer 4 functions (in util.py)  with which to express knowledge on the probabilistic relations between variables. In cases they dont cover, a detailed CPT can be created with CPT protobuf functions.  A good example of how these are used is in file covid_bayes.py, which creates the net that is used in notebook covid_bayesnet.ipynb.  Discrete distributions are made with protobuf functions, that tell the probability of "leaf" variables that are not derived from other variables, given no other information (the "priors").  
+Conditional Probability Tables (CPTs) are notoriously hard to fill in by hand.  We offer 5 functions (in util.py)  with which to express knowledge on the probabilistic relations between variables. In cases they dont cover, a detailed CPT can be created with CPT protobuf functions.  A good example of how these are used is in file covid_bayes.py, which creates the net that is used in notebook covid_bayesnet.ipynb.  Discrete distributions are made with protobuf functions, that tell the probability of "leaf" variables that are not derived from other variables, given no other information (the "priors").  
 
 	discreteDistribution = bayesianNetwork.discreteDistributions.add()
 		discreteDistribution.name = "cough"
@@ -38,7 +38,22 @@ Conditional Probability Tables (CPTs) are notoriously hard to fill in by hand.  
 		variable.name = "no_cough"
 		variable.probability = 0.90
 
+We offer a function that expresses depenency, that makes it easy to add data from the medical literature because statistics are expressed in the same way they in the medical literature.  The relative_risk function enters into the net the most common from Randomized Controlled Trials, and Systematic Analyses and Metareviews of RCTs, the relative risk statistic.  Simply put the statistics from the literature after the cpt variable in the literature, including a list of all the values of the variable that are included in the relative risk.  The incidence of the disease regardless of variable values is listedd afterwards.  Relative risk values just show how many times more likely you are to get a condition if you have the given variable values.  Odds risk can be used for low prevalence conditions.  This function uses linear programming underneath to assume linearity unless determined otherwise in cases where the information given underdetermines the distribution.
 
+
+
+	cpt["diabetes"] = relative_risk(bayesianNetwork,cpt,
+		[
+		({"age":["elderly"]},4.5),
+		({"bmi":["bmi_over_40_high_risk"]},5.1),
+		({"bmi":["bmi_35_to_39_moderate_risk"]},3.6),
+		({"bmi":["bmi_30_to_34_low_risk"]},2.5),
+		({"bmi":["bmi_25_to_29_overweight"]},1.5),
+		({"hypertension":["hypertension"]},3.8),
+		({"psychological_disorders":["psychological_disorders"]},1.7)
+		],
+		{"diabetes":0.12,"no_diabetes":0.88}
+		)
 
 CPTs are made from these variables and the variables in other CPTs.  We offer an "all_of" function, which is true when all of the input variables have values stated in a list (in this case, a python set).  This and the other functions list the output values.  If all have values in their respective lists, then the first value is true, else the second value.  "all_of" can thus have only two output values:  
 
@@ -92,16 +107,35 @@ We offer an average function "avg" , that requires that all the input variable v
 		[ "significant_cold_symptoms","mild_cold_symptoms","no_cold_symptoms"]
 		)
 
-	
+
 	
 ## The Explanation Function
 
-The explanation function, "explain", tests the effect of each other variable in the net , when it is moved in the direction that would improve the variable of interest, on the variable of interest.  Each internal variable and modified input variable in the net is changed one value over (assuming that the variable values represent an increasing/decreasing quantity), then the output value of the variable of interest is measured and subtracted from the output value it had before the value had changed, but with the other evidence set that was set before.  The difference in probability is output :  if the probability of the value increases it would have a negative value.  However, sensitivity is what we mostly care about, and the absolute value of the output can be taken for ranking the variables of the most effect were they to change.  One may object that a good explaination needs more than one variable at a time tested.  We chose to move one only in a tradeoff, but although each variable is moved individually for speed's sake, the internal variables contain interesting combinations of variables that we care about as well, and so much is explained. We use the explanation function to rank output messages in our app, and so speed is important.  The explanation function is called from the proto if a list of variables to explain is given.  Since some variables are improved when increased (such as social distancing in covid) and some are improved when lowered (such as risk of getting covid) , the default is to test what would make variable values of lower probability, and there is an option to indicate if the variables are improved when higher (ie social distancing.
+The explanation function, "explain", tests the effect of each other variable in the net , when it is moved in the direction that would improve the variable of interest, on the variable of interest.  Each internal variable and modified input variable in the net is changed one value over (assuming that the variable values represent an increasing/decreasing quantity), then the output value of the variable of interest is measured and subtracted from the output value it had before the value had changed, but with the other evidence set that was set before.  The difference in probability is output :  if the probability of the value increases it would have a negative value.  However, sensitivity is what we mostly care about, and the absolute value of the output can be taken for ranking the variables of the most effect were they to change.  One may object that a good explaination needs more than one variable at a time tested.  We chose to move one only in a tradeoff, but although each variable is moved individually for speed's sake, the internal variables contain interesting combinations of variables that we care about as well, and so much is explained. We use the explanation function to rank output messages in our app, and so speed is important.  The explanation function is called from the proto if a list of variables to explain is given.  Since some variables are improved when increased (such as social distancing in covid) and some are improved when lowered (such as risk of getting covid) , the default is to test what would make variable values of lower probability, and there is an option to indicate if the variables are improved when higher (ie social distancing.0
 
 
 	explain_results =  explain(covid,bayesianNetwork,evidence,outvars,reverse_explain_list = ['social_distancing', 'social_distancing_binary'])
+	
+As used above, this function explains why variables are doing poorly.  A list of evidence can be entered into the reverse_evidence field of this function to explain why variables are doing well.  By reverse evidence, we mean we make the value of the evicdence worse, and if it makes the explained variable worse, then it must have been what is making it good.  All variables to be explained except the ones that used to be in the reverse_explain_list should appeat there when explaining why variables are doing well.  
+	
+We offer two wrapped versions of the function for the case when variables are doing well, and also when poorly, which does not need a long list of reverse evidence or reverse variables.  Its is only used in nets where all rules are in the same direction.  We adjusted the social_distancing variable above so tht it is in the same direction as the rest of the rules.  
+
+	explain_why_bad(covid,bayesianNetwork,evidence,outvars)
+	explain_why_good(covid,bayesianNetwork,evidence,outvars)
 
 
+## Human Readable Rules
+
+Our addCpt function returns a description of all the CPT based rules, while the non_cpt_descriptions returns the discrete distributions.  Here is a sampling, and the code that made the descriptions.
+
+The prevalence of  cough_test of value strong_positive_cough_test is 0.019999999552965164, of value positive_moderate_cough_test is 0.019999999552965164, of value positive_mild_cough_test is 0.029999999329447746, of value positive_asymp_cough_test is 0.029999999329447746, and of value healthy_cough_test is 0.8999999761581421.
+
+Against the baseline risks, the relative risk of diabetes for those in the age category of elderly is 4.5 , the relative risk of diabetes for those in the bmi category of bmi_over_40_high_risk is 5.1 , the relative risk of diabetes for those in the bmi category of bmi_35_to_39_moderate_risk is 3.6 , the relative risk of diabetes for those in the bmi category of bmi_30_to_34_low_risk is 2.5 , the relative risk of diabetes for those in the bmi category of bmi_25_to_29_overweight is 1.5 , and the relative risk of diabetes for those in the hypertension category of hypertension is 3.8 , and the relative risk of diabetes for those in the psychological_disorders category of psychological_disorders is 1.7.
+
+gastrointestinal_symptoms has the value of gastrointestinal_symptoms if nausea has the value of new_or_worse_or_severe_nausea, OR vomiting has the value of new_or_worse_or_severe_vomiting, OR abdominal_pain has the value of abdominal_pain; otherwise gastrointestinal_symptoms has the value of no_gastrointestinal_symptoms.
+
+	outstr = outstr + non_cpt_descriptions(bayesianNetwork)
+        outstr = outstr + addCpt(bayesianNetwork,cpt)
 
 ## The Anomaly Detection function
 
