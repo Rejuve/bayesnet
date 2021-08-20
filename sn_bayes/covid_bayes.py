@@ -161,10 +161,10 @@ def covid_bayes():
         discreteDistribution.name = "age"
         variable = discreteDistribution.variables.add()
         variable.name = "elderly"
-        variable.probability = 0.1
+        variable.probability = 0.05
         variable = discreteDistribution.variables.add()
         variable.name = "adult"
-        variable.probability = 0.2
+        variable.probability = 0.25
         variable = discreteDistribution.variables.add()
         variable.name = "young_adult"
         variable.probability = 0.3
@@ -428,14 +428,13 @@ def covid_bayes():
         discreteDistribution.name = "sore_throat"
         variable = discreteDistribution.variables.add()
         variable.name = "new_or_worse_or_severe_sore_throat"
-        variable.probability = 0.1
+        variable.probability = 0.05
         variable = discreteDistribution.variables.add()
         variable.name = "moderate_sore_throat"
-        variable.probability = 0.1
+        variable.probability = 0.05
         variable = discreteDistribution.variables.add()
         variable.name = "no_sore_throat"
-        variable.probability = 0.80
-
+        variable.probability = 0.90
 
         discreteDistribution = bayesianNetwork.discreteDistributions.add()
         discreteDistribution.name = "pink_eye"
@@ -476,11 +475,11 @@ def covid_bayes():
         discreteDistribution.name = "congestion"
         variable = discreteDistribution.variables.add()
         variable.name = "congestion"
-        variable.probability = 0.20
+        variable.probability = 0.10
         variable = discreteDistribution.variables.add()
         variable.name = "no_congestion"
-        variable.probability = 0.80
-        
+        variable.probability = 0.90
+       
         
         discreteDistribution = bayesianNetwork.discreteDistributions.add()
         discreteDistribution.name = "fatigue"
@@ -544,17 +543,16 @@ def covid_bayes():
         variable.probability = 0.05
         variable = discreteDistribution.variables.add()
         variable.name = "bmi_35_to_39_moderate_risk"
-        variable.probability = 0.1
+        variable.probability = 0.05
         variable = discreteDistribution.variables.add()
         variable.name = "bmi_30_to_34_low_risk"
-        variable.probability = 0.25
+        variable.probability = 0.2
         variable = discreteDistribution.variables.add()
         variable.name = "bmi_25_to_29_overweight"
-        variable.probability = 0.5
+        variable.probability = 0.3
         variable = discreteDistribution.variables.add()
         variable.name = "bmi_under_25_healthy"
-        variable.probability = 0.1
-
+        variable.probability = 0.4
 
         # covid/social distance rules
         
@@ -852,29 +850,45 @@ def covid_bayes():
         variable.name = "no_steps_anomaly"
         variable.probability = 0.95
         
-        
-        discreteDistribution = bayesianNetwork.discreteDistributions.add()
-        discreteDistribution.name = "heart_rate_variability_anomaly"
-        variable = discreteDistribution.variables.add()
-        variable.name = "heart_rate_variability_anomaly"
-        variable.probability = 0.05
-        variable = discreteDistribution.variables.add()
-        variable.name = "no_heart_rate_variability_anomaly"
-        variable.probability = 0.95
-        
-        
-        discreteDistribution = bayesianNetwork.discreteDistributions.add()
-        discreteDistribution.name = "oxygen_anomaly"
-        variable = discreteDistribution.variables.add()
-        variable.name = "oxygen_anomaly"
-        variable.probability = 0.02
-        variable = discreteDistribution.variables.add()
-        variable.name = "no_oxygen_anomaly"
-        variable.probability = 0.98
-
-        # conditional probability tables
+       # conditional probability tables
 
         cpt ={} 
+ 
+        #discreteDistribution = bayesianNetwork.discreteDistributions.add()
+        #discreteDistribution.name = "heart_rate_variability_anomaly"
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "heart_rate_variability_anomaly"
+        #variable.probability = 0.05
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "no_heart_rate_variability_anomaly"
+        #variable.probability = 0.95
+        
+        
+        #discreteDistribution = bayesianNetwork.discreteDistributions.add()
+        #discreteDistribution.name = "oxygen_anomaly"
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "oxygen_anomaly"
+        #variable.probability = 0.02
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "no_oxygen_anomaly"
+        #variable.probability = 0.98
+
+
+        cpt["heart_rate_variability_anomaly"] = relative_risk(bayesianNetwork,cpt,
+        [
+        ({"heart_rate_anomaly":["heart_rate_anomaly"]},3)
+        ],
+        {"heart_rate_variability_anomaly":0.05,"no_heart_rate_variability_anomaly":0.95}
+        )
+
+
+        cpt["oxygen_anomaly"] = relative_risk(bayesianNetwork,cpt,
+        [
+        ({"heart_rate_anomaly":["heart_rate_anomaly"]},2)
+        ],
+        {"oxygen_anomaly":0.02,"no_oxygen_anomaly":0.98}
+        )
+
 
         cpt["hypertension"] = relative_risk(bayesianNetwork,cpt,
         [
@@ -1219,22 +1233,38 @@ def covid_bayes():
                 )
 
 
+        cpt["anomalous_wearables_binary"] = any_of(bayesianNetwork,cpt,
+            {"heart_rate_variability_anomaly":{"heart_rate_variability_anomaly"},
+            "oxygen_anomaly":{"oxygen_anomaly"},
+            "normal_activity_heart_rate_anomaly":{"normal_activity_heart_rate_anomaly"}
+            },
+        ["anomalous_wearables","no_anomalous_wearables"]
+        )
 
-        cpt["anomalous_wearables"] = avg(bayesianNetwork,cpt,
+
+        cpt["anomalous_wearables_4"] = avg(bayesianNetwork,cpt,
         [
         "heart_rate_variability_anomaly",
         "oxygen_anomaly",
         "normal_activity_heart_rate_anomaly"
         ],
-        ["high_anomalous_wearables","medium_anomalous_wearables","low_anomalous_wearables"]
-        #["high_anomalous_wearables","medium_anomalous_wearables","low_anomalous_wearables","no_anomalous_wearables"]
+        ["high_anomalous_wearables","medium_anomalous_wearables","low_anomalous_wearables","no_anomalous_wearables"]
         )
 
-        cpt["anomalous_wearables_binary"] = avg(bayesianNetwork,cpt,
+        #cpt["anomalous_wearables"] = if_then_else(bayesianNetwork,cpt,
+                #{
+                #"anomalous_wearables_4":{"high_anomalous_wearables"},
+                #"anomalous_wearables_4":{"medium_anomalous_wearables"}
+                #},
+                #["high_anomalous_wearables","medium_anomalous_wearables","low_anomalous_wearables"]
+                #) 
+        
+
+        cpt["anomalous_wearables"] = avg(bayesianNetwork,cpt,
         [
-        "anomalous_wearables"
+        "anomalous_wearables_4"#binary"
         ],
-        ["anomalous_wearables","no_anomalous_wearables"]
+        ["high_anomalous_wearables","medium_anomalous_wearables","low_anomalous_wearables"]
         )
 
 
