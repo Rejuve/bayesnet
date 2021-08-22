@@ -509,7 +509,8 @@ def explain(baked_net, netspec, evidence,explain_list, reverse_explain_list = []
         internal_var_val_positions = get_internal_var_val_positions(netspec)
         exclusion_list = [var for var, val in internal_var_val_positions.items()]
         internal_result = query(baked_net,netspec,evidence,exclusion_list)
-        
+        #print ("internal_result")
+        #print (internal_result)
         internal_winners = {}
         for key,val_dict in internal_result.items():
                 winner = max(val_dict,key=val_dict.get)
@@ -519,11 +520,11 @@ def explain(baked_net, netspec, evidence,explain_list, reverse_explain_list = []
         #print(internal_winners)
         internal_evidence = {k:tup[0] for k,tup in internal_winners.items() }
         #print ('internal_evidence')
-        ##print(internal_evidence)
+        #print(internal_evidence)
         
         more_evidence = {}
         for var, val in internal_evidence.items():
-                more_evidence[var] = copy.deepcopy(evidence)
+                
                 new_pos = None
                 old_pos = var_val_positions[var][val]
                 if var in reverse_evidence and old_pos > 0:
@@ -532,36 +533,38 @@ def explain(baked_net, netspec, evidence,explain_list, reverse_explain_list = []
                         new_pos = old_pos+ 1
                 if new_pos is not None:
                         new_val = var_val_names[var][new_pos]
+                        more_evidence[var] = copy.deepcopy(evidence)        
                         more_evidence[var].update({var:new_val})
         #print('more_evidence')
         #print(more_evidence)
         evidence_perturbations.update(more_evidence)
-                
+        #print ("evidence_perturbations")
+        #print (evidence_perturbations)
         #next run each, obtaining the values of vars to be explained.  
         #find the difference between these outputvalues and the output values from the original evidence input
         result = query(baked_net,netspec,evidence,explain_list)
         #print ("result (without changes)")
         #print(result)
-        winners = {}
+        before_change = {}
         explanation = {}
         for key,val_dict in result.items():
                 winner = max(val_dict,key=val_dict.get)
                 winner_val = val_dict[winner]
-                winners[key] = (winner,winner_val)
+                before_change[key] = (winner,winner_val)
                 explanation[key] = {}
-                
-        
+        #print("reverse_explain_list")
+        #print(reverse_explain_list)
         for explaining_var, evidence in evidence_perturbations.items():
                 #print("explaining_var")
                 #print(explaining_var)
                 #print("evidence")
                 #print(evidence)
-                result = query(baked_net,netspec,evidence,explain_list)
+                after_change = query(baked_net,netspec,evidence,explain_list)
                 #print("result")
                 #print(result)
                 for key in explain_list:
-                        if key in result:
-                                diff = result[key][winners[key][0]]-winners[key][1] if key in reverse_explain_list else winners[key][1] - result[key][winners[key][0]]
+                        if key in after_change:
+                                diff = before_change[key][1] - after_change[key][before_change[key][0]]
                                 explanation[key][explaining_var] = diff
         return explanation
         
