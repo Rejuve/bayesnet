@@ -145,11 +145,31 @@ def complexity_check(bayesianNetwork,
 
 def get_var_positions(bayesianNetwork):
         var_positions = {}
+        check_for_repeats= set()
         for i,dist in enumerate(bayesianNetwork.discreteDistributions):
                 var_positions[dist.name]=i
+                #print ("dist.name") 
+                #print (dist.name)
+                #print ("i")
+                #print (i)
+                if dist.name in check_for_repeats:
+                    print(f"double instance of {dist.name}") 
+                else:
+                    check_for_repeats.add(dist.name)
         start = len(var_positions)
+        #print ("start")
+        #print(start)
         for j,table in enumerate(bayesianNetwork.conditionalProbabilityTables):
                 var_positions[table.name] = j+ start
+                #print("table.name")
+                #print(table.name)
+                #print("j")
+                #print(j)
+                if table.name in check_for_repeats:
+                    print(f"double instance of {table.name}") 
+                else:
+                    check_for_repeats.add(table.name)
+
         return var_positions
 
 
@@ -952,6 +972,20 @@ def get_priors(bayesianNetwork,invars,cpt):
                             priors[k] = {}
                         for v in vdict[k]:
                                 try:
+                                        #problem="hypertension"
+                                        #if k is problem or v is problem:
+                                            #print("k")
+                                            #print(k)
+                                            #print("v")
+                                            #print(v)
+                                            #print("var_positions")
+                                            #print(var_positions)
+                                            #print ("probs")
+                                            #print (probs)
+                                            #print("priors")
+                                            #print(priors)
+                                            #print("json.loads(probs[var_positions[k]].to_json())['parameters']")
+                                            #print(json.loads(probs[var_positions[k]].to_json())['parameters'])
                                         priors[k][v]=(json.loads(probs[var_positions[k]].to_json()))['parameters'][0][v]
                                         asum += priors[k][v]
                                 except AttributeError as e:
