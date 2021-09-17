@@ -2804,14 +2804,7 @@ def longevity_bayes():
         )
         
                 
-                
-        cpt["cancer"] = relative_risk(bayesianNetwork,cpt,
-        [
-        ({"age":["elderly"]},5.8)
-        ],
-        {"cancer":0.055,"no_cancer":0.945}
-        )
-
+          
         
         cpt["low_socioeconomic_status_demography"] = avg(bayesianNetwork,cpt,
                 [
@@ -3076,10 +3069,64 @@ def longevity_bayes():
                         ],
                         {"poor_diet":0.07,"no_poor_diet":0.93}
                         )
-
-
-
+ 
+        cpt["smoking"] = any_of(bayesianNetwork,cpt,
+                {
+         "second_hand_smoke":{"second_hand_smoke_yes"},
+         "five_days_smoke_cigarettes":{"five_days_smoke_cigarettes_yes"},
+         "ever_vaped":{"ever_vaped_yes"}
+         },
+         ["smoking","no_smoking"]
+         )
          
+ 
+        outstr = outstr + addCpt(bayesianNetwork,cpt) 
+        cpt = {}
+         
+
+        cpt["inactivated_sirtuins"] = relative_risk(bayesianNetwork,cpt,
+                [
+                    ({"dietary_energy":["dietary_energy_above_3939.00","dietary_energy_above_2612.00_to_3939.00_and_below",
+        "dietary_energy_above_1930.00_to_2612.00_and_below","dietary_energy_above_1399.00_to_1930.00_and_below"]},10),
+                    ({"diet_quality": ["deficient_diet_quality","below_average_diet_quality","avg_diet_quality","above_average_diet_quality"]},5)
+                    ],
+                {"inactivated_sirtuins":0.2,"no_inactivated_sirtuins":0.8}
+                )
+
+        
+
+
+        cpt["hallmark_1_genomic_instability"] = relative_risk(bayesianNetwork,cpt,
+                [
+                    ({"age":["elderly"]},10),
+                    ({"age":["adult"]},5),
+                    ({"poor_diet":["poor_diet"]},4),
+                    ({"smoking":["smoking"]},3)
+                ],
+                {"hallmark_1_genomic_instability":0.1, "no_halmark_1_genomic_instability":0.9}
+                )
+  
+        outstr = outstr + addCpt(bayesianNetwork,cpt) 
+        cpt = {}
+                 
+      
+        cpt["cancer"] = relative_risk(bayesianNetwork,cpt,
+        [
+        ({"age":["elderly"]},5.8),
+        ({"hallmark_1_genomic_instability":["hallmark_1_genomic_instability"]},10)
+        ],
+        {"cancer":0.055,"no_cancer":0.945}
+        )
+
+
+        cpt["frailty"] = relative_risk(bayesianNetwork,cpt,
+                [
+                    ({"inactivated_sirtuins":["inactivated_sirtuins"]},3),
+                    ({"hallmark_1_genomic_instability":["hallmark_1_genomic_instability"]},7)
+                    ],
+                {"frailty":0.15, "no_frailty":0.85}
+                )
+
 
         # cpt["poor_diet"] = relative_risk(bayesianNetwork,cpt,
         #                [

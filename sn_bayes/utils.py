@@ -1355,6 +1355,8 @@ def relative_risk(bayesianNetwork, cpt, invars, outvars):
                 cpt_rows.append(cpt_row)
         #print ("cpt_rows")
         #print(cpt_rows)
+
+        print(outvars)
         return (cpt_rows,keylist,outvars,description)
 
 
