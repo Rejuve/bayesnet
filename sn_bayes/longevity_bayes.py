@@ -704,18 +704,18 @@ def longevity_bayes():
         discreteDistribution = bayesianNetwork.discreteDistributions.add()
         discreteDistribution.name = "chloride"
         variable = discreteDistribution.variables.add()
-        variable.name = "low_below_96.0"
+        variable.name = "chloride_low_below_96.0"
         variable.probability = 0.02
-        variable.name = "normal_low_96.0_to_99.0"
+        variable.name = "chloride_normal_low_96.0_to_99.0"
         variable.probability = 0.24
         variable = discreteDistribution.variables.add()
-        variable.name = "normal_medium_100.0_to_103.0"
+        variable.name = "chloride_normal_medium_100.0_to_103.0"
         variable.probability = 0.56
         variable = discreteDistribution.variables.add()
-        variable.name = "nomal_high_104.0_to_106.0"
+        variable.name = "chloride_normal_high_104.0_to_106.0"
         variable.probability = 0.16
         variable = discreteDistribution.variables.add()
-        variable.name = "high_above_106.0"
+        variable.name = "chloride_high_above_106.0"
         variable.probability = 0.02
 
         discreteDistribution = bayesianNetwork.discreteDistributions.add()
@@ -2818,13 +2818,31 @@ def longevity_bayes():
                 )
                         
 
-        cpt["low_socioeconomic_status_health"] = avg(bayesianNetwork,cpt,
+        cpt["low_socioeconomic_status_health_insurance"] = avg(bayesianNetwork,cpt,
                 [
                         "have_health_insurance",
-                        "prescription_health_insurance",
+                        "prescription_health_insurance"
+                ],
+                ["low_socioeconomic_status_health_insurance","no_low_socioeconomic_status_health_insurance"]
+
+                )
+                        
+
+        cpt["low_socioeconomic_status_healthcare"] = avg(bayesianNetwork,cpt,
+                [
                         "how_many_times_saw_doctor_last_year",
                         "how_long_since_saw_doctor",
                         "age_at_first_child"
+                ],
+                ["low_socioeconomic_status_healthcare","no_low_socioeconomic_status_healthcare"]
+
+                )
+                        
+
+        cpt["low_socioeconomic_status_health"] = avg(bayesianNetwork,cpt,
+                [
+                        "low_socioeconomic_status_health_insurance",
+                        "low_socioeconomic_status_healthcare"
                 ],
                 ["low_socioeconomic_status_health","no_low_socioeconomic_status_health"]
 
@@ -2841,14 +2859,28 @@ def longevity_bayes():
                 )
                         
 
-         
-        cpt["poor_diet_minerals"] = any_of(bayesianNetwork,cpt,
+           
+        cpt["poor_diet_minerals_1"] = any_of(bayesianNetwork,cpt,
                 {
          "dietary_iron":{"dietary_iron_above_29.59"},
          "dietary_magnesium":{ "dietary_magnesium_101.00_and_below"},
-         "dietary_potassium":{"dietary_potassium_850.00_and_below"},
+         "dietary_potassium":{"dietary_potassium_850.00_and_below"}
+         },
+         ["poor_diet_minerals_1","no_poor_diet_minerals_1"]
+         )
+         
+        cpt["poor_diet_minerals_2"] = any_of(bayesianNetwork,cpt,
+                {
          "dietary_zinc":{"dietary_zinc_2.98_and_below"},
          "dietary_copper":{"dietary_copper_above_2.31"}
+         },
+         ["poor_diet_minerals_2","no_poor_diet_minerals_2"]
+         )
+         
+        cpt["poor_diet_minerals"] = any_of(bayesianNetwork,cpt,
+                {
+         "poor_diet_minerals_1":{"poor_diet_minerals_1"},
+         "poor_diet_minerals_2":{"poor_diet_minerals_2"}
          },
          ["poor_diet_minerals","no_poor_diet_minerals"]
          )
@@ -2861,14 +2893,28 @@ def longevity_bayes():
          },
          ["poor_diet_vitamin_a","no_poor_diet_vitamin_a"]
          )
-         
-        cpt["poor_diet_vitamin_b"] = any_of(bayesianNetwork,cpt,
+           
+        cpt["poor_diet_vitamin_b_1"] = any_of(bayesianNetwork,cpt,
+                {
+         "dietary_b6":{"dietary_b6_0.47_and_below"},
+         "dietary_folate":{"dietary_folate_119.00_and_below"}
+         },
+         ["poor_diet_vitamin_b_1","no_poor_diet_vitamin_b_1"]
+         )
+
+        cpt["poor_diet_vitamin_b_2"] = any_of(bayesianNetwork,cpt,
                 {
          "dietary_thiamin":{"dietary_thiamin_0.48_and_below"},
          "dietary_riboflavin":{"dietary_riboflavin_0.56_and_below"},
-         "dietary_b6":{"dietary_b6_0.47_and_below"},
-         "dietary_b12":{"dietary_b12_0.50_and_below"},
-         "dietary_folate":{"dietary_folate_119.00_and_below"}
+         "dietary_b12":{"dietary_b12_0.50_and_below"}
+         },
+         ["poor_diet_vitamin_b_2","no_poor_diet_vitamin_b_2"]
+         )
+
+        cpt["poor_diet_vitamin_b"] = any_of(bayesianNetwork,cpt,
+                {
+         "poor_diet_vitamin_b_1":{"poor_diet_vitamin_b_1"},
+         "poor_diet_vitamin_b_2":{"poor_diet_vitamin_b_2"}
          },
          ["poor_diet_vitamin_b","no_poor_diet_vitamin_b"]
          )
@@ -2934,28 +2980,60 @@ def longevity_bayes():
          ["poor_diet_substances","no_poor_diet_substances"]
          )
          
-         
-                        
-        cpt["poor_diet_flag"] = any_of(bayesianNetwork,cpt,
+           
+        cpt["poor_diet_quantity"] = any_of(bayesianNetwork,cpt,
                 {
          "poor_diet_substances":{"poor_diet_substances"},
          "poor_diet_supplements":{"poor_diet_supplements"},
-         "poor_diet_basics":{"poor_diet_basics"},
+         "poor_diet_basics":{"poor_diet_basics"}
+         },
+         ["poor_diet_quantity","no_poor_diet_quantity"]
+         )
+
+        cpt["poor_diet_food"] = any_of(bayesianNetwork,cpt,
+                {
          "poor_diet_fats":{"poor_diet_fats"},
          "poor_diet_vitamins_and_minerals":{"poor_diet_vitamins_and_minerals"}
+         },
+         ["poor_diet_food","no_poor_diet_food"]
+         )
+
+                        
+        cpt["poor_diet_flag"] = any_of(bayesianNetwork,cpt,
+                {
+         "poor_diet_quantity":{"poor_diet_quantity"},
+         "poor_diet_food":{"poor_diet_food"}
          },
          ["poor_diet_flag","no_poor_diet_flag"]
          )
          
+           
          
-         
-        cpt["diet_minerals"] = avg(bayesianNetwork,cpt,
+        cpt["diet_minerals_1"] = avg(bayesianNetwork,cpt,
          [
          "dietary_iron",
          "dietary_magnesium",
-         "dietary_potassium",
+         "dietary_potassium"
+         ],
+         ["deficient_diet_minerals_1","below_average_diet_minerals_1","average_diet_minerals_1","above_average_diet_minerals_1","excellent_diet_minerals_1"]
+         )
+         
+
+         
+        cpt["diet_minerals_2"] = avg(bayesianNetwork,cpt,
+         [
          "dietary_zinc",
          "dietary_copper"
+         ],
+         ["deficient_diet_minerals_2","below_average_diet_minerals_2","average_diet_minerals_2","above_average_diet_minerals_2","excellent_diet_minerals_2"]
+         )
+         
+
+         
+        cpt["diet_minerals"] = avg(bayesianNetwork,cpt,
+         [
+         "diet_minerals_1",
+         "diet_minerals_2"
          ],
          ["deficient_diet_minerals","below_average_diet_minerals","average_diet_minerals","above_average_diet_minerals","excellent_diet_minerals"]
          )
@@ -2968,14 +3046,30 @@ def longevity_bayes():
          ],
          ["deficient_diet_vitamin_a","below_average_diet_vitamin_a","average_diet_vitamin_a","above_average_diet_vitamin_a","excellent_diet_vitamin_a"]
          )
+           
+        cpt["diet_vitamin_b_1"] = avg(bayesianNetwork,cpt,
+         [
+         "dietary_b6",
+         "dietary_folate"
+         ],
+         ["deficient_diet_vitamin_b_1","below_average_diet_vitamin_b_1","average_diet_vitamin_b_1","above_average_diet_vitamin_b_1","excellent_diet_vitamin_b1"]
+         )
          
-        cpt["diet_vitamin_b"] = avg(bayesianNetwork,cpt,
+
+        cpt["diet_vitamin_b_2"] = avg(bayesianNetwork,cpt,
          [
          "dietary_thiamin",
          "dietary_riboflavin",
-         "dietary_b6",
-         "dietary_b12",
-         "dietary_folate"
+         "dietary_b12"
+         ],
+         ["deficient_diet_vitamin_b_2","below_average_diet_vitamin_b_2","average_diet_vitamin_b_2","above_average_diet_vitamin_b_2","excellent_diet_vitamin_b_2"]
+         )
+         
+
+        cpt["diet_vitamin_b"] = avg(bayesianNetwork,cpt,
+         [
+         "diet_vitamin_b_1",
+         "diet_vitamin_b_2"
          ],
          ["deficient_diet_vitamin_b","below_average_diet_vitamin_b","average_diet_vitamin_b","above_average_diet_vitamin_b","excellent_diet_vitamin_b"]
          )
@@ -3040,16 +3134,29 @@ def longevity_bayes():
          ["deficient_diet_substances","below_average_diet_substances","avg_diet_substances","above_average_diet_substances","excellent_diet_substances"]
          )
                         
-         
-         
+           
+        cpt["diet_quality_food"] = avg(bayesianNetwork,cpt,
+          [
+         "diet_fats",
+         "diet_vitamins_and_minerals"
+         ],
+         ["deficient_diet_quality_food","below_average_diet_quality_food","avg_diet_quality_food","above_average_diet_quality_food","excellent_diet_quality_food"]
+         )
+
+        cpt["diet_quantity"] = avg(bayesianNetwork,cpt,
+          [
+         "diet_substances",
+         "diet_supplements",
+         "diet_basics"
+         ],
+         ["deficient_diet_quantity","below_average_diet_quantity","avg_diet_quantity","above_average_diet_quantity","excellent_diet_quantity"]
+         )
+
                         
         cpt["diet_quality"] = avg(bayesianNetwork,cpt,
           [
-         "poor_diet_substances",
-         "poor_diet_supplements",
-         "poor_diet_basics",
-         "poor_diet_fats",
-         "poor_diet_vitamins_and_minerals"
+         "diet_quantity",
+         "diet_quality_food"
          ],
          ["deficient_diet_quality","below_average_diet_quality","avg_diet_quality","above_average_diet_quality","excellent_diet_quality"]
          )
@@ -3119,6 +3226,57 @@ def longevity_bayes():
         )
 
 
+        cpt["metabolic_disease"] = avg(bayesianNetwork,cpt,
+        [
+        "cardiovascular_disease",
+        "diabetes",
+        "hypertension"
+        ],
+        ["metabolic_disease","no_metabolic_disease"]
+
+        )
+        
+        cpt["cancer_related"] = avg(bayesianNetwork,cpt,
+        [
+        "cancer",
+        "immunocompromised",
+        ],
+        ["cancer_related","no_cancer_related"]
+
+        )
+
+
+        cpt["lung_or_kidney_disease"] = any_of(bayesianNetwork,cpt,
+        {
+        "lung_disease":{"lung_disease"},
+        "kidney_disease":{"kidney_disease"},
+        },
+        ["lung_or_kidney_disease","no_lung_or_kidney_disease"]
+
+        )
+
+
+        cpt["chronic_conditions"] = any_of(bayesianNetwork,cpt,
+        {
+        "lung_or_kidney_disease":{"lung_or_kidney_disease"},
+        "cancer_related":{"cancer_related"},
+        "psychological_disorders":{"psychological_disorders"}
+        },
+        ["chronic_conditions","no_chronic_conditions"]
+
+        )
+
+
+        cpt["comorbidities"] = avg(bayesianNetwork,cpt,
+        [
+        "chronic_conditions",
+        "metabolic_disease",
+        "bmi"
+        ],
+        ["comorbidities","no_comorbidities"]
+
+        )
+        
         cpt["frailty"] = relative_risk(bayesianNetwork,cpt,
                 [
                     ({"inactivated_sirtuins":["inactivated_sirtuins"]},3),
