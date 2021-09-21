@@ -541,16 +541,16 @@ def longevity_bayes_short():
         discreteDistribution = bayesianNetwork.discreteDistributions.add()
         discreteDistribution.name = "floss_days_per_week"
         variable = discreteDistribution.variables.add()
-        variable.name = "none"
+        variable.name = "floss_days_per_week_none"
         variable.probability = 0.34
         variable = discreteDistribution.variables.add()
-        variable.name = "1_to_3"
+        variable.name = "floss_days_per_week_1_to_3"
         variable.probability = 0.22
         variable = discreteDistribution.variables.add()
-        variable.name = "4_to_6"
+        variable.name = "floss_days_per_week_4_to_6"
         variable.probability = 0.09
         variable = discreteDistribution.variables.add()
-        variable.name = "7.0"
+        variable.name = "floss_days_per_week_7.0"
         variable.probability = 0.34
 
 
@@ -629,7 +629,7 @@ def longevity_bayes_short():
         {
         "teeth_health":{"teeth_health_poor"},
         "gum_disease":{"gum_disease_yes"},
-        "floss_days_per_week":{"none"},
+        "floss_days_per_week":{"floss_days_per_week_none"},
         "times_brush_teeth_daily":{"times_brush_teeth_daily_none"},
         "mouth_pain_last_year":{"mouth_pain_last_year_very_often"}
         },
