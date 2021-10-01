@@ -495,15 +495,15 @@ def query(baked_net, netspec, evidence,out_var_list):
 
        
 
-def explain_why_bad(baked_net, netspec, evidence,explain_list):
-    return explain(baked_net, netspec,evidence,explain_list)
+def explain_why_bad(baked_net, netspec, evidence,explain_list,include_list = []):
+    return explain(baked_net, netspec,evidence,explain_list, include_list = include_list)
 
-def explain_why_good(baked_net, netspec, evidence, explain_list):
+def explain_why_good(baked_net, netspec, evidence, explain_list, include_list = []):
     adict = dictVarsAndValues(netspec,{})
-    return explain(baked_net, netspec,evidence, explain_list, reverse_explain_list = explain_list, reverse_evidence = adict.keys())
+    return explain(baked_net, netspec,evidence, explain_list, reverse_explain_list = explain_list, reverse_evidence = adict.keys(),include_list = include_list)
 
     
-def explain(baked_net, netspec, evidence,explain_list, reverse_explain_list = [], reverse_evidence = [] ):
+def explain(baked_net, netspec, evidence,explain_list, reverse_explain_list = [], reverse_evidence = [] , include_list = []):
         #explain_list lists output variables to tell what input variable would make them less likely (for example covid severity)
         #reverse_explain_list tells which of those out vars to explain more likely rather than less likely  (for example social distancing)
         #reverse_evidence_list tells which of the evidence to explain should perturb one val to the left rather than the right (the default)
@@ -519,7 +519,7 @@ def explain(baked_net, netspec, evidence,explain_list, reverse_explain_list = []
                         new_pos = old_pos-1
                 elif var not in reverse_evidence and old_pos < len(var_val_positions[var])-1: 
                         new_pos = old_pos+ 1
-                if new_pos is not None:
+                if new_pos is not None and (len(include_list) == 0 or var in include_list):
                         new_evidence = copy.deepcopy(evidence)
                         new_val = var_val_names[var][new_pos]
                         new_evidence[var]=new_val
@@ -551,7 +551,7 @@ def explain(baked_net, netspec, evidence,explain_list, reverse_explain_list = []
                         new_pos = old_pos-1
                 elif var not in reverse_evidence and old_pos < len(var_val_positions[var])-1: 
                         new_pos = old_pos+ 1
-                if new_pos is not None:
+                if new_pos is not None and (len(include_list) == 0 or var in include_list):
                         new_val = var_val_names[var][new_pos]
                         more_evidence[var] = copy.deepcopy(evidence)        
                         more_evidence[var].update({var:new_val})
