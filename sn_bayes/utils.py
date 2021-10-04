@@ -495,15 +495,21 @@ def query(baked_net, netspec, evidence,out_var_list):
 
        
 
-def explain_why_bad(baked_net, netspec, evidence,explain_list,include_list = []):
-    return explain(baked_net, netspec,evidence,explain_list, include_list = include_list)
+def explain_why_bad(baked_net, netspec, evidence,explain_list,internal_query_result=None, include_list = []):
+    return explain(baked_net, netspec,evidence,explain_list, internal_query_result=internal_query_result, include_list = include_list)
 
-def explain_why_good(baked_net, netspec, evidence, explain_list, include_list = []):
+def explain_why_good(baked_net, netspec, evidence, explain_list, internal_query_result = None, include_list = []):
     adict = dictVarsAndValues(netspec,{})
-    return explain(baked_net, netspec,evidence, explain_list, reverse_explain_list = explain_list, reverse_evidence = adict.keys(),include_list = include_list)
+    return explain(baked_net, netspec,evidence, explain_list, reverse_explain_list = explain_list, reverse_evidence = adict.keys(),
+            internal_query_result=internal_query_result,include_list = include_list)
 
+def internal_query(baked_net, netspec,evidence):
+        internal_var_val_positions = get_internal_var_val_positions(netspec)
+        exclusion_list = [var for var, val in internal_var_val_positions.items()]
+        result = query(baked_net,netspec,evidence,exclusion_list)
+        return result
     
-def explain(baked_net, netspec, evidence,explain_list, reverse_explain_list = [], reverse_evidence = [] , include_list = []):
+def explain(baked_net, netspec, evidence,explain_list, reverse_explain_list = [], reverse_evidence = [] , internal_query_result=None, include_list = []):
         #explain_list lists output variables to tell what input variable would make them less likely (for example covid severity)
         #reverse_explain_list tells which of those out vars to explain more likely rather than less likely  (for example social distancing)
         #reverse_evidence_list tells which of the evidence to explain should perturb one val to the left rather than the right (the default)
@@ -526,13 +532,11 @@ def explain(baked_net, netspec, evidence,explain_list, reverse_explain_list = []
                         evidence_perturbations[var]= new_evidence
                         
         # add in the internal nodes that arent the input nodes
-        internal_var_val_positions = get_internal_var_val_positions(netspec)
-        exclusion_list = [var for var, val in internal_var_val_positions.items()]
-        internal_result = query(baked_net,netspec,evidence,exclusion_list)
-        #print ("internal_result")
-        #print (internal_result)
+        result = internal_query(baked_net,netspec,evidence) if internal_query_result == None else internal_query_result
+        #print ("result")
+        #print (result)
         internal_winners = {}
-        for key,val_dict in internal_result.items():
+        for key,val_dict in result.items():
                 winner = max(val_dict,key=val_dict.get)
                 winner_val = val_dict[winner]
                 internal_winners[key] = (winner,winner_val)
@@ -562,16 +566,17 @@ def explain(baked_net, netspec, evidence,explain_list, reverse_explain_list = []
         #print (evidence_perturbations)
         #next run each, obtaining the values of vars to be explained.  
         #find the difference between these outputvalues and the output values from the original evidence input
-        result = query(baked_net,netspec,evidence,explain_list)
+        #result = query(baked_net,netspec,evidence,explain_list)
         #print ("result (without changes)")
         #print(result)
         before_change = {}
         explanation = {}
         for key,val_dict in result.items():
-                winner = max(val_dict,key=val_dict.get)
-                winner_val = val_dict[winner]
-                before_change[key] = (winner,winner_val)
-                explanation[key] = {}
+                if key in explain_list:
+                    winner = max(val_dict,key=val_dict.get)
+                    winner_val = val_dict[winner]
+                    before_change[key] = (winner,winner_val)
+                    explanation[key] = {}
         #print("reverse_explain_list")
         #print(reverse_explain_list)
         for explaining_var, evidence in evidence_perturbations.items():
@@ -957,7 +962,7 @@ def non_cpt_descriptions(bayesianNetwork):
         return description
 
 
-def get_priors(bayesianNetwork,invars,cpt):
+def get_priors(bayesianNetwork,invars,prevalence,cpt):
         var_positions = get_var_positions(bayesianNetwork)
         pomegranate= bayesInitialize(bayesianNetwork)
         #print(bayesianNetwork)
@@ -965,7 +970,9 @@ def get_priors(bayesianNetwork,invars,cpt):
         probs = pomegranate.predict_proba({})
         priors = {}
         vdict = dictVarsAndValues(bayesianNetwork, cpt)
-        for vardict,numval in invars:
+        for vardict,numval_dict in invars:
+                numval = numval_dict["relative_risk"] if "relative_risk" in numval_dict else (
+                                    (numval_dict["sensitivity"]/prevalence) if "sensitivity" in numval_dict else 1) 
                 asum = 0
                 for k, varlist in vardict.items():
                         if k not in priors:
@@ -1052,7 +1059,7 @@ def get_frequencies(bayesianNetwork,keylist,cpt):
                 
 
 
-def relative_risk(bayesianNetwork, cpt, invars, outvars):
+def dependency(bayesianNetwork, cpt, invars, outvars):
         
         import itertools
         from scipy.optimize import linprog
@@ -1071,9 +1078,11 @@ def relative_risk(bayesianNetwork, cpt, invars, outvars):
                         phrase = "" if firsttime else " and "
                         description + phrase + k + " of " + str(v) + " , "
                         firsttime = False
-
+                prevalence = list(outvars.items())[0][1]
                 firsttime = True
-                for vardict,numval in invars:
+                for vardict,numval_dict in invars:
+                            numval = numval_dict["relative_risk"] if "relative_risk" in numval_dict else (
+                                    (numval_dict["sensitivity"]/prevalence) if "sensitivity" in numval_dict else 1) 
                             for val, varlist in vardict.items():
                                     phrase = "" if firsttime else (" , and " if varlist [-1] is val else " , " )
 
@@ -1084,11 +1093,14 @@ def relative_risk(bayesianNetwork, cpt, invars, outvars):
                                             description = description + phrase + var
                                             firsttime1 = False
                                     description = description + " is " + str(numval)
+                                    if "sensitivity" in numval_dict:
+                                        description = description + ", calculated from a sensitivity of " + str(numval_dict["sensitivity"])
+
                                     firsttime = False
                                             
                 description = description + "."
                 
-                priors = get_priors(bayesianNetwork,invars,cpt)
+                priors = get_priors(bayesianNetwork,invars,prevalence,cpt)
                 #print("priors")
                 #print(priors)
          
@@ -1107,7 +1119,10 @@ def relative_risk(bayesianNetwork, cpt, invars, outvars):
 
 
 
-                for vardict,numval in invars:
+                for vardict,numval_dict in invars:                            
+                        numval = numval_dict["relative_risk"] if "relative_risk" in numval_dict else (
+                                    (numval_dict["sensitivity"]/prevalence) if "sensitivity" in numval_dict else 1) 
+ 
                         for k, varlist in vardict.items():
                                 keyset.add(k)
                                 if k not in keys_vals_risks:
@@ -1124,7 +1139,9 @@ def relative_risk(bayesianNetwork, cpt, invars, outvars):
                                     
                         better_than_val_prevalence1 [k] = prevalence_condition_regardless/asum
                        
-                for vardict,numval in invars:
+                for vardict,numval_dict in invars:
+                        numval = numval_dict["relative_risk"] if "relative_risk" in numval_dict else (
+                                    (numval_dict["sensitivity"]/prevalence) if "sensitivity" in numval_dict else 1) 
                         for k, varlist in vardict.items():
                                 keyset.add(k)
                                 group_sum = 0
@@ -1237,7 +1254,9 @@ def relative_risk(bayesianNetwork, cpt, invars, outvars):
                         #+ (prevalence of hbp among elderly overweight psych) * prevalence of elderly overweight psych
                         #+ (prevalence of hbp among elderly healthy psych) * prevalence of elderly healthy psych
                         
-                        for vardict,relative_risk in invars:
+                        for vardict,numval_dict in invars:
+                                relative_risk = numval_dict["relative_risk"] if "relative_risk" in numval_dict else (
+                                    (numval_dict["sensitivity"]/prevalence) if "sensitivity" in numval_dict else 1) 
                                 for k, varlist in vardict.items():
                                 
                                         if k not in lhs_equality_equation1:
@@ -1287,7 +1306,9 @@ def relative_risk(bayesianNetwork, cpt, invars, outvars):
                 lhs_eq = []
                 rhs_eq = []
                                 
-                for vardict,relative_risk in invars:
+                for vardict,numval_dict in invars:
+                        relative_risk= numval_dict["relative_risk"] if "relative_risk" in numval_dict else (
+                                    (numval_dict["sensitivity"]/prevalence) if "sensitivity" in numval_dict else 1) 
                         for k, varlist in vardict.items():
                                 for v in varlist:
 

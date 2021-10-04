@@ -5,7 +5,7 @@ from sn_bayes.utils import avg
 from sn_bayes.utils import if_then_else
 from sn_bayes.utils import bayesInitialize
 from sn_bayes.utils import addCpt
-from sn_bayes.utils import relative_risk
+from sn_bayes.utils import dependency
 from sn_bayes.utils import non_cpt_descriptions
 
 import sn_service.service_spec.bayesian_pb2
@@ -874,29 +874,29 @@ def covid_bayes():
         #variable.probability = 0.98
 
 
-        cpt["heart_rate_variability_anomaly"] = relative_risk(bayesianNetwork,cpt,
+        cpt["heart_rate_variability_anomaly"] = dependency(bayesianNetwork,cpt,
         [
-        ({"heart_rate_anomaly":["heart_rate_anomaly"]},3)
+            ({"heart_rate_anomaly":["heart_rate_anomaly"]},{"relative_risk":3})
         ],
         {"heart_rate_variability_anomaly":0.05,"no_heart_rate_variability_anomaly":0.95}
         )
 
 
-        cpt["oxygen_anomaly"] = relative_risk(bayesianNetwork,cpt,
+        cpt["oxygen_anomaly"] = dependency(bayesianNetwork,cpt,
         [
-        ({"heart_rate_anomaly":["heart_rate_anomaly"]},2)
+            ({"heart_rate_anomaly":["heart_rate_anomaly"]},{"relative_risk":2})
         ],
         {"oxygen_anomaly":0.02,"no_oxygen_anomaly":0.98}
         )
 
 
-        cpt["hypertension"] = relative_risk(bayesianNetwork,cpt,
+        cpt["hypertension"] = dependency(bayesianNetwork,cpt,
         [
-        ({"age":["elderly"]},3.5),
-        ({"age":["adult"]},2),
-        ({"bmi":["bmi_35_to_39_moderate_risk","bmi_30_to_34_low_risk","bmi_over_40_high_risk"]},2.17),
-        ({"bmi":["bmi_25_to_29_overweight"]},1.52),
-        ({"psychological_disorders":["psychological_disorders"]},1.1)
+            ({"age":["elderly"]},{"relative_risk":3.5}),
+            ({"age":["adult"]},{"relative_risk":2}),
+            ({"bmi":["bmi_35_to_39_moderate_risk","bmi_30_to_34_low_risk","bmi_over_40_high_risk"]},{"relative_risk":2.17}),
+            ({"bmi":["bmi_25_to_29_overweight"]},{"relative_risk":1.52}),
+            ({"psychological_disorders":["psychological_disorders"]},{"relative_risk":1.1})
         ],
         {"hypertension":0.17,"no_hypertension":0.83}
         )
@@ -904,48 +904,48 @@ def covid_bayes():
         outstr = outstr + addCpt(bayesianNetwork,cpt)
         cpt={}
 
-        cpt["kidney_disease"] = relative_risk(bayesianNetwork,cpt,
+        cpt["kidney_disease"] = dependency(bayesianNetwork,cpt,
         [
-        ({"bmi":["bmi_over_40_high_risk","bmi_35_to_39_moderate_risk","bmi_30_to_34_low_risk"]},2.14),
-        ({"bmi":["bmi_25_to_29_overweight"]},1.21),
-        ({"hypertension":["hypertension"]},2)
+            ({"bmi":["bmi_over_40_high_risk","bmi_35_to_39_moderate_risk","bmi_30_to_34_low_risk"]},{"relative_risk":2.14}),
+            ({"bmi":["bmi_25_to_29_overweight"]},{"relative_risk":1.21}),
+            ({"hypertension":["hypertension"]},{"relative_risk":2})
         ],
         {"kidney_disease":0.14,"no_kidney_disease":0.86}
         )
         
 
 
-        cpt["diabetes"] = relative_risk(bayesianNetwork,cpt,
+        cpt["diabetes"] = dependency(bayesianNetwork,cpt,
         [
-        ({"age":["elderly"]},4.5),
-        ({"bmi":["bmi_over_40_high_risk"]},5.1),
-        ({"bmi":["bmi_35_to_39_moderate_risk"]},3.6),
-        ({"bmi":["bmi_30_to_34_low_risk"]},2.5),
-        ({"bmi":["bmi_25_to_29_overweight"]},1.5),
-        ({"hypertension":["hypertension"]},3.8),
-        ({"psychological_disorders":["psychological_disorders"]},1.7)
+            ({"age":["elderly"]},{"relative_risk":4.5}),
+            ({"bmi":["bmi_over_40_high_risk"]},{"relative_risk":5.1}),
+            ({"bmi":["bmi_35_to_39_moderate_risk"]},{"relative_risk":3.6}),
+            ({"bmi":["bmi_30_to_34_low_risk"]},{"relative_risk":2.5}),
+            ({"bmi":["bmi_25_to_29_overweight"]},{"relative_risk":1.5}),
+            ({"hypertension":["hypertension"]},{"relative_risk":3.8}),
+            ({"psychological_disorders":["psychological_disorders"]},{"relative_risk":1.7})
         ],
         {"diabetes":0.12,"no_diabetes":0.88}
         )
         outstr = outstr + addCpt(bayesianNetwork,cpt) 
         cpt = {}
                 
-        cpt["cardiovascular_disease"] = relative_risk(bayesianNetwork,cpt,
+        cpt["cardiovascular_disease"] = dependency(bayesianNetwork,cpt,
         [
-        ({"age":["elderly"]},7),
-        ({"diabetes":["diabetes"]},3),
-        ({"bmi":["bmi_35_to_39_moderate_risk","bmi_30_to_34_low_risk","bmi_over_40_high_risk"]},2),
-        ({"bmi":["bmi_25_to_29_overweight"]},1.12),
-        ({"hypertension":["hypertension"]},3.15),
+            ({"age":["elderly"]},{"relative_risk":7}),
+            ({"diabetes":["diabetes"]},{"relative_risk":3}),
+            ({"bmi":["bmi_35_to_39_moderate_risk","bmi_30_to_34_low_risk","bmi_over_40_high_risk"]},{"relative_risk":2}),
+            ({"bmi":["bmi_25_to_29_overweight"]},{"relative_risk":1.12}),
+            ({"hypertension":["hypertension"]},{"relative_risk":3.15}),
         ],
         {"cardiovascular_disease":0.09,"no_cardiovascular_disease":0.91}
         )
         
                 
                 
-        cpt["cancer"] = relative_risk(bayesianNetwork,cpt,
+        cpt["cancer"] = dependency(bayesianNetwork,cpt,
         [
-        ({"age":["elderly"]},5.8)
+            ({"age":["elderly"]},{"relative_risk":5.8})
         ],
         {"cancer":0.055,"no_cancer":0.945}
         )
