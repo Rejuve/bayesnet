@@ -109,14 +109,13 @@ def make_tree(bayesianNetwork):
 
 def complexity_check(bayesianNetwork,
 #todo: check obscenity                
-        max_size_in_bytes = 2560000,             
-        allowed_number_nodes = 300,
-        allowed_number_variables=6, allowed_number_variable_values= 9):
+        max_size_in_bytes = 256000000,             
+        allowed_number_nodes = 5000,
+        allowed_number_variables=9, allowed_number_variable_values= 15):
 
         passes = True
         messages = []
         size = bayesianNetwork.ByteSize()
-        
         if size > max_size_in_bytes:
                 passes = False
                 messages.append("This net's size is {0} bytes while max size is {1} bytes".format(size,max_size_in_bytes))
@@ -251,7 +250,10 @@ def parse_net(query, bayesianNetwork):
             anomaly_params_dict[o.varName]['detectors'] = []
             for d in o.detectors:
                 anomaly_params_dict[o.varName]['detectors'].append(d.name)
-        return(evidence_dict, outvar_list, explainvars, reverse_explain_list, reverse_evidence,anomaly_tuples,anomaly_params_dict)
+        switch=query.switch
+        baseline=query.baseline if query.baseline else None
+        include_list = query.include_list
+        return(evidence_dict, outvar_list, explainvars, reverse_explain_list, reverse_evidence,anomaly_tuples,anomaly_params_dict,include_list,baseline,switch)
 
 from adtk.data import validate_series
 
@@ -295,6 +297,7 @@ def iqr(s,c):
         if abs_high > s.max()[0] and abs_low < s.min()[0]:
             print ("no iqr anomalies")
         return(abs_low,abs_high)
+
 
 def detect_anomalies(anomaly_tuples,bayesianNetwork,anomaly_params):
         evidence = {}
@@ -407,6 +410,21 @@ def detect_anomalies(anomaly_tuples,bayesianNetwork,anomaly_params):
                             print(f'ThresholdAD-{var}')
                             print(e)
 
+                    elif detector == "VolatilityShiftAD":
+                        try:
+                            from adtk.detector import VolatilityShiftAD
+                            volatility_shift_ad = VolatilityShiftAD(c=anomaly_params[var]['c'], side=anomaly_params[var]['side'],window=anomaly_params[var]['window'])
+                            anomaly_dict[var][detector] = volatility_shift_ad.detect(s)
+
+                        except RuntimeError as e:
+                            print(f'VolatilityShiftAD-{var}')
+                            print(e)
+                        except ValueError as e:
+                            print(f'VolatilityShiftAD-{var}')
+                            print(e)
+
+
+
                 firsttime = True
                 for detector,df in anomaly_dict[var].items():
                     if firsttime:
@@ -419,15 +437,30 @@ def detect_anomalies(anomaly_tuples,bayesianNetwork,anomaly_params):
 
                 is_anomalous = combined_df[['value']].tail(anomaly_params[var]["n"])['value'].any()
                 evidence[var] = var_val_names[var][0] if is_anomalous else var_val_names[var][1]
-            anomaly_out['signal'][var] = signal_dict[var]
-            anomaly_out['anomalies'][var] = combined_df[['value']]   #combined_signals
-            anomaly_out['fitted'][var] = fitted[var]
-            anomaly_out['evidence'][var] = evidence[var]
+                temp = combined_df[['value']].to_records()
+                anomaly_out['anomalies'][var]= [tup[1] for tup  in temp]
+                anomaly_out['signal'][var] = list(signal_dict[var].to_records())
+                #print (f"anomaly_out['anomalies'][{var}][0]:")
+                #print (anomaly_out['anomalies'][var][0])
+                anomaly_out['fitted'][var] = fitted[var]
+                anomaly_out['evidence'][var] = evidence[var]
         return (anomaly_out)
 
-        
+
+def readable(bayesianNetwork,response):
+
+        var_val_names = get_var_val_names(bayesianNetwork)
+        var_names = get_var_names(bayesianNetwork)
+        readable = {}
+        for answer in response.varAnswers:
+            var = var_names[answer.var_num]
+            readable[var]={}
+            for state in answer.varStates:
+                val = var_val_names[var][state.state_num]= state.probability
+        return readable
+                 
 def create_query (bayesianNetwork,evidence_dict,outvar_list,explainvars=[],
-        reverse_explainvars=[],reverse_evidence=[],timeseries = []):
+        reverse_explainvars=[],reverse_evidence=[],timeseries = [], include_list = [], baseline = None, switch= None):
         #create a query for the test service
 
         #print("evidence_dict")
@@ -435,12 +468,23 @@ def create_query (bayesianNetwork,evidence_dict,outvar_list,explainvars=[],
         #print("outvar_list")
         #print(outvar_list)
         query = Query()
+        query.switch = switch
+        if baseline:
+                query.baseline.CopyFrom( baseline)
+
+
         var_val_positions = get_var_val_positions(bayesianNetwork)
         #print ("var_val_positions")
         #print (var_val_positions)
         var_positions = get_var_positions(bayesianNetwork)
         #print ("var_positions")
         #print (var_positions)
+        for v in include_list:
+                if v in var_positions:
+                        outvar = query.include_list.add()
+                        outvar.var_num = var_positions[v]
+
+                        #print ("outvar")
         for k,v in evidence_dict.items():
                 if k in var_positions and k in var_val_positions and v in var_val_positions[k]:
                         evidence= query.evidence.add()
@@ -496,6 +540,7 @@ def query(baked_net, netspec, evidence,out_var_list):
        
 
 def explain_why_bad(baked_net, netspec, evidence,explain_list,internal_query_result=None, include_list = []):
+    print (internal_query_result)
     return explain(baked_net, netspec,evidence,explain_list, internal_query_result=internal_query_result, include_list = include_list)
 
 def explain_why_good(baked_net, netspec, evidence, explain_list, internal_query_result = None, include_list = []):

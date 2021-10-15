@@ -5,19 +5,24 @@ import logging
 
 import grpc
 import uuid
+import distutils.util
 import concurrent.futures as futures
 from google.protobuf import json_format
 
 
 from sn_bayes.utils import bayesInitialize
 from sn_bayes.utils import query
+from sn_bayes.utils import internal_query
 from sn_bayes.utils import parse_net 
 from sn_bayes.utils import get_var_positions
 from sn_bayes.utils import get_var_val_positions
 from sn_bayes.utils import complexity_check
 from sn_bayes.utils import explain
+from sn_bayes.utils import explain_why_good
+from sn_bayes.utils import explain_why_bad
 from sn_bayes.utils import detect_anomalies
-  
+from sn_bayes.utils import readable
+
 import os
 import pickle
 import pomegranate
@@ -104,8 +109,6 @@ class BayesNetServicer(grpc_bt_grpc.BayesNetServicer):
 	
   def StartNet(self, request, context):
     id = Id()
-    #print("id")
-    #print(id)
     not_too_complex,error_msg = complexity_check(request)
     if not_too_complex:
       uniqueID = self.getUniqueID()
@@ -119,8 +122,6 @@ class BayesNetServicer(grpc_bt_grpc.BayesNetServicer):
       with open(self.spec_path, 'wb') as f:
         pickle.dump(self.spec_json, f)
         f.close()
-     #print("self.spec")
-      #print(self.spec)
       id.id = uniqueID
     else:
       id.error_msg = error_msg
@@ -133,7 +134,8 @@ class BayesNetServicer(grpc_bt_grpc.BayesNetServicer):
     answer = Answer()
     if request.id in self.spec:
       bayesianNetwork = self.spec[request.id]
-      evidence,outvars,explainvars, reverse_explain_list, reverse_evidence,anomaly_tuples, anomaly_params_dict = parse_net(request.query, bayesianNetwork)
+      evidence,outvars,explainvars, reverse_explain_list, reverse_evidence,anomaly_tuples, anomaly_params_dict,include_list,baseline,switch = parse_net(
+              request.query, bayesianNetwork)
       #print("anomaly_params_dict")
       #print(anomaly_params_dict)
       #for var,params in anomaly_params_dict.items():
@@ -141,12 +143,25 @@ class BayesNetServicer(grpc_bt_grpc.BayesNetServicer):
        # anomaly_out = detect_anomalies(anomaly_tuples,bayesianNetwork,new_dict)
         #print ("anomaly_out")
         #print (anomaly_out)
-      anomaly_out = detect_anomalies(anomaly_tuples,bayesianNetwork,anomaly_params_dict)
-      #print ("anomaly_out")
-      #print (anomaly_out)
-      evidence.update(anomaly_out['evidence'])    
-      answer_dict = query(self.baked[request.id], self.spec[request.id], evidence,outvars)
-      explain_dict= explain(self.baked[request.id],self.spec[request.id],evidence,explainvars,reverse_explain_list, reverse_evidence)
+      #answer.error_msg=f"evidence={evidence},baseline={baseline},include_list={include_list}, switch={switch}"  
+      anomaly_out = {}
+      answer_dict = {}
+      if not switch or switch == "query" or switch == "internal_query":  
+        anomaly_out = detect_anomalies(anomaly_tuples,bayesianNetwork,anomaly_params_dict)
+        #print ("anomaly_out")
+        #print (anomaly_out)
+        evidence.update(anomaly_out['evidence'])   
+        answer_dict =  internal_query(self.baked[request.id], self.spec[request.id], evidence
+                        ) if switch is "internal_query" else query(self.baked[request.id], self.spec[request.id], evidence,outvars)
+        #answer.error_msg = answer.error_msg + f",anomaly_out:{anomaly_out},answer_dict:{answer_dict}"
+      explain_dict= explain(self.baked[request.id],self.spec[request.id],evidence,explainvars,reverse_explain_list, reverse_evidence,
+              internal_query_result = readable(baseline),include_list = include_list)if not switch or switch is "explain" else (  
+              explain_why_bad(self.baked[request.id],self.spec[request.id],evidence,explainvars,
+              internal_query_result = readable(baseline),include_list = include_list)if switch is "explain_why_bad" else (  
+              explain_why_good(self.baked[request.id],self.spec[request.id],evidence,explainvars,
+              internal_query_result = readable(baseline),include_list = include_list)if switch is "explain_why_good" else {}))  
+
+      #answer.error_msg = answer.error_msg + f",explain_dict:{explain_dict}"
       var_positions = get_var_positions(self.spec[request.id])
       var_val_positions = get_var_val_positions(self.spec[request.id])
 
@@ -170,17 +185,30 @@ class BayesNetServicer(grpc_bt_grpc.BayesNetServicer):
             var_state = var_answer.varStates.add()
             var_state.state_num = val_num
             var_state.probability =val
-      for var, val_dict in anomaly_out['fitted'].items():
-        var_answer = answer.anomalies.add()
-        if var in var_positions:
-          var_num = var_positions[var]
-          var_answer.var_num = var_num
-          for var, val in val_dict.items():
-            var_state = var_answer.fitStates.add()
-            var_state.fitted = var
-            var_state.val =val
-
-        
+      if 'fitted' in anomaly_out:      
+          for var, val_dict in anomaly_out['fitted'].items():
+            if var in var_positions:
+              var_answer = answer.anomalies.add()
+              var_num = var_positions[var]
+              var_answer.var_num = var_num
+              for var, val in val_dict.items():
+                var_state = var_answer.fitStates.add()
+                var_state.fitted = var
+                var_state.val =val
+      if 'signal' in anomaly_out and 'anomalies' in anomaly_out:
+          for var,val_dict in anomaly_out['anomalies'].items():
+            if var in anomaly_out['signal'] and var in var_positions:
+              var_answer1 = answer.signal_anomalies.add()
+              var_num = var_positions[var]
+              var_answer1.var_num = var_num
+              for tup in anomaly_out['signal'][var]:
+                var_state1 = var_answer1.signals.add()
+                var_state1.interval = tup[0]
+                var_state1.val = tup[1]
+              for is_anomaly in anomaly_out['anomalies'][var]:
+                var_state2 = var_answer1.anomalies.add()
+                #var_state2.is_anomaly = bool(distutils.util.strtobool(is_anomaly))
+                var_state2.is_anomaly = is_anomaly
     else:
       answer.error_msg = "Net {} does not exist".format(request.id)
     return(answer)
@@ -253,10 +281,19 @@ class BayesNetServicer(grpc_bt_grpc.BayesNetServicer):
 #
 # Add all your classes to the server here.
 # (from generated .py files by protobuf compiler)
+# The gRPC serve function.
+#
+# Params:
+# max_workers: pool of threads to execute calls asynchronously
+# port: gRPC server port
+#
+# Add all your classes to the server here.
+# (from generated .py files by protobuf compiler)
 def serve(max_workers=10, port=7777):
-    channel_opt = [('grpc.max_send_message_length', 25 * 1024 * 1024), ('grpc.max_receive_message_length', 25 * 1024 * 1024)]
-    server = grpc.server(futures.ThreadPoolExecutor(max_workers=max_workers), options=channel_opt)
-   # server = grpc.server(futures.ThreadPoolExecutor(max_workers=max_workers))
+    choptions = [('grpc.max_send_message_length', 1000000000),
+                ('grpc.max_receive_message_length', 1000000000)]
+    server = grpc.server(futures.ThreadPoolExecutor(max_workers=max_workers), options=choptions)
+    #server = grpc.server(futures.ThreadPoolExecutor(max_workers=max_workers))
     grpc_bt_grpc.add_BayesNetServicer_to_server(BayesNetServicer(), server)
     server.add_insecure_port("[::]:{}".format(port))
     return server

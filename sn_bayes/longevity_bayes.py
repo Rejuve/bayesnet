@@ -128,8 +128,6 @@ def longevity_bayes():
         detectors = anomaly.detectors.add()
         detectors.name = "ThresholdAD"
 
-
-
                 
         anomaly = bayesianNetwork.anomalies.add()
         anomaly.varName = "sleep_anomaly"
@@ -154,6 +152,37 @@ def longevity_bayes():
 
         
 
+        anomaly = bayesianNetwork.anomalies.add()
+        anomaly.varName = "heart_rate_anomaly"
+        anomaly.n_steps = 14
+        anomaly.step_size = 24
+        anomaly.c = 12.0
+        anomaly.n = 24
+        anomaly.window = 5
+        anomaly.side = "positive"
+        anomaly.is_all = False
+        detectors = anomaly.detectors.add()
+        detectors.name = "AutoregressionAD"
+        detectors = anomaly.detectors.add()
+        detectors.name = "InterQuartileRangeAD"
+        detectors = anomaly.detectors.add()
+        detectors.name = "LevelShiftAD"
+
+        anomaly = bayesianNetwork.anomalies.add()
+        anomaly.varName = "heart_rate_variability_anomaly"
+        anomaly.n_steps = 14
+        anomaly.step_size = 24
+        anomaly.c = 12.0 
+        anomaly.n = 24
+        anomaly.window = 5
+        anomaly.side = "positive"
+        anomaly.is_all = False 
+        detectors = anomaly.detectors.add()
+        detectors.name = "AutoregressionAD"
+        detectors = anomaly.detectors.add()
+        detectors.name = "InterQuartileRangeAD"
+        detectors = anomaly.detectors.add()
+        detectors.name = "LevelShiftAD"
 #Input nodes
 
 

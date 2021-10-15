@@ -1,6 +1,6 @@
 registry = {
     "bayes_service": {
-        "grpc": 7005,
+        "grpc": 7003,
     },
 }
 from sn_service import common

@@ -79,40 +79,11 @@ message Id{
   string error_msg = 2;
   }
 
-message Query{
-  message Evidence{
-    int32 var_num = 1;
-    int32 response = 2;
-    }
-  repeated Evidence evidence = 1;
-  message Outvar{
-    int32 var_num = 1;
-  }
-  message Timeval{
+message Timeval{
 	float val = 1;
 	float interval = 2;
 	}	
-  
-  message Anomaly{
-	int32 var_num = 1;
-	repeated Timeval timevals = 2;
-  }
-  repeated Outvar outvars = 2;
-  repeated Outvar explainvars =3;
-  repeated Outvar reverse_explainvars = 4;
-  repeated Outvar reverse_evidence = 5;
-  repeated Anomaly timeseries=6;
-}
-
-
-message QueryId{
-  string id = 1;
-  Query query = 2;
-}
-
-
-
-
+ 
 message Answer{
   
   message VarAnswer{
@@ -127,10 +98,7 @@ message Answer{
   
   message AnomalyAnswer{
 	int32 var_num = 1;
-    message Signal{
-	float val = 1;
-	}
-    repeated Signal signals = 2;
+    repeated  Timeval signals = 2;
     message Anomaly{
 	bool is_anomaly = 1;
 	}
@@ -152,6 +120,40 @@ message Answer{
   repeated FitAnswer anomalies = 4;
   string error_msg = 5;
 }
+
+message Query{
+  message Evidence{
+    int32 var_num = 1;
+    int32 response = 2;
+    }
+  repeated Evidence evidence = 1;
+  message Outvar{
+    int32 var_num = 1;
+  }
+ 
+  message Anomaly{
+	int32 var_num = 1;
+	repeated Timeval timevals = 2;
+  }
+  repeated Outvar outvars = 2;
+  repeated Outvar explainvars =3;
+  repeated Outvar reverse_explainvars = 4;
+  repeated Outvar reverse_evidence = 5;
+  repeated Anomaly timeseries=6;
+  repeated Outvar include_list=7;
+  Answer baseline=8;
+  string switch=9;
+ 
+}
+
+
+message QueryId{
+  string id = 1;
+  Query query = 2;
+}
+
+
+
 
 message BayesianNetworkQuery{
 	BayesianNetwork bayesianNetwork = 1;
