@@ -136,14 +136,17 @@ class BayesNetServicer(grpc_bt_grpc.BayesNetServicer):
       bayesianNetwork = self.spec[request.id]
       evidence,outvars,explainvars, reverse_explain_list, reverse_evidence,anomaly_tuples, anomaly_params_dict,include_list,baseline,switch = parse_net(
               request.query, bayesianNetwork)
-      #print("anomaly_params_dict")
-      #print(anomaly_params_dict)
-      #for var,params in anomaly_params_dict.items():
-       # new_dict = {copy.deepcopy(var):copy.deepcopy(params)}
-       # anomaly_out = detect_anomalies(anomaly_tuples,bayesianNetwork,new_dict)
-        #print ("anomaly_out")
-        #print (anomaly_out)
-      #answer.error_msg=f"evidence={evidence},baseline={baseline},include_list={include_list}, switch={switch}"  
+      #print  ("evidence,outvars,explainvars, reverse_explain_list, reverse_evidence,anomaly_tuples, anomaly_params_dict,include_list,baseline,switch")
+      #print  (evidence)
+      #print  (outvars)
+      #print  (explainvars)
+      #print  (reverse_explain_list)
+      #print  (reverse_evidence)
+      #print  (anomaly_tuples)
+      #print  (anomaly_params_dict)
+      #print  (include_list)
+      #print  (baseline)
+      #print  (switch)
       anomaly_out = {}
       answer_dict = {}
       if not switch or switch == "query" or switch == "internal_query":  
@@ -155,12 +158,16 @@ class BayesNetServicer(grpc_bt_grpc.BayesNetServicer):
                         ) if switch is "internal_query" else query(self.baked[request.id], self.spec[request.id], evidence,outvars)
         #answer.error_msg = answer.error_msg + f",anomaly_out:{anomaly_out},answer_dict:{answer_dict}"
       explain_dict= explain(self.baked[request.id],self.spec[request.id],evidence,explainvars,reverse_explain_list, reverse_evidence,
-              internal_query_result = readable(baseline),include_list = include_list)if not switch or switch is "explain" else (  
+              internal_query_result = baseline,include_list = include_list)if not switch or switch == "explain" else (  
               explain_why_bad(self.baked[request.id],self.spec[request.id],evidence,explainvars,
-              internal_query_result = readable(baseline),include_list = include_list)if switch is "explain_why_bad" else (  
+              internal_query_result = baseline,include_list = include_list)if switch == "explain_why_bad" else (  
               explain_why_good(self.baked[request.id],self.spec[request.id],evidence,explainvars,
-              internal_query_result = readable(baseline),include_list = include_list)if switch is "explain_why_good" else {}))  
-
+              internal_query_result = baseline,include_list = include_list)if switch =="explain_why_good" else {}))  
+      
+      #print("readable(baseline)")
+      #print(readable(bayesianNetwork,baseline))
+      #print("explain_dict")
+      #print(explain_dict)
       #answer.error_msg = answer.error_msg + f",explain_dict:{explain_dict}"
       var_positions = get_var_positions(self.spec[request.id])
       var_val_positions = get_var_val_positions(self.spec[request.id])

@@ -251,8 +251,8 @@ def parse_net(query, bayesianNetwork):
             for d in o.detectors:
                 anomaly_params_dict[o.varName]['detectors'].append(d.name)
         switch=query.switch
-        baseline=query.baseline if query.baseline else None
-        include_list = query.include_list
+        baseline= readable(bayesianNetwork,query.baseline) if query.baseline else None
+        include_list = [var_names[o.var_num] for o in query.include_list if o.var_num in var_names]
         return(evidence_dict, outvar_list, explainvars, reverse_explain_list, reverse_evidence,anomaly_tuples,anomaly_params_dict,include_list,baseline,switch)
 
 from adtk.data import validate_series
@@ -455,8 +455,13 @@ def readable(bayesianNetwork,response):
         for answer in response.varAnswers:
             var = var_names[answer.var_num]
             readable[var]={}
+            #print("answer")
+            #print(answer)
             for state in answer.varStates:
-                val = var_val_names[var][state.state_num]= state.probability
+                readable[var][var_val_names[var][state.state_num]]= state.probability
+        
+        #print ("readable")
+        #print(readable)
         return readable
                  
 def create_query (bayesianNetwork,evidence_dict,outvar_list,explainvars=[],
@@ -558,8 +563,17 @@ def explain(baked_net, netspec, evidence,explain_list, reverse_explain_list = []
         #explain_list lists output variables to tell what input variable would make them less likely (for example covid severity)
         #reverse_explain_list tells which of those out vars to explain more likely rather than less likely  (for example social distancing)
         #reverse_evidence_list tells which of the evidence to explain should perturb one val to the left rather than the right (the default)
-        
+     #   
         #first make a list of all the pertubations to make
+        #print  ("in explain, evidence,explain_list, reverse_explain_list, reverse_evidence")
+        #print  (evidence)
+        #print  (explain_list)
+        #print  (reverse_explain_list)
+        #print  (reverse_evidence)
+        #print ("In explain, internal_query_result")
+        #print(internal_query_result)
+        #print ("include_list")
+        #print(include_list)
         evidence_perturbations = {}
         var_val_positions = get_var_val_positions(netspec)
         var_val_names = get_var_val_names(netspec)
@@ -600,6 +614,7 @@ def explain(baked_net, netspec, evidence,explain_list, reverse_explain_list = []
                         new_pos = old_pos-1
                 elif var not in reverse_evidence and old_pos < len(var_val_positions[var])-1: 
                         new_pos = old_pos+ 1
+
                 if new_pos is not None and (len(include_list) == 0 or var in include_list):
                         new_val = var_val_names[var][new_pos]
                         more_evidence[var] = copy.deepcopy(evidence)        
