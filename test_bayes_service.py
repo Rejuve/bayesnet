@@ -59,7 +59,7 @@ if __name__ == "__main__":
         timeseries = []
         oxygen = {}
         timeseries.append(oxygen)
-        oxygen["var"] = "steps_anomaly"
+        oxygen["var"] = "step_assymetry_anomaly"
         timevals = []
         oxygen["timevals"] = timevals
 
