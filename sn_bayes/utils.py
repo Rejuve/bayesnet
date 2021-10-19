@@ -10,6 +10,7 @@ from sn_service.service_spec.bayesian_pb2 import Query
 import itertools
 import typing
 import numpy as np
+from dateutil.parser import parse
 
 T = typing.TypeVar("T")
 
@@ -305,6 +306,7 @@ def detect_anomalies(anomaly_tuples,bayesianNetwork,anomaly_params):
         signal_dict ={}
         combined_signals={}
         fitted={}
+        s_dict = {}
         anomaly_out = {}
         anomaly_out['signal'] = {}
         anomaly_out['anomalies']= {}
@@ -336,6 +338,20 @@ def detect_anomalies(anomaly_tuples,bayesianNetwork,anomaly_params):
                 if pd.NaT in s.index:
                     s = s.drop(pd.NaT)
                 signal_dict[var]=s
+                #print("s")
+                #print(s)
+                s_dict[var]=[]
+                last_dti = None
+                interval = 0
+                for index, row in signal_dict[var].iterrows():
+                    if last_dti is not None:
+                        this_dti = index
+                        diff = this_dti - last_dti
+                        interval = float(diff.total_seconds())
+                        #print ("interval")
+                        #print (interval)
+                    last_dti = index
+                    s_dict[var].append ((interval,row['value']))      
                 detector_set = set(anomaly_params[var]["detectors"])
                 for detector in detector_set:
                     if detector == "AutoregressionAD":
@@ -437,9 +453,14 @@ def detect_anomalies(anomaly_tuples,bayesianNetwork,anomaly_params):
 
                 is_anomalous = combined_df[['value']].tail(anomaly_params[var]["n"])['value'].any()
                 evidence[var] = var_val_names[var][0] if is_anomalous else var_val_names[var][1]
+                #print("combined_df")
+                #print(combined_df)
                 temp = combined_df[['value']].to_records()
+                #print("temp")
+                #print(temp)
                 anomaly_out['anomalies'][var]= [tup[1] for tup  in temp]
-                anomaly_out['signal'][var] = list(signal_dict[var].to_records())
+                #anomaly_out['signal'][var] = list(signal_dict[var].to_records())
+                anomaly_out['signal'][var]=s_dict[var]
                 #print (f"anomaly_out['anomalies'][{var}][0]:")
                 #print (anomaly_out['anomalies'][var][0])
                 anomaly_out['fitted'][var] = fitted[var]
