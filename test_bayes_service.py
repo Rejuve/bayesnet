@@ -75,8 +75,9 @@ if __name__ == "__main__":
             reading["val"] = row[1]
             reading["interval"] = thisrow
             timevals.append(reading)
-
-        print("Creating query")    
+        #print ("timeseries")
+        #print (timeseries)
+        #print("Creating query")    
         query1 = create_query(bayesianNetwork,evidence,outvars,explainvars,reverse_explainvars,[],timeseries,include_list=include_list,switch="internal_query")
 
 
