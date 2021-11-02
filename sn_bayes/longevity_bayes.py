@@ -14,9 +14,7 @@ from sn_service.service_spec.bayesian_pb2 import BayesianNetwork
 
 def longevity_bayes():
         bayesianNetwork = BayesianNetwork()
-
-
-
+        cpt = {}
         outstr = '' 
                 
         #probabilities within distributions must sum to 1.0
@@ -207,14 +205,51 @@ def longevity_bayes():
 
 
 #Cardiovascular Disease
-        discreteDistribution = bayesianNetwork.discreteDistributions.add()
-        discreteDistribution.name = "daily_asprin_prescription"
-        variable = discreteDistribution.variables.add()
-        variable.name = "daily_asprin_prescription_yes"
-        variable.probability = 0.05
-        variable = discreteDistribution.variables.add()
-        variable.name = "daily_asprin_prescription_no"
-        variable.probability = 0.95
+
+
+        #discreteDistribution = bayesianNetwork.discreteDistributions.add()
+        #discreteDistribution.name = "angina"
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "angina_yes"
+        #variable.probability = 0.03
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "angina_no"
+        #variable.probability = 0.97
+
+
+ 
+        outstr = outstr + addCpt(bayesianNetwork,cpt) 
+        cpt = {}
+
+
+        cpt["angina"] = dependency(bayesianNetwork,cpt,
+        [
+            ({"age":["elderly"]},{"relative_risk":2.3})
+        ],
+        {"angina_yes":0.03,"angina_no":0.97}
+        )
+                
+        #discreteDistribution = bayesianNetwork.discreteDistributions.add()
+        #discreteDistribution.name = "daily_asprin_prescription"
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "daily_asprin_prescription_yes"
+        #variable.probability = 0.05
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "daily_asprin_prescription_no"
+        #variable.probability = 0.95
+        
+        
+ 
+        outstr = outstr + addCpt(bayesianNetwork,cpt) 
+        cpt = {}
+
+
+        cpt["daily_asprin_prescription"] = dependency(bayesianNetwork,cpt,
+        [
+            ({"angina":["angina_yes"]},{"relative_risk":5})
+        ],
+        {"daily_asprin_prescription_yes":0.05,"daily_asprin_prescription_no":0.95}
+        )
 
         discreteDistribution = bayesianNetwork.discreteDistributions.add()
         discreteDistribution.name = "daily_aspirin_compliance"
@@ -227,50 +262,43 @@ def longevity_bayes():
 
 
 
-
-        discreteDistribution = bayesianNetwork.discreteDistributions.add()
-        discreteDistribution.name = "angina"
-        variable = discreteDistribution.variables.add()
-        variable.name = "angina_yes"
-        variable.probability = 0.03
-        variable = discreteDistribution.variables.add()
-        variable.name = "angina_no"
-        variable.probability = 0.97
-
-        discreteDistribution = bayesianNetwork.discreteDistributions.add()
-        discreteDistribution.name = "blood_relative_heart_attack_before_age_50"
-        variable = discreteDistribution.variables.add()
-        variable.name = "blood_relative_heart_attack_before_50_yes"
-        variable.probability = 0.13
-        variable = discreteDistribution.variables.add()
-        variable.name = "blood_relative_heart_attack_before_50_no"
-        variable.probability = 0.87
+        #discreteDistribution = bayesianNetwork.discreteDistributions.add()
+        #discreteDistribution.name = "blood_relative_heart_attack_before_age_50"
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "blood_relative_heart_attack_before_50_yes"
+        #variable.probability = 0.13
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "blood_relative_heart_attack_before_50_no"
+        #variable.probability = 0.87
 
 
 
-        discreteDistribution = bayesianNetwork.discreteDistributions.add()
-        discreteDistribution.name = "chest_pain"
-        variable = discreteDistribution.variables.add()
-        variable.name = "chest_pain_yes"
-        variable.probability = 0.30
-        variable = discreteDistribution.variables.add()
-        variable.name = "chest_pain_no"
-        variable.probability = 0.70
+        cpt["blood_relative_heart_attack_before_age_50"] = dependency(bayesianNetwork,cpt,
+        [
+            ({"angina":["angina_yes"]},{"relative_risk":2})
+        ],
+        {"blood_relative_heart_attack_before_50_yes":0.13,"blood_relative_heart_attack_before_50_no":0.87}
+        )
+
+
+        #discreteDistribution = bayesianNetwork.discreteDistributions.add()
+        #discreteDistribution.name = "chest_pain"
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "chest_pain_yes"
+        #variable.probability = 0.30
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "chest_pain_no"
+        #variable.probability = 0.70
         
 
 
-#Resting heart rate
-        discreteDistribution = bayesianNetwork.discreteDistributions.add()
-        discreteDistribution.name = "resting_heart_rate"
-        variable = discreteDistribution.variables.add()
-        variable.name = "resting_heart_rate_very_high_91_and_above"
-        variable.probability = 0.09
-        variable = discreteDistribution.variables.add()
-        variable.name = "resting_heart_rate_high_81_to_90"
-        variable.probability = 0.15
-        variable = discreteDistribution.variables.add()
-        variable.name = "resting_heart_rate_normal_under_80"
-        variable.probability = 0.67
+        cpt["chest_pain"] = dependency(bayesianNetwork,cpt,
+        [
+            ({"angina":["angina_yes"]},{"relative_risk":3})
+        ],
+        {"chest_pain_yes":0.3,"chest_pain_no":0.7}
+        )
+
 
 #Hypertension
         
@@ -278,10 +306,10 @@ def longevity_bayes():
         discreteDistribution.name = "high_blood_pressure_patient_prescription"
         variable = discreteDistribution.variables.add()
         variable.name = "high_blood_pressure_patient_prescription_yes"
-        variable.probability = 0.85
+        variable.probability = 0.15
         variable = discreteDistribution.variables.add()
         variable.name = "high_blood_pressure_patient_prescription_no"
-        variable.probability = 0.15
+        variable.probability = 0.85
 
         discreteDistribution = bayesianNetwork.discreteDistributions.add()
         discreteDistribution.name = "high_blood_pressure_medication_compliance"
@@ -364,7 +392,8 @@ def longevity_bayes():
         variable.probability = 0.16
         variable = discreteDistribution.variables.add()
         variable.name = "time_spent_outdoors_1_hour_per_day"
-        variable.probability = 61
+        variable.probability = 0.16
+        variable = discreteDistribution.variables.add()
         variable.name = "time_spent_outdoors_2_or_3_hours_per_day"
         variable.probability = 0.18
         variable = discreteDistribution.variables.add()
@@ -424,25 +453,59 @@ def longevity_bayes():
         variable.name = "weight_at_25_125.00_and_below"
         variable.probability = 0.25
 
-        discreteDistribution = bayesianNetwork.discreteDistributions.add()
-        discreteDistribution.name = "greatest_weight"
-        variable = discreteDistribution.variables.add()
-        variable.name = "greatest_weight_above_315.00"
-        variable.probability = 0.05
-        variable = discreteDistribution.variables.add()
-        variable.name = "greatest_weight_above_230.00_to_315.00_and_below"
-        variable.probability = 0.20
-        variable = discreteDistribution.variables.add()
-        variable.name = "greatest_weight_above_190.00_to_230.00_and_below"
-        variable.probability = 0.25
-        variable = discreteDistribution.variables.add()
-        variable.name = "greatest_weight_above_160.00_to_190.00_and_below"
-        variable.probability = 0.25
-        variable = discreteDistribution.variables.add()
-        variable.name = "greatest_weight_160.00_and_below"
-        variable.probability = 0.25
+        #discreteDistribution = bayesianNetwork.discreteDistributions.add()
+        #discreteDistribution.name = "greatest_weight"
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "greatest_weight_above_315.00"
+        #variable.probability = 0.05
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "greatest_weight_above_230.00_to_315.00_and_below"
+        #variable.probability = 0.20
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "greatest_weight_above_190.00_to_230.00_and_below"
+        #variable.probability = 0.25
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "greatest_weight_above_160.00_to_190.00_and_below"
+        #variable.probability = 0.25
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "greatest_weight_160.00_and_below"
+        #variable.probability = 0.25
+
+                        
+                                
+        outstr = outstr + addCpt(bayesianNetwork,cpt) 
+        cpt = {}
+                 
+
+        cpt["greatest_weight"] = dependency(bayesianNetwork,cpt, 
+        [
+        ({"weight_at_25":["weight_at_25_above_300.00","weight_at_25_above_180.00_to_300.00_and_below"]},{"sensitivity":0.66})
+        ],
+        {"greatest_weight_above_230.00":0.25,"no_greatest_weight_above_230.00":0.75}
+        )
+
+               
+
+        #discreteDistribution = bayesianNetwork.discreteDistributions.add()
+        #discreteDistribution.name = "weight"
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "weight_above_123.90"
+        #variable.probability = 0.05
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "weight_above_92.60_to_123.90_and_below"
+        #variable.probability = 0.20
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "weight_above_76.70_to_92.60_and_below"
+        #variable.probability = 0.25
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "weight_above_63.60_to_76.70_and_below"
+        #variable.probability = 0.25
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "weight_63.60_and_below"
+        #variable.probability = 0.25     
 
 
+                
 
         discreteDistribution = bayesianNetwork.discreteDistributions.add()
         discreteDistribution.name = "bmi"
@@ -461,97 +524,340 @@ def longevity_bayes():
         variable = discreteDistribution.variables.add()
         variable.name = "bmi_under_25_healthy"
         variable.probability = 0.32
+                        
+                                
+        outstr = outstr + addCpt(bayesianNetwork,cpt) 
+        cpt = {}
+                 
 
+        cpt["weight"] = dependency(bayesianNetwork,cpt, 
+        [
+        ({"greatest_weight":["greatest_weight_above_230.00"]},{"sensitivity":0.66}),        
+        ({"bmi":["bmi_over_40_high_risk","bmi_35_to_39_moderate_risk"]},{"sensitivity":0.90})
+        ],
+        {"weight_above_92.60":0.25,"no_weight_above_92.60":0.75}
+        )
+
+
+
+        #discreteDistribution = bayesianNetwork.discreteDistributions.add()
+        #discreteDistribution.name = "height"
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "height_150.50_and_below"
+        #variable.probability = 0.05
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "height_above_150.50_to_158.50_and_below"
+        #variable.probability = 0.20
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "height_above_158.50_to_165.50_and_below"
+        #variable.probability = 0.25
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "height_above_165.50_to_173.40_and_below"
+        #variable.probability = 0.25
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "height_above_173.40"
+        #variable.probability = 0.25
+
+
+
+        cpt["height"] = dependency(bayesianNetwork,cpt, 
+        [       
+        ({"bmi":["bmi_over_40_high_risk","bmi_35_to_39_moderate_risk"]},{"sensitivity":0.50})
+        ],
+        {"height_above_173.40":0.25,"no_height_above_173.40":0.75}
+        )
+
+                           
+
+        #discreteDistribution = bayesianNetwork.discreteDistributions.add()
+        #discreteDistribution.name = "hip"
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "hip_above_133.30"
+        #variable.probability = 0.05
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "hip_above_112.70_to_133.30_and_below"
+        #variable.probability = 0.20
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "hip_above_103.10_to_112.70_and_below"
+        #variable.probability = 0.25
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "hip_above_95.20_to_103.10_and_below"
+        #variable.probability = 0.25
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "hip_95.20_and_below"
+        #variable.probability = 0.25
+        
+        
+
+        cpt["hip"] = dependency(bayesianNetwork,cpt, 
+        [       
+        ({"bmi":["bmi_over_40_high_risk","bmi_35_to_39_moderate_risk"]},{"sensitivity":0.66})
+        ],
+        {"hip_above_112.70":0.25,"no_hip_above_112.70":0.75}
+        )
+
+                           
+        
+        
+        #discreteDistribution = bayesianNetwork.discreteDistributions.add()
+        #discreteDistribution.name = "waist"
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "waist_above_129.70"
+        #variable.probability = 0.05
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "waist_above_109.00_to_129.70_and_below"
+        #variable.probability = 0.20
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "waist_above_96.70_to_109.00_and_below"
+        #variable.probability = 0.25
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "waist_above_84.50_to_96.70_and_below"
+        #variable.probability = 0.25
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "waist_84.50_and_below"
+        #variable.probability = 0.25
+        
+ 
         discreteDistribution = bayesianNetwork.discreteDistributions.add()
-        discreteDistribution.name = "hip"
+        discreteDistribution.name = "dietary_energy"
         variable = discreteDistribution.variables.add()
-        variable.name = "hip_above_133.30"
+        variable.name = "dietary_energy_above_3939.00"
         variable.probability = 0.05
         variable = discreteDistribution.variables.add()
-        variable.name = "hip_above_112.70_to_133.30_and_below"
+        variable.name = "dietary_energy_above_2612.00_to_3939.00_and_below"
         variable.probability = 0.20
         variable = discreteDistribution.variables.add()
-        variable.name = "hip_above_103.10_to_112.70_and_below"
+        variable.name = "dietary_energy_above_1930.00_to_2612.00_and_below"
         variable.probability = 0.25
         variable = discreteDistribution.variables.add()
-        variable.name = "hip_above_95.20_to_103.10_and_below"
+        variable.name = "dietary_energy_above_1399.00_to_1930.00_and_below"
         variable.probability = 0.25
         variable = discreteDistribution.variables.add()
-        variable.name = "hip_95.20_and_below"
+        variable.name = "dietary_energy_1399.00_and_below"
         variable.probability = 0.25
+
+       
+                                
+        outstr = outstr + addCpt(bayesianNetwork,cpt) 
+        cpt = {}
+                 
+
+        cpt["waist"] = dependency(bayesianNetwork,cpt, 
+        [
+        ({"hip":["hip_above_112.70"]},{"sensitivity":0.80})
+        ],
+        {"waist_above_109.00":0.25,"no_waist_above_109.00":0.75}
+        )
+ 
+
+#Lack of exercise
 
         discreteDistribution = bayesianNetwork.discreteDistributions.add()
-        discreteDistribution.name = "height"
+        discreteDistribution.name = "shortness_of_breath_exertion"
         variable = discreteDistribution.variables.add()
-        variable.name = "height_150.50_and_below"
-        variable.probability = 0.05
+        variable.name = "shortness_of_breath_exertion_yes"
+        variable.probability = 0.38
         variable = discreteDistribution.variables.add()
-        variable.name = "height_above_150.50_to_158.50_and_below"
-        variable.probability = 0.20
-        variable = discreteDistribution.variables.add()
-        variable.name = "height_above_158.50_to_165.50_and_below"
-        variable.probability = 0.25
-        variable = discreteDistribution.variables.add()
-        variable.name = "height_above_165.50_to_173.40_and_below"
-        variable.probability = 0.25
-        variable = discreteDistribution.variables.add()
-        variable.name = "height_above_173.40"
-        variable.probability = 0.25
+        variable.name = "shortness_of_breath_exertion_no"
+        variable.probability = 0.62
 
         discreteDistribution = bayesianNetwork.discreteDistributions.add()
-        discreteDistribution.name = "waist"
+        discreteDistribution.name = "daily_walk_or_bicycle_travel"
         variable = discreteDistribution.variables.add()
-        variable.name = "waist_above_129.70"
-        variable.probability = 0.05
+        variable.name = "daily_walk_or_bicycle_travel_less_than_30_minutes"
+        variable.probability = 0.34
         variable = discreteDistribution.variables.add()
-        variable.name = "waist_above_109.00_to_129.70_and_below"
-        variable.probability = 0.20
+        variable.name = "daily_walk_or_bicycle_travel_30_to_59_minutes"
+        variable.probability = 0.30
         variable = discreteDistribution.variables.add()
-        variable.name = "waist_above_96.70_to_109.00_and_below"
-        variable.probability = 0.25
+        variable.name = "daily_walk_or_bicycle_travel_60_minutes_or_more"
+        variable.probability = 0.36
+        
+        discreteDistribution = bayesianNetwork.discreteDistributions.add()
+        discreteDistribution.name = "daily_time_sitting"
         variable = discreteDistribution.variables.add()
-        variable.name = "waist_above_84.50_to_96.70_and_below"
-        variable.probability = 0.25
+        variable.name = "daily_time_sitting_12_or_more_hours"
+        variable.probability = 0.08
         variable = discreteDistribution.variables.add()
-        variable.name = "waist_84.50_and_below"
-        variable.probability = 0.25
+        variable.name = "daily_time_sitting_over_6_but_less_than_12_hours"
+        variable.probability = 0.36
+        variable = discreteDistribution.variables.add()
+        variable.name = "daily_time_sitting_over_2_but_less_than_6_hours"
+        variable.probability = 0.49
+        variable = discreteDistribution.variables.add()
+        variable.name = "daily_time_sitting_less_than_2_hours"
+        variable.probability = 0.06
 
         discreteDistribution = bayesianNetwork.discreteDistributions.add()
-        discreteDistribution.name = "weight"
+        discreteDistribution.name = "physical_work"
         variable = discreteDistribution.variables.add()
-        variable.name = "weight_above_123.90"
-        variable.probability = 0.05
+        variable.name = "physical_work_no"
+        variable.probability = 0.76
         variable = discreteDistribution.variables.add()
-        variable.name = "weight_above_92.60_to_123.90_and_below"
-        variable.probability = 0.20
-        variable = discreteDistribution.variables.add()
-        variable.name = "weight_above_76.70_to_92.60_and_below"
-        variable.probability = 0.25
-        variable = discreteDistribution.variables.add()
-        variable.name = "weight_above_63.60_to_76.70_and_below"
-        variable.probability = 0.25
-        variable = discreteDistribution.variables.add()
-        variable.name = "weight_63.60_and_below"
-        variable.probability = 0.25
+        variable.name = "physical_work_yes"
+        variable.probability = 0.24
 
-
-
-
-#Type 2 diabetes
         discreteDistribution = bayesianNetwork.discreteDistributions.add()
-        discreteDistribution.name = "a1c"
+        discreteDistribution.name = "ten_minutes_daily_workout"
         variable = discreteDistribution.variables.add()
-        variable.name = "a1c_diabetes_6.5_and_above"
+        variable.name = "ten_minutes_daily_workout_no"
+        variable.probability = 0.60
+        variable = discreteDistribution.variables.add()
+        variable.name = "ten_minutes_daily_workout_yes"
+        variable.probability = 0.40
+ #anomalies
+                       
+        discreteDistribution = bayesianNetwork.discreteDistributions.add()
+        discreteDistribution.name = "heart_rate_anomaly"
+        variable = discreteDistribution.variables.add()
+        variable.name = "heart_rate_anomaly"
+        variable.probability = 0.03
+        variable = discreteDistribution.variables.add()
+        variable.name = "no_heart_rate_anomaly"
+        variable.probability = 0.97
+
+
+        discreteDistribution = bayesianNetwork.discreteDistributions.add()
+        discreteDistribution.name = "steps_anomaly"
+        variable = discreteDistribution.variables.add()
+        variable.name = "steps_anomaly"
         variable.probability = 0.05
         variable = discreteDistribution.variables.add()
-        variable.name = "a1c_prediabetes_low_5.7_to_6.4"
-        variable.probability = 0.27
+        variable.name = "no_steps_anomaly"
+        variable.probability = 0.95
+        
+
+
+        discreteDistribution = bayesianNetwork.discreteDistributions.add()
+        discreteDistribution.name = "workout_anomaly"
         variable = discreteDistribution.variables.add()
-        variable.name = "a1c_high_normal_5.3_to_5.6"
-        variable.probability = 0.35
+        variable.name = "workout_anomaly"
+        variable.probability = 0.05
         variable = discreteDistribution.variables.add()
-        variable.name = "a1c_low_normal_below_5.3"
-        variable.probability = 0.25
+        variable.name = "no_workout_anomaly"
+        variable.probability = 0.95
+        
+
+
+        discreteDistribution = bayesianNetwork.discreteDistributions.add()
+        discreteDistribution.name = "walking_speed_anomaly"
+        variable = discreteDistribution.variables.add()
+        variable.name = "walking_speed_anomaly"
+        variable.probability = 0.05
+        variable = discreteDistribution.variables.add()
+        variable.name = "no_walking_speed_anomaly"
+        variable.probability = 0.95
+        
+
+
+        discreteDistribution = bayesianNetwork.discreteDistributions.add()
+        discreteDistribution.name = "walking_speed_variability_anomaly"
+        variable = discreteDistribution.variables.add()
+        variable.name = "walking_speed_variability_anomaly"
+        variable.probability = 0.05
+        variable = discreteDistribution.variables.add()
+        variable.name = "no_walking_speed_variability_anomaly"
+        variable.probability = 0.95
+        
+
+
+        discreteDistribution = bayesianNetwork.discreteDistributions.add()
+        discreteDistribution.name = "stride_variability_anomaly"
+        variable = discreteDistribution.variables.add()
+        variable.name = "stride_variability_anomaly"
+        variable.probability = 0.05
+        variable = discreteDistribution.variables.add()
+        variable.name = "no_stride_variability_anomaly"
+        variable.probability = 0.95
+        
+
+
+        discreteDistribution = bayesianNetwork.discreteDistributions.add()
+        discreteDistribution.name = "step_assymetry_anomaly"
+        variable = discreteDistribution.variables.add()
+        variable.name = "step_assymetry_anomaly"
+        variable.probability = 0.05
+        variable = discreteDistribution.variables.add()
+        variable.name = "no_step_assymetry_anomaly"
+        variable.probability = 0.95
+        
+
+
+        discreteDistribution = bayesianNetwork.discreteDistributions.add()
+        discreteDistribution.name = "double_support_stepping_anomaly"
+        variable = discreteDistribution.variables.add()
+        variable.name = "double_support_stepping__anomaly"
+        variable.probability = 0.05
+        variable = discreteDistribution.variables.add()
+        variable.name = "no_double_support_stepping_anomaly"
+        variable.probability = 0.95
+        
+
+
+        discreteDistribution = bayesianNetwork.discreteDistributions.add()
+        discreteDistribution.name = "step_variability_anomaly"
+        variable = discreteDistribution.variables.add()
+        variable.name = "step_variability_anomaly"
+        variable.probability = 0.05
+        variable = discreteDistribution.variables.add()
+        variable.name = "no_step_variability_anomaly"
+        variable.probability = 0.95
+        
+        
+
+
+ 
+        cpt["lack_of_exercise_reported"] = avg(bayesianNetwork,cpt,
+                [
+                        "shortness_of_breath_exertion",
+                        "daily_walk_or_bicycle_travel",
+                        "daily_time_sitting",
+                        "physical_work",
+                        'ten_minutes_daily_workout'
+                ],
+                ["lack_of_exercise_reported","no_lack_of_exercise_reported"]
+
+                )
+ 
+ 
+        cpt["lack_of_exercise_signal"] = any_of(bayesianNetwork,cpt,
+                {
+         "workout_anomaly":{ "workout_anomaly"},
+         "walking_speed_anomaly":{"walking_speed_anomaly"},
+         "steps_anomaly":{"steps_anomaly"}
+         },
+         ["lack_of_exercise_signal","no_lack_of_exercise_signal"]
+                 
+         )
+                
+ 
+        cpt["lack_of_exercise"] = any_of(bayesianNetwork,cpt,
+                {
+         "lack_of_exercise_signal":{ "lack_of_exercise_signal"},
+         "lack_of_exercise_reported":{"lack_of_exercise_reported"}
+         },
+         ["lack_of_exercise","no_lack_of_exercise"]
+                 
+         )
+ 
+                        
+        outstr = outstr + addCpt(bayesianNetwork,cpt) 
+        cpt = {}
+         
+ 
+
+        cpt["obesity"] = dependency(bayesianNetwork,cpt, 
+        [
+        ({"dietary_energy":["dietary_energy_above_3939.00"]},{"sensitivity":0.99}),
+        ({"dietary_energy":["dietary_energy_above_2612.00_to_3939.00_and_below"]},{"sensitivity":0.9}),
+        ({"bmi":["bmi_over_40_high_risk"]},{"sensitivity":0.99}),
+        ({"bmi":["bmi_35_to_39_moderate_risk"]},{"sensitivity":0.95}),
+        ({"bmi":["bmi_30_to_34_low_risk"]},{"sensitivity":0.9}),
+        ({"lack_of_exercise":["lack_of_exercise"]},{"sensitivity":0.9})
+        ],
+        {"obesity":0.38,"no_obesity":0.62}
+        )
+
 
 #PTSD
         discreteDistribution = bayesianNetwork.discreteDistributions.add()
@@ -625,10 +931,10 @@ def longevity_bayes():
         discreteDistribution.name = "liver_condition"
         variable = discreteDistribution.variables.add()
         variable.name = "liver_condition_yes"
-        variable.probability = 0.00
+        variable.probability = 0.05
         variable = discreteDistribution.variables.add()
         variable.name = "liver_condition_no"
-        variable.probability = 1.00
+        variable.probability = 0.95
         
 
         discreteDistribution = bayesianNetwork.discreteDistributions.add()
@@ -768,21 +1074,6 @@ def longevity_bayes():
         variable.probability = 0.08
         
         discreteDistribution = bayesianNetwork.discreteDistributions.add()
-        discreteDistribution.name = "sodium"
-        variable = discreteDistribution.variables.add()
-        variable.name = "sodium_below_135"
-        variable.probability = 0.01
-        variable = discreteDistribution.variables.add()
-        variable.name = "sodium_135.0_to_140.0"
-        variable.probability = 0.51
-        variable = discreteDistribution.variables.add()
-        variable.name = "sodium_141.0_to_145.0"
-        variable.probability = 0.44
-        variable = discreteDistribution.variables.add()
-        variable.name = "sodium_146.0_and_higher"
-        variable.probability = 0.02
-
-        discreteDistribution = bayesianNetwork.discreteDistributions.add()
         discreteDistribution.name = "bilirubin"
         variable = discreteDistribution.variables.add()
         variable.name = "bilirubin_0.6_and_above"
@@ -854,16 +1145,16 @@ def longevity_bayes():
         variable.probability = 0.76
 
         discreteDistribution = bayesianNetwork.discreteDistributions.add()
-        discreteDistribution.name = "cobolt"
+        discreteDistribution.name = "cobalt"
         variable = discreteDistribution.variables.add()
-        variable.name = "cobolt_high_above_1.8"
-        variable.probability = 0.00
+        variable.name = "cobalt_high_above_0.3"
+        variable.probability = 0.1
         variable = discreteDistribution.variables.add()
-        variable.name = "cobolt_high_normal_1.0_to_1.8"
-        variable.probability = 0.00
+        variable.name = "cobalt_high_normal_0.12_to_0.3"
+        variable.probability = 0.80
         variable = discreteDistribution.variables.add()
-        variable.name = "cobolt_normal_below_1"
-        variable.probability = 1.00
+        variable.name = "cobalt_normal_below_0.12"
+        variable.probability = 0.10
 
         discreteDistribution = bayesianNetwork.discreteDistributions.add()
         discreteDistribution.name = "chromium"
@@ -1000,17 +1291,6 @@ def longevity_bayes():
         variable.name = "ferritin_high_above_336"
         variable.probability = 0.08
 
-        discreteDistribution = bayesianNetwork.discreteDistributions.add()
-        discreteDistribution.name = "fasting_glucose"
-        variable = discreteDistribution.variables.add()
-        variable.name = "fasting_glucose_high_above_100"
-        variable.probability = 0.57
-        variable = discreteDistribution.variables.add()
-        variable.name = "fasting_glucose_normal_70_to_100"
-        variable.probability = 0.43
-        variable = discreteDistribution.variables.add()
-        variable.name = "fasting_glucose_low_below_70"
-        variable.probability = 0.00
 
         discreteDistribution = bayesianNetwork.discreteDistributions.add()
         discreteDistribution.name = "hemoglobin"
@@ -1180,24 +1460,6 @@ def longevity_bayes():
 
 
         discreteDistribution = bayesianNetwork.discreteDistributions.add()
-        discreteDistribution.name = "glucose_serum"
-        variable = discreteDistribution.variables.add()
-        variable.name = "glucose_serum_above_155.00"
-        variable.probability = 0.05
-        variable = discreteDistribution.variables.add()
-        variable.name = "glucose_serum_above_101.00_to_155.00_and_below"
-        variable.probability = 0.20
-        variable = discreteDistribution.variables.add()
-        variable.name = "glucose_serum_above_92.00_to_101.00_and_below"
-        variable.probability = 0.25
-        variable = discreteDistribution.variables.add()
-        variable.name = "glucose_serum_above_86.00_to_92.00_and_below"
-        variable.probability = 0.25
-        variable = discreteDistribution.variables.add()
-        variable.name = "glucose_serum_86.00_and_below"
-        variable.probability = 0.25
-
-        discreteDistribution = bayesianNetwork.discreteDistributions.add()
         discreteDistribution.name = "gamma_glutamyl_transferase"
         variable = discreteDistribution.variables.add()
         variable.name = "gamma_glutamyl_transferase_high_above_30"
@@ -1250,18 +1512,6 @@ def longevity_bayes():
         variable = discreteDistribution.variables.add()
         variable.name = "uric_acid_low_below_2.7"
         variable.probability = 0.01
-
-        discreteDistribution = bayesianNetwork.discreteDistributions.add()
-        discreteDistribution.name = "total_cholesterol"
-        variable = discreteDistribution.variables.add()
-        variable.name = "total_cholesterol_high_above_200"
-        variable.probability = 0.30
-        variable = discreteDistribution.variables.add()
-        variable.name = "total_cholesterol_normal_125_to_200"
-        variable.probability = 0.64
-        variable = discreteDistribution.variables.add()
-        variable.name = "total_cholesterol_low_below_125"
-        variable.probability = 0.06
 
         discreteDistribution = bayesianNetwork.discreteDistributions.add()
         discreteDistribution.name = "benzonitrile"
@@ -1564,18 +1814,6 @@ def longevity_bayes():
 #Folic acid
 
         discreteDistribution = bayesianNetwork.discreteDistributions.add()
-        discreteDistribution.name = "folic_acid"
-        variable = discreteDistribution.variables.add()
-        variable.name = "folic_acid_low_below_4.5"
-        variable.probability = 0.97
-        variable = discreteDistribution.variables.add()
-        variable.name = "folic_acid_normal_4.5_to_45.3"
-        variable.probability = 0.03
-        variable = discreteDistribution.variables.add()
-        variable.name = "folic_acid_high_above_45.3"
-        variable.probability = 0.00
-
-        discreteDistribution = bayesianNetwork.discreteDistributions.add()
         discreteDistribution.name = "folate"
         variable = discreteDistribution.variables.add()
         variable.name = "folate_low_below_4.5"
@@ -1704,64 +1942,6 @@ def longevity_bayes():
         variable.name = "weekday_sleep_11_or_more"
         variable.probability = 0.09
         
-
-
-#Lack of exercise
-
-        discreteDistribution = bayesianNetwork.discreteDistributions.add()
-        discreteDistribution.name = "shortness_of_breath_exertion"
-        variable = discreteDistribution.variables.add()
-        variable.name = "shortness_of_breath_exertion_yes"
-        variable.probability = 0.38
-        variable = discreteDistribution.variables.add()
-        variable.name = "shortness_of_breath_exertion_no"
-        variable.probability = 0.62
-
-        discreteDistribution = bayesianNetwork.discreteDistributions.add()
-        discreteDistribution.name = "daily_walk_or_bicycle_travel"
-        variable = discreteDistribution.variables.add()
-        variable.name = "daily_walk_or_bicycle_travel_less_than_30_minutes"
-        variable.probability = 0.34
-        variable = discreteDistribution.variables.add()
-        variable.name = "daily_walk_or_bicycle_travel_30_to_59_minutes"
-        variable.probability = 0.30
-        variable = discreteDistribution.variables.add()
-        variable.name = "daily_walk_or_bicycle_travel_60_minutes_or_more"
-        variable.probability = 0.36
-        
-        discreteDistribution = bayesianNetwork.discreteDistributions.add()
-        discreteDistribution.name = "daily_time_sitting"
-        variable = discreteDistribution.variables.add()
-        variable.name = "daily_time_sitting_12_or_more_hours"
-        variable.probability = 0.08
-        variable = discreteDistribution.variables.add()
-        variable.name = "daily_time_sitting_over_6_but_less_than_12_hours"
-        variable.probability = 0.36
-        variable = discreteDistribution.variables.add()
-        variable.name = "daily_time_sitting_over_2_but_less_than_6_hours"
-        variable.probability = 0.49
-        variable = discreteDistribution.variables.add()
-        variable.name = "daily_time_sitting_less_than_2_hours"
-        variable.probability = 0.06
-
-        discreteDistribution = bayesianNetwork.discreteDistributions.add()
-        discreteDistribution.name = "physical_work"
-        variable = discreteDistribution.variables.add()
-        variable.name = "physical_work_no"
-        variable.probability = 0.76
-        variable = discreteDistribution.variables.add()
-        variable.name = "physical_work_yes"
-        variable.probability = 0.24
-
-        discreteDistribution = bayesianNetwork.discreteDistributions.add()
-        discreteDistribution.name = "ten_minutes_daily_workout"
-        variable = discreteDistribution.variables.add()
-        variable.name = "ten_minutes_daily_workout_no"
-        variable.probability = 0.60
-        variable = discreteDistribution.variables.add()
-        variable.name = "ten_minutes_daily_workout_yes"
-        variable.probability = 0.40
-
 #Poor diet
 
         discreteDistribution = bayesianNetwork.discreteDistributions.add()
@@ -1787,21 +1967,10 @@ def longevity_bayes():
         variable = discreteDistribution.variables.add()
         variable.name = "tuna_eaten_per_month_0_or_1"
         variable.probability = 0.36
-
-
-        discreteDistribution = bayesianNetwork.discreteDistributions.add()
-        discreteDistribution.name = "salt_how_often"
-        variable = discreteDistribution.variables.add()
-        variable.name = "salt_very_often"
-        variable.probability = 0.18
-        variable = discreteDistribution.variables.add()
-        variable.name = "salt_occasionally"
-        variable.probability = 0.29
-        variable = discreteDistribution.variables.add()
-        variable.name = "salt_rarely"
-        variable.probability = 0.53
         
-
+        
+ 
+ 
         discreteDistribution = bayesianNetwork.discreteDistributions.add()
         discreteDistribution.name = "eat_out_how_many_times_per_week"
         variable = discreteDistribution.variables.add()
@@ -1821,6 +1990,32 @@ def longevity_bayes():
         variable.probability = 0.22
 
 
+
+
+        #discreteDistribution = bayesianNetwork.discreteDistributions.add()
+        #discreteDistribution.name = "salt_how_often"
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "salt_very_often"
+        #variable.probability = 0.18
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "salt_occasionally"
+        #variable.probability = 0.29
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "salt_rarely"
+        #variable.probability = 0.53
+        
+
+                                
+        outstr = outstr + addCpt(bayesianNetwork,cpt) 
+        cpt = {}
+                 
+
+        cpt["salt_how_often"] = dependency(bayesianNetwork,cpt, 
+        [
+        ({"eat_out_how_many_times_per_week":["eat_out_more_than_7_times_per_week"]},{"sensitivity":0.80})
+        ],
+        {"salt_very_often":0.18,"no_salt_very_often":0.82}
+        )
 
         discreteDistribution = bayesianNetwork.discreteDistributions.add()
         discreteDistribution.name = "how_healthy_diet"
@@ -1971,21 +2166,44 @@ def longevity_bayes():
         discreteDistribution = bayesianNetwork.discreteDistributions.add()
         discreteDistribution.name = "dietary_cholesterol"
         variable = discreteDistribution.variables.add()
-        variable.name = "dietary_cholesterol_39.00_and_below"
-        variable.probability = 0.05
-        variable = discreteDistribution.variables.add()
-        variable.name = "dietary_cholesterol_above_39.00_to_124.00_and_below"
-        variable.probability = 0.20
-        variable = discreteDistribution.variables.add()
-        variable.name = "dietary_cholesterol_above_124.00_to_227.00_and_below"
+        variable.name = "dietary_cholesterol_above_403.00"
         variable.probability = 0.25
         variable = discreteDistribution.variables.add()
         variable.name = "dietary_cholesterol_above_227.00_to_403.00_and_below"
         variable.probability = 0.25
         variable = discreteDistribution.variables.add()
-        variable.name = "dietary_cholesterol_above_403.00"
+        variable.name = "dietary_cholesterol_above_124.00_to_227.00_and_below"
         variable.probability = 0.25
+        variable = discreteDistribution.variables.add()
+        variable.name = "dietary_cholesterol_above_39.00_to_124.00_and_below"
+        variable.probability = 0.20
+        variable = discreteDistribution.variables.add()
+        variable.name = "dietary_cholesterol_39.00_and_below"
+        variable.probability = 0.05
 
+        #discreteDistribution = bayesianNetwork.discreteDistributions.add()
+        #discreteDistribution.name = "total_cholesterol"
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "total_cholesterol_high_above_200"
+        #variable.probability = 0.30
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "total_cholesterol_normal_125_to_200"
+        #variable.probability = 0.64
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "total_cholesterol_low_below_125"
+        #variable.probability = 0.06
+                                
+        outstr = outstr + addCpt(bayesianNetwork,cpt) 
+        cpt = {}
+                 
+
+        cpt["total_cholesterol"] = dependency(bayesianNetwork,cpt, 
+        [
+        ({"dietary_cholesterol":["dietary_cholesterol_above_403.00"]},{"sensitivity":0.2})
+        ],
+        {"total_cholesterol_high_above_200":0.3,"no_total_cholesterol_high_above_200":0.7}
+        )
+ 
         discreteDistribution = bayesianNetwork.discreteDistributions.add()
         discreteDistribution.name = "dietary_copper"
         variable = discreteDistribution.variables.add()
@@ -2057,25 +2275,8 @@ def longevity_bayes():
         variable = discreteDistribution.variables.add()
         variable.name = "dietary_iron_8.24_and_below"
         variable.probability = 0.25
-
-        discreteDistribution = bayesianNetwork.discreteDistributions.add()
-        discreteDistribution.name = "dietary_energy"
-        variable = discreteDistribution.variables.add()
-        variable.name = "dietary_energy_above_3939.00"
-        variable.probability = 0.05
-        variable = discreteDistribution.variables.add()
-        variable.name = "dietary_energy_above_2612.00_to_3939.00_and_below"
-        variable.probability = 0.20
-        variable = discreteDistribution.variables.add()
-        variable.name = "dietary_energy_above_1930.00_to_2612.00_and_below"
-        variable.probability = 0.25
-        variable = discreteDistribution.variables.add()
-        variable.name = "dietary_energy_above_1399.00_to_1930.00_and_below"
-        variable.probability = 0.25
-        variable = discreteDistribution.variables.add()
-        variable.name = "dietary_energy_1399.00_and_below"
-        variable.probability = 0.25
-
+        
+        
         discreteDistribution = bayesianNetwork.discreteDistributions.add()
         discreteDistribution.name = "dietary_lycopene"
         variable = discreteDistribution.variables.add()
@@ -2201,24 +2402,55 @@ def longevity_bayes():
         variable = discreteDistribution.variables.add()
         variable.name = "dietary_selenium_above_140.40"
         variable.probability = 0.25
+        
+        
+                                
+        outstr = outstr + addCpt(bayesianNetwork,cpt) 
+        cpt = {}
+                 
 
+        cpt["dietary_sodium"] = dependency(bayesianNetwork,cpt, 
+        [
+        ({"salt_how_often":["salt_very_often"]},{"sensitivity":0.80})
+        ],
+        {"dietary_sodium_above_4297.00":0.25,"no_dietary_sodium_above_4297.00":0.75}
+        )
+
+
+        #discreteDistribution = bayesianNetwork.discreteDistributions.add()
+        #discreteDistribution.name = "dietary_sodium"
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "dietary_sodium_above_6872.00"
+        #variable.probability = 0.05
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "dietary_sodium_above_4297.00_to_6872.00_and_below"
+        #variable.probability = 0.20
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "dietary_sodium_above_3069.00_to_4297.00_and_below"
+        #variable.probability = 0.25
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "dietary_sodium_above_2111.00_to_3069.00_and_below"
+        #variable.probability = 0.25
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "dietary_sodium_2111.00_and_below"
+        #variable.probability = 0.25
+        
+        
         discreteDistribution = bayesianNetwork.discreteDistributions.add()
-        discreteDistribution.name = "dietary_sodium"
+        discreteDistribution.name = "sodium"
         variable = discreteDistribution.variables.add()
-        variable.name = "dietary_sodium_above_6872.00"
-        variable.probability = 0.05
+        variable.name = "sodium_below_135"
+        variable.probability = 0.01
         variable = discreteDistribution.variables.add()
-        variable.name = "dietary_sodium_above_4297.00_to_6872.00_and_below"
-        variable.probability = 0.20
+        variable.name = "sodium_135.0_to_140.0"
+        variable.probability = 0.51
         variable = discreteDistribution.variables.add()
-        variable.name = "dietary_sodium_above_3069.00_to_4297.00_and_below"
-        variable.probability = 0.25
+        variable.name = "sodium_141.0_to_145.0"
+        variable.probability = 0.44
         variable = discreteDistribution.variables.add()
-        variable.name = "dietary_sodium_above_2111.00_to_3069.00_and_below"
-        variable.probability = 0.25
-        variable = discreteDistribution.variables.add()
-        variable.name = "dietary_sodium_2111.00_and_below"
-        variable.probability = 0.25
+        variable.name = "sodium_146.0_and_higher"
+        variable.probability = 0.02
+
 
         discreteDistribution = bayesianNetwork.discreteDistributions.add()
         discreteDistribution.name = "dietary_thiamin"
@@ -2525,14 +2757,14 @@ def longevity_bayes():
         discreteDistribution = bayesianNetwork.discreteDistributions.add()
         discreteDistribution.name = "employment"
         variable = discreteDistribution.variables.add()
-        variable.name = "employment_not_working"
-        variable.probability = 0.42
-        variable = discreteDistribution.variables.add()
         variable.name = "employment_unemployed"
         variable.probability = 0.04
         variable = discreteDistribution.variables.add()
         variable.name = "employment_associated"
         variable.probability = 0.02
+        variable = discreteDistribution.variables.add()
+        variable.name = "employment_not_working"
+        variable.probability = 0.42
         variable = discreteDistribution.variables.add()
         variable.name = "employment_working"
         variable.probability = 0.51
@@ -2559,18 +2791,6 @@ def longevity_bayes():
         variable.probability = 0.04
 
 
-#inflammation
-
-        discreteDistribution = bayesianNetwork.discreteDistributions.add()
-        discreteDistribution.name = "c_reactive_protein"
-        variable = discreteDistribution.variables.add()
-        variable.name = "c_reactive_protein_high_above_2"
-        variable.probability = 0.45
-        variable = discreteDistribution.variables.add()
-        variable.name = "c_reactive_protein_low_2_and_below"
-        variable.probability = 0.55
-
-
 #Gum disease causes inflammation
 
 
@@ -2594,60 +2814,145 @@ def longevity_bayes():
         
 
 
-        discreteDistribution = bayesianNetwork.discreteDistributions.add()
-        discreteDistribution.name = "mouth_pain_last_year"
-        variable = discreteDistribution.variables.add()
-        variable.name = "mouth_pain_last_year_very_often"
-        variable.probability = 0.04
-        variable = discreteDistribution.variables.add()
-        variable.name = "mouth_pain_last_year_fairly_often"
-        variable.probability = 0.05
-        variable = discreteDistribution.variables.add()
-        variable.name = "mouth_pain_last_year_occasionally_or_hardly_ever"
-        variable.probability = 0.48
-        variable = discreteDistribution.variables.add()
-        variable.name = "mouth_pain_last_year_never"
-        variable.probability = 0.44
 
-        discreteDistribution = bayesianNetwork.discreteDistributions.add()
-        discreteDistribution.name = "gum_disease"
-        variable = discreteDistribution.variables.add()
-        variable.name = "gum_disease_yes"
-        variable.probability = 0.19
-        variable = discreteDistribution.variables.add()
-        variable.name = "gum_disease_no"
-        variable.probability = 0.80
+        #discreteDistribution = bayesianNetwork.discreteDistributions.add()
+        #discreteDistribution.name = "times_brush_teeth_daily"
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "times_brush_teeth_daily_none"
+        #variable.probability = 0.00
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "times_brush_teeth_daily_1"
+        #variable.probability = 0.31
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "times_brush_teeth_daily_2"
+        #variable.probability = 0.61
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "times_brush_teeth_daily_3_or_more"
+        #variable.probability = 0.08
+        
+        
+        outstr = outstr + addCpt(bayesianNetwork,cpt) 
+        cpt = {}
+        
+                
+        cpt["times_brush_teeth_daily"] = dependency(bayesianNetwork,cpt,
+                [
+                    ({"last_dentist_visit":["last_dentist_visit_never","last_dentist_visit_2_or_more_years"]},{"sensitivity":0.66})
+                    ],
+                {"times_brush_teeth_daily_1_or_less":0.33, "no_times_brush_teeth_daily_1_or_less":0.66}
+                )
+                
+                
+        #discreteDistribution = bayesianNetwork.discreteDistributions.add()
+        #discreteDistribution.name = "floss_days_per_week"
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "none"
+        #variable.probability = 0.34
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "1_to_3"
+        #variable.probability = 0.22
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "4_to_6"
+        #variable.probability = 0.09
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "7.0"
+        #variable.probability = 0.34
+        
+        
+        outstr = outstr + addCpt(bayesianNetwork,cpt) 
+        cpt = {}
+           
+                
+        cpt["floss_days_per_week"] = dependency(bayesianNetwork,cpt,
+                [
+                    ({"times_brush_teeth_daily":["times_brush_teeth_daily_1_or_less"]},{"sensitivity":0.75}),
+                    ({"last_dentist_visit":["last_dentist_visit_never","last_dentist_visit_2_or_more_years"]},{"sensitivity":0.66})
+                    ],
+                {"floss_days_per_week_3_or_less":0.56, "no_floss_days_per_week_3_or_less":0.44}
+                )
+                     
+
+        #discreteDistribution = bayesianNetwork.discreteDistributions.add()
+        #discreteDistribution.name = "teeth_health"
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "teeth_health_poor"
+        #variable.probability = 0.09
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "teeth_health_fair"
+        #variable.probability = 0.21
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "teeth_health_good"
+        #variable.probability = 0.57
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "teeth_health_excellent"
+        #variable.probability = 0.13
 
 
-        discreteDistribution = bayesianNetwork.discreteDistributions.add()
-        discreteDistribution.name = "teeth_health"
-        variable = discreteDistribution.variables.add()
-        variable.name = "teeth_health_poor"
-        variable.probability = 0.09
-        variable = discreteDistribution.variables.add()
-        variable.name = "teeth_health_fair"
-        variable.probability = 0.21
-        variable = discreteDistribution.variables.add()
-        variable.name = "teeth_health_good"
-        variable.probability = 0.57
-        variable = discreteDistribution.variables.add()
-        variable.name = "teeth_health_excellent"
-        variable.probability = 0.13
+        outstr = outstr + addCpt(bayesianNetwork,cpt) 
+        cpt = {}
+           
+                
+        cpt["teeth_health"] = dependency(bayesianNetwork,cpt,
+                [
+                    ({"times_brush_teeth_daily":["times_brush_teeth_daily_1_or_less"]},{"sensitivity":0.75}),
+                    ({"floss_days_per_week":["floss_days_per_week_3_or_less"]},{"sensitivity":0.66})
+                    ],
+                {"teeth_health_poor":0.09, "no_teeth_health_poor":0.91}
+                )
+              
+        #discreteDistribution = bayesianNetwork.discreteDistributions.add()
+        #discreteDistribution.name = "gum_disease"
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "gum_disease_yes"
+        #variable.probability = 0.19
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "gum_disease_no"
+        #variable.probability = 0.80       
 
-        discreteDistribution = bayesianNetwork.discreteDistributions.add()
-        discreteDistribution.name = "times_brush_teeth_daily"
-        variable = discreteDistribution.variables.add()
-        variable.name = "times_brush_teeth_daily_none"
-        variable.probability = 0.00
-        variable = discreteDistribution.variables.add()
-        variable.name = "times_brush_teeth_daily_1"
-        variable.probability = 0.31
-        variable = discreteDistribution.variables.add()
-        variable.name = "times_brush_teeth_daily_2"
-        variable.probability = 0.61
-        variable = discreteDistribution.variables.add()
-        variable.name = "times_brush_teeth_daily_3_or_more"
-        variable.probability = 0.08
+
+
+        outstr = outstr + addCpt(bayesianNetwork,cpt) 
+        cpt = {}
+           
+                
+        cpt["gum_disease"] = dependency(bayesianNetwork,cpt,
+                [
+                    ({"times_brush_teeth_daily":["times_brush_teeth_daily_1_or_less"]},{"sensitivity":0.75}),
+                    ({"floss_days_per_week":["floss_days_per_week_3_or_less"]},{"sensitivity":0.66})
+                    ],
+                {"gum_disease_yes":0.19, "gum_disease_no":0.81}
+                )
+
+
+        #discreteDistribution = bayesianNetwork.discreteDistributions.add()
+        #discreteDistribution.name = "mouth_pain_last_year"
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "mouth_pain_last_year_very_often"
+        #variable.probability = 0.04
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "mouth_pain_last_year_fairly_often"
+        #variable.probability = 0.05
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "mouth_pain_last_year_occasionally_or_hardly_ever"
+        #variable.probability = 0.48
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "mouth_pain_last_year_never"
+        #variable.probability = 0.44
+
+
+
+        outstr = outstr + addCpt(bayesianNetwork,cpt) 
+        cpt = {}
+           
+                
+        cpt["mouth_pain_last_year"] = dependency(bayesianNetwork,cpt,
+                [
+                    ({"gum_disease":["gum_disease_yes"]},{"sensitivity":0.75}),
+                    ({"teeth_health":["teeth_health_poor"]},{"sensitivity":0.66})
+                    ],
+                {"mouth_pain_last_year_fairly_often":0.09, "no_mouth_pain_last_year_fairly_often":0.91}
+                )
+
 
         discreteDistribution = bayesianNetwork.discreteDistributions.add()
         discreteDistribution.name = "dental_bone_loss"
@@ -2658,20 +2963,6 @@ def longevity_bayes():
         variable.name = "dental_bone_loss_no"
         variable.probability = 0.82
 
-        discreteDistribution = bayesianNetwork.discreteDistributions.add()
-        discreteDistribution.name = "floss_days_per_week"
-        variable = discreteDistribution.variables.add()
-        variable.name = "none"
-        variable.probability = 0.34
-        variable = discreteDistribution.variables.add()
-        variable.name = "1_to_3"
-        variable.probability = 0.22
-        variable = discreteDistribution.variables.add()
-        variable.name = "4_to_6"
-        variable.probability = 0.09
-        variable = discreteDistribution.variables.add()
-        variable.name = "7.0"
-        variable.probability = 0.34
 
         discreteDistribution = bayesianNetwork.discreteDistributions.add()
         discreteDistribution.name = "oral_cancer_exam"
@@ -2714,119 +3005,105 @@ def longevity_bayes():
         variable = discreteDistribution.variables.add()
         variable.name = "not_immunocompromised"
         variable.probability = 0.973
- #anomalies
-                       
+        
+        
         discreteDistribution = bayesianNetwork.discreteDistributions.add()
-        discreteDistribution.name = "heart_rate_anomaly"
+        discreteDistribution.name = "glucose_serum"
         variable = discreteDistribution.variables.add()
-        variable.name = "heart_rate_anomaly"
-        variable.probability = 0.03
-        variable = discreteDistribution.variables.add()
-        variable.name = "no_heart_rate_anomaly"
-        variable.probability = 0.97
-
-
-        discreteDistribution = bayesianNetwork.discreteDistributions.add()
-        discreteDistribution.name = "steps_anomaly"
-        variable = discreteDistribution.variables.add()
-        variable.name = "steps_anomaly"
+        variable.name = "glucose_serum_above_155.00"
         variable.probability = 0.05
         variable = discreteDistribution.variables.add()
-        variable.name = "no_steps_anomaly"
-        variable.probability = 0.95
+        variable.name = "glucose_serum_above_101.00_to_155.00_and_below"
+        variable.probability = 0.20
+        variable = discreteDistribution.variables.add()
+        variable.name = "glucose_serum_above_92.00_to_101.00_and_below"
+        variable.probability = 0.25
+        variable = discreteDistribution.variables.add()
+        variable.name = "glucose_serum_above_86.00_to_92.00_and_below"
+        variable.probability = 0.25
+        variable = discreteDistribution.variables.add()
+        variable.name = "glucose_serum_86.00_and_below"
+        variable.probability = 0.25
+       
+       
+        #discreteDistribution = bayesianNetwork.discreteDistributions.add()
+        #discreteDistribution.name = "fasting_glucose"
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "fasting_glucose_high_above_100"
+        #variable.probability = 0.57
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "fasting_glucose_normal_70_to_100"
+        #variable.probability = 0.43
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "fasting_glucose_low_below_70"
+        #variable.probability = 0.00
+ 
+        outstr = outstr + addCpt(bayesianNetwork,cpt) 
+        cpt = {}
+
+                
+        cpt["fasting_glucose"] = dependency(bayesianNetwork,cpt,
+                [
+                    ({"glucose_serum":["glucose_serum_above_155.00","glucose_serum_above_101.00_to_155.00_and_below"]},{"sensitivity":0.68})
+                    ],
+                {"fasting_glucose_high_above_100":0.57, "no_fasting_glucose_high_above_100":0.43}
+                )
+
+
+        outstr = outstr + addCpt(bayesianNetwork,cpt) 
+        cpt = {}
+
+                
+        cpt["a1c"] = dependency(bayesianNetwork,cpt,
+                [
+                    ({"fasting_glucose":["fasting_glucose_high_above_100"]},{"sensitivity":0.59})
+                    ],
+                {"a1c_diabetes_5.7_and_above":0.33, "no_a1c_diabetes_5.7_and_above":0.66}
+                )
+                
+                
+                
+        outstr = outstr + addCpt(bayesianNetwork,cpt) 
+        cpt = {}
+        
+        #cpt["blood_diabetes_indicators"] = dependency(bayesianNetwork,cpt,
+        #[
+         #   ({"a1c":["a1c_diabetes_6.5_and_above"]},{"sensitivity":0.68}),
+          #  ({"fasting_glucose":["fasting_glucose_hight_above_100"]},{"sensitivity":0.59}),
+           # ({"glucose_serum":["glucose_serum_above_155.00"]},{"sensitivity":0.77})
+        #],
+        #{"blood_diabetes_indicators":0.12,"no_blood_diabetes_indicators":0.88}
+        #)
+                    
+                 
+        
+        
         
 
 
-        discreteDistribution = bayesianNetwork.discreteDistributions.add()
-        discreteDistribution.name = "sleep_anomaly"
-        variable = discreteDistribution.variables.add()
-        variable.name = "sleep_anomaly"
-        variable.probability = 0.05
-        variable = discreteDistribution.variables.add()
-        variable.name = "no_sleep_anomaly"
-        variable.probability = 0.95
-        
+#Type 2 diabetes
+        #discreteDistribution = bayesianNetwork.discreteDistributions.add()
+        #discreteDistribution.name = "a1c"
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "a1c_diabetes_6.5_and_above"
+        #variable.probability = 0.05
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "a1c_prediabetes_low_5.7_to_6.4"
+        #variable.probability = 0.27
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "a1c_high_normal_5.3_to_5.6"
+        #variable.probability = 0.35
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "a1c_low_normal_below_5.3"
+        #variable.probability = 0.25
 
-
-        discreteDistribution = bayesianNetwork.discreteDistributions.add()
-        discreteDistribution.name = "workout_anomaly"
-        variable = discreteDistribution.variables.add()
-        variable.name = "workout_anomaly"
-        variable.probability = 0.05
-        variable = discreteDistribution.variables.add()
-        variable.name = "no_workout_anomaly"
-        variable.probability = 0.95
-        
-
-
-        discreteDistribution = bayesianNetwork.discreteDistributions.add()
-        discreteDistribution.name = "walking_speed_anomaly"
-        variable = discreteDistribution.variables.add()
-        variable.name = "walking_speed_anomaly"
-        variable.probability = 0.05
-        variable = discreteDistribution.variables.add()
-        variable.name = "no_walking_speed_anomaly"
-        variable.probability = 0.95
-        
-
-
-        discreteDistribution = bayesianNetwork.discreteDistributions.add()
-        discreteDistribution.name = "walking_speed_variability_anomaly"
-        variable = discreteDistribution.variables.add()
-        variable.name = "walking_speed_variability_anomaly"
-        variable.probability = 0.05
-        variable = discreteDistribution.variables.add()
-        variable.name = "no_walking_speed_variability_anomaly"
-        variable.probability = 0.95
-        
-
-
-        discreteDistribution = bayesianNetwork.discreteDistributions.add()
-        discreteDistribution.name = "stride_variability_anomaly"
-        variable = discreteDistribution.variables.add()
-        variable.name = "stride_variability_anomaly"
-        variable.probability = 0.05
-        variable = discreteDistribution.variables.add()
-        variable.name = "no_stride_variability_anomaly"
-        variable.probability = 0.95
-        
-
-
-        discreteDistribution = bayesianNetwork.discreteDistributions.add()
-        discreteDistribution.name = "step_assymetry_anomaly"
-        variable = discreteDistribution.variables.add()
-        variable.name = "step_assymetry_anomaly"
-        variable.probability = 0.05
-        variable = discreteDistribution.variables.add()
-        variable.name = "no_step_assymetry_anomaly"
-        variable.probability = 0.95
-        
-
-
-        discreteDistribution = bayesianNetwork.discreteDistributions.add()
-        discreteDistribution.name = "double_support_stepping_anomaly"
-        variable = discreteDistribution.variables.add()
-        variable.name = "double_support_stepping__anomaly"
-        variable.probability = 0.05
-        variable = discreteDistribution.variables.add()
-        variable.name = "no_double_support_stepping_anomaly"
-        variable.probability = 0.95
-        
-
-
-        discreteDistribution = bayesianNetwork.discreteDistributions.add()
-        discreteDistribution.name = "step_variability_anomaly"
-        variable = discreteDistribution.variables.add()
-        variable.name = "step_variability_anomaly"
-        variable.probability = 0.05
-        variable = discreteDistribution.variables.add()
-        variable.name = "no_step_variability_anomaly"
-        variable.probability = 0.95
         
        # conditional probability tables
 
-        cpt ={} 
- 
+        
+        outstr = outstr + addCpt(bayesianNetwork,cpt) 
+        cpt = {}
+
         #discreteDistribution = bayesianNetwork.discreteDistributions.add()
         #discreteDistribution.name = "heart_rate_variability_anomaly"
         #variable = discreteDistribution.variables.add()
@@ -2857,41 +3134,78 @@ def longevity_bayes():
 
         cpt["oxygen_anomaly"] = dependency(bayesianNetwork,cpt,
         [
+            ({"obesity":["obesity"]},{"sensitivity":0.8}),
             ({"heart_rate_anomaly":["heart_rate_anomaly"]},{"sensitivity":0.2})
         ],
         {"oxygen_anomaly":0.02,"no_oxygen_anomaly":0.98}
         )
                 
                 
+ 
+        outstr = outstr + addCpt(bayesianNetwork,cpt) 
+        cpt = {}
+
+
+        #discreteDistribution = bayesianNetwork.discreteDistributions.add()
+        #discreteDistribution.name = "sleep_anomaly"
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "sleep_anomaly"
+        #variable.probability = 0.05
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "no_sleep_anomaly"
+        #variable.probability = 0.95
+        
+
+                
+
+        cpt["sleep_anomaly"] = dependency(bayesianNetwork,cpt,
+        [
+            ({"lack_of_exercise":["lack_of_exercise"]},{"sensitivity":0.7}),
+            ({"oxygen_anomaly":["oxygen_anomaly"]},{"sensitivity":0.6})
+        ],
+        {"sleep_anomaly":0.05,"no_sleep_anomaly":0.95}
+        )
                 
                 
         cpt["blood_illness_indicators"] = any_of(bayesianNetwork,cpt,
                 {
          "nucleated_red_blood_cells":{ "nucleated_red_blood_cells_high_0.2"}, #he presence of nucleated RBC can indicate a number of diseases or blood conditions, such as leukemia, anemia, or problems with the spleen.
          "globulin":{"globulin_high_3.6 and_higher"},#High levels may indicate infection, inflammatory disease or immune disorders
-         "white_blood_cell_count":{"white_blood_cell_count_high_above_9.6"},#An elevated white blood cell count could be caused by a viral, bacterial or a parasitic infection
-         'c_reactive_protein':{"c_reactive_protein_high_above_2"}
+         "white_blood_cell_count":{"white_blood_cell_count_high_above_9.6"}#An elevated white blood cell count could be caused by a viral, bacterial or a parasitic infection
+         #'c_reactive_protein':{"c_reactive_protein_high_above_2"}
          },
          ["blood_illness_indicators","no_blood_illness_indicators"]
          )
   
-        cpt["blood_diabetes_indicators"] = any_of(bayesianNetwork,cpt,
-                {
-         "a1c":{ "a1c_diabetes_6.5_and_above"},
-         "fasting_glucose":{"fasting_glucose_hight_above_100"},
-         "glucose_serum":{"glucose_serum_above_155.00"}#The glucose serum is the simplest and most direct single test available to test for diabetes. fasting from blood liquid
-         },
-         ["blood_diabetes_indicators","no_blood_diabetes_indicators"]
-         )
-                 
-                 
+        #cpt["blood_diabetes_indicators"] = any_of(bayesianNetwork,cpt,
+        #       {
+        # "a1c":{ "a1c_diabetes_6.5_and_above"},
+        # "fasting_glucose":{"fasting_glucose_hight_above_100"},
+        # "glucose_serum":{"glucose_serum_above_155.00"}#The glucose serum is the simplest and most direct single test available to test for diabetes. fasting from blood liquid
+        # },
+         #["blood_diabetes_indicators","no_blood_diabetes_indicators"]
+         #)
+            
+
+#inflammation
+
+        #discreteDistribution = bayesianNetwork.discreteDistributions.add()
+        #discreteDistribution.name = "c_reactive_protein"
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "c_reactive_protein_high_above_2"
+        #variable.probability = 0.45
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "c_reactive_protein_low_2_and_below"
+        #variable.probability = 0.55
+
+
               
         cpt["blood_metabolism_disorder_indicators"] = any_of(bayesianNetwork,cpt,
                 {
          "total_cholesterol":{ "total_cholesterol_high_above_200"},
          "triglycerides":{"triglycerides_high_above_199"},#The most common causes of high triglycerides are obesity and poorly controlled diabetes. If you are overweight and are not active, you may have high triglycerides,
-         "blood_diabetes_indicators":{"blood_diabetes_indicators"},
-                 "direct_HDL":{"direct_HDL_low_below_40"}
+         "a1c":{"a1c_diabetes_5.7_and_above"},
+         "direct_HDL":{"direct_HDL_low_below_40"}
          },
          ["blood_metabolism_disorder_indicators","no_blood_metabolism_disorder_indicators"]
          )
@@ -2923,7 +3237,20 @@ def longevity_bayes():
                  
          )
                  
-        
+           
+ 
+        cpt["resting_heart_rate"] = dependency(bayesianNetwork,cpt,
+        [
+            ({"lack_of_exercise":["lack_of_exercise"]},{"sensitivity":0.8}),
+            ({"heart_rate_anomaly":["heart_rate_anomaly"]},{"sensitivity":0.8})
+        ],
+        {"resting_heart_rate_very_high_91_and_above":0.09,"no_resting_heart_rate_very_high_91_and_above":0.91}
+        )
+                        
+                                
+        outstr = outstr + addCpt(bayesianNetwork,cpt) 
+        cpt = {}
+         
         cpt["signal_heart_disorder_indicators"] = any_of(bayesianNetwork,cpt,
                 {
                         "resting_heart_rate":{"resting_heart_rate_very_high_91_and_above"},
@@ -2947,44 +3274,22 @@ def longevity_bayes():
                 )
                                 
                                 
-        
-        cpt["lack_of_exercise_reported"] = avg(bayesianNetwork,cpt,
-                [
-                        "shortness_of_breath_exertion",
-                        "daily_walk_or_bicycle_travel",
-                        "daily_time_sitting",
-                        "physical_work",
-                                                'ten_minutes_daily_workout'
-                ],
-                ["lack_of_exercise_reported","no_lack_of_exercise_reported"]
-
-                )
- 
- 
-        cpt["lack_of_exercise_signal"] = any_of(bayesianNetwork,cpt,
-                {
-         "workout_anomaly":{ "workout_anomaly"},
-         "walking_speed_anomaly":{"walking_speed_anomaly"},
-         "steps_anomaly":{"steps_anomaly"}
-         },
-         ["lack_of_exercise_signal","no_lack_of_exercise_signal"]
-                 
-         )
-                
- 
-        cpt["lack_of_exercise"] = any_of(bayesianNetwork,cpt,
-                {
-         "lack_of_exercise_signal":{ "lack_of_exercise_signal"},
-         "lack_of_exercise_reported":{"lack_of_exercise_reported"}
-         },
-         ["lack_of_exercise","no_lack_of_exercise"]
-                 
-         )
- 
         outstr = outstr + addCpt(bayesianNetwork,cpt) 
         cpt = {}
-                
- 
+                     
+        #Resting heart rate
+        #discreteDistribution = bayesianNetwork.discreteDistributions.add()
+        #discreteDistribution.name = "resting_heart_rate"
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "resting_heart_rate_very_high_91_and_above"
+        #variable.probability = 0.09
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "resting_heart_rate_high_81_to_90"
+        #variable.probability = 0.15
+        #variable = discreteDistribution.variables.add()
+        #variable.name = "resting_heart_rate_normal_under_80"
+        #variable.probability = 0.67
+
  
         cpt["blood_mild_liver_disorder_indicators"] = any_of(bayesianNetwork,cpt,
                 {
@@ -3031,57 +3336,33 @@ def longevity_bayes():
          ["blood_kidney_disorder_indicators","no_blood_kidney_disorder_indicators"]
                  
          )
-                 
-          
-        cpt["obesity_length"] = avg(bayesianNetwork,cpt,
-                [
-                                'hip',
-                                'waist',
-                                'height'
-                ],
-                ["obesity_length","no_obesity_length"]
-
-                )
-                 
-          
-        
-        cpt["obesity_weight"] = avg(bayesianNetwork,cpt,
-                [
-                                'weight_at_25',
-                                'greatest_weight',
-                                'weight'
-                ],
-                ["obesity_weight","no_obesity_weight"]
-
-                )
-                                
-                                
-                                
-        outstr = outstr + addCpt(bayesianNetwork,cpt) 
-        cpt = {}
-                 
-
-        cpt["obesity"] = dependency(bayesianNetwork,cpt, 
-        [
-        ({"bmi":["bmi_over_40_high_risk","bmi_35_to_39_moderate_risk","bmi_30_to_34_low_risk"]},{"sensitivity":0.9}),
-        ({"obesity_weight":["obesity_weight"]},{"sensitivity":0.8}),
-        ({"obesity_length":["obesity_length"]},{"sensitivity":0.7})
-        ],
-        {"obesity":0.38,"no_obesity":0.62}
-        )
+                
 
                        
          
                  
-        cpt["medicated_hypertension"] = avg(bayesianNetwork,cpt,
-                [
-                                "high_blood_pressure_patient_prescription",
-                                "high_blood_pressure_medication_compliance"
-                ],
-                ["medicated_hypertension","no_medicated_hypertension"]
+        #cpt["medicated_hypertension"] = avg(bayesianNetwork,cpt,
+                #[
+                        #        "high_blood_pressure_patient_prescription",
+                        #        "high_blood_pressure_medication_compliance"
+                #],
+                #["medicated_hypertension","no_medicated_hypertension"]
 
-                )
+                #)
 
+        outstr = outstr + addCpt(bayesianNetwork,cpt) 
+        cpt = {}
+                
+ 
+        cpt["medicated_hypertension"] = dependency(bayesianNetwork,cpt,
+        [
+            ({"diastolic":["diastolic_120_or_higher_crisis","diastolic_90_to_119_high_stage_2","diastolic_80_to_89_high_stage_1"]},{"sensitivity":0.4}),
+            ({"systolic":["systolic_180_over_crisis","systolic_140_to_179_high_stage_2","systolic_130_to_139_high_stage_1"]},{"sensitivity":0.6}),
+            ({"high_blood_pressure_patient_prescription":["high_blood_pressure_patient_prescription_yes"]},{"sensitivity":0.85}),
+            ({"high_blood_pressure_medication_compliance":["high_blood_pressure_medication_compliance_no"]},{"sensitivity":0.8})
+        ],
+        {"medicated_hypertension":0.09,"no_medicated_hypertension":0.91}
+        )
          
         cpt["reported_hypertension"] = any_of(bayesianNetwork,cpt,
                 {
@@ -3113,9 +3394,8 @@ def longevity_bayes():
          
         cpt["folate_labs"] = any_of(bayesianNetwork,cpt,
                 {
-         "folic_acid":{  "folic_acid_low_below_4.5"},
          "folate":{"folate_low_below_4.5"},
-                 "folate_mefox":{"folate_mefox_0.41_and_below"}
+         "folate_mefox":{"folate_mefox_0.41_and_below"}
          },
          ["deficient_folate_labs","no_deficient_folate_labs"]
          )
@@ -3124,7 +3404,7 @@ def longevity_bayes():
                  
         cpt["mineral_labs"] = avg(bayesianNetwork,cpt,
                 [
-                                'cobolt', #Cobalt is an element essential for human health as part of vitamin B12 (cobalamin), but is toxic at high levels.
+                                'cobalt', #Cobalt is an element essential for human health as part of vitamin B12 (cobalamin), but is toxic at high levels.
                                 'manganese', #Manganese helps the body form connective tissue, bones, blood clotting factors, and sex hormones
                                 'chromium', #chromium can lower glucose levels and improve insulin sensitivity
                                 'selenium' #Selenium is an essential trace mineral that supports many bodily processes. It can help improve cognition, immune system function, and fertility.
@@ -3244,6 +3524,19 @@ def longevity_bayes():
          },
          ["inflammation_from_illness","no_inflammation_from_illness"]
          )
+         
+            
+ 
+        outstr = outstr + addCpt(bayesianNetwork,cpt) 
+        cpt = {}
+                
+        cpt["c_reactive_protein"] = dependency(bayesianNetwork,cpt,
+        [
+            ({"inflammation_from_illness":["inflammation_from_illness"]},{"sensitivity":0.8})
+        ],
+        {"c_reactive_protein_high_above_2":0.45,"no_c_reactive_protein_high_above_2":0.55}
+        )
+                
                  
                  
         cpt["poor_sleep_schedule"] = avg(bayesianNetwork,cpt,
@@ -3260,8 +3553,7 @@ def longevity_bayes():
         cpt["poor_sleep"] = any_of(bayesianNetwork,cpt,
                 {
          "poor_sleep_schedule":{ "poor_sleep_schedule"},
-         "sleep_anomaly":{"sleep_anomaly"},
-         "oxygen_anomaly":{"oxygen_anomaly"}
+         "sleep_anomaly":{"sleep_anomaly"}
          },
          ["poor_sleep","no_poor_sleep"]
          )
@@ -3281,121 +3573,19 @@ def longevity_bayes():
                 
                 
                 
-        cpt["inflammation"] = any_of(bayesianNetwork,cpt,
-                {
-         "inflammation_from_behavior":{ "inflammation_from_behavior"},
-         "inflammation_from_illness":{"inflammation_from_illness"}
-         },
-         ["inflammation","no_inflammation"]
-         )
+        #cpt["inflammation"] = any_of(bayesianNetwork,cpt,
+         #       {
+         #"inflammation_from_behavior":{ "inflammation_from_behavior"},
+         #"inflammation_from_illness":{"inflammation_from_illness"}
+         #},
+         #["inflammation","no_inflammation"]
+         #)
                 
-                
-  
-        outstr = outstr + addCpt(bayesianNetwork,cpt) 
-        cpt = {}
-                 
-        cpt["hypertension"] = dependency(bayesianNetwork,cpt,
-        [
-        ({"age":["elderly"]},{"relative_risk":3.5}),
-        ({"age":["adult"]},{"relative_risk":2}),
-        ({"obesity":["obesity"]},{"relative_risk":2.17}),
-        ({"inflammation":["inflammation"]},{"relative_risk":2}),
-        ({"reported_hypertension":["reported_hypertension"]},{"sensitivity":0.9})
-        ],
-        {"hypertension":0.17,"no_hypertension":0.83}
-        )
-                
-                                 
+ 
         outstr = outstr + addCpt(bayesianNetwork,cpt) 
         cpt = {}
          
-        cpt["kidney_disease"] = dependency(bayesianNetwork,cpt,
-        [
-        ({"obesity":["obesity"]},{"relative_risk":2.14}),
-        ({"bmi":["bmi_25_to_29_overweight"]},{"relative_risk":1.21}),
-        ({"hypertension":["hypertension"]},{"relative_risk":2}),
-        ({"blood_kidney_disorder_indicators":["blood_kidney_disorder_indicators"]},{"sensitivity":0.4})
-        ],
-        {"kidney_disease":0.14,"no_kidney_disease":0.86}
-        )
-        
-        cpt["psychological_disorders"] = dependency(bayesianNetwork,cpt, ##
-        [
-        ({"anxious_how_often":["anxious_daily"]},{"sensitivity":2}),
-        ({"marital_status":["widowed"]},{"relative_risk":4}),
-        ({"marital_status":["separated","divorced","never_married"]},{"relative_risk":1.7}),
-        ({"inflammation":["inflammation"]},{"sensitivity": 0.3}),
-        ],
-        {"psychological_disorders":0.09,"no_psychological_disorders":0.91}
-        )        
-                
-                
-                        
-                        
-        
-                
-        cpt["hearing_difficulty"] = avg(bayesianNetwork,cpt,
-        [
-        "hearing_difficulty_how_often",
-                "hearing_frustration_how_often",
-                "wear_hearing_aid",
-                "loud_noise_job",
-                "loud_music"
-        ],
-        ["hearing_difficulty","no_hearing_difficulty"]
-
-        )
-                 
-
-        cpt["general_aging_signs"] = any_of(bayesianNetwork,cpt,
-        {
-        "urine_leakage_bother":{"urine_leakage_bother_greatly","urine_leakage_bother_very_much"},
-        "osteoporosis":{"osteoporosis_yes"},
-        "artificial_joints":{"artificial_joints_yes"},
-        "dental_bone_loss":{"dental_bone_loss_yes"},
-                "hearing_difficulty":{"hearing_difficulty"}
-        },
-        ["general_aging_signs","no_general_aging_signs"]
-
-        )
-
-       
-                
-        cpt["sarcopenia_movement"] = avg(bayesianNetwork,cpt,
-        [
-        "walking_difficulty",
-                "two_hour_standing_difficulty",
-                "stand_from_sit_difficulty",
-                "ten_stairs_difficulty",
-                "two_hour_sitting_difficulty"
-        ],
-        ["sarcopenia_movement","no_sarcopenia_movement"]
-
-        )
-                
-        cpt["sarcopenia_function"] = avg(bayesianNetwork,cpt,
-        [
-        "chore_difficulty",
-                "social_activity_difficulty",
-                "work_limiting_problem",
-                "birth_weight",
-                "lack_of_exercise"
-        ],
-        ["sarcopenia_function","no_sarcopenia_function"]
-
-        )
-
-
-        cpt["sarcopenia"] = any_of(bayesianNetwork,cpt,
-        {
-        "sarcopenia_movement":{"sarcopenia_movement"},
-        "sarcopenia_function":{"sarcopenia_function"}
-        },
-        ["sarcopenia","no_sarcopenia"]
-
-        )
-
-          
+                       
         
         cpt["low_socioeconomic_status_demography"] = avg(bayesianNetwork,cpt,
                 [
@@ -3555,7 +3745,7 @@ def longevity_bayes():
          
         cpt["poor_diet_basics"] = any_of(bayesianNetwork,cpt,
                 {
-         "water_drank_yesterday":{"water_drank_yesterday_0.00_and_below"},
+         "water_drank_yesterday":{"water_drank_yesterday_0.00_and_below","water_drank_yesterday_0.00_and_below"},
          "dietary_fiber":{"dietary_fiber_3.80_and_below"},
          "dietary_carbohydrate":{"dietary_carbohydrate_above_477.91"},
          "dietary_energy":{"dietary_energy_above_3939.00"}
@@ -3577,7 +3767,7 @@ def longevity_bayes():
         cpt["poor_diet_substances"] = any_of(bayesianNetwork,cpt,
                 {
          "dietary_caffeine":{"dietary_caffeine_0.00_and_below"},
-         "dietary_sodium":{"dietary_sodium_above_6872.00"},
+         "dietary_sodium":{"dietary_sodium_above_4297.00"},
          "alcohol_consumption_last_year":{"alcohol_daily"},
          "num_alcoholic_drinks_when_drinking":{"num_alcohol_8_or_more"}
          },
@@ -3656,7 +3846,7 @@ def longevity_bayes():
          "dietary_b6",
          "dietary_folate"
          ],
-         ["deficient_diet_vitamin_b_1","below_average_diet_vitamin_b_1","average_diet_vitamin_b_1","above_average_diet_vitamin_b_1","excellent_diet_vitamin_b1"]
+         ["deficient_diet_vitamin_b_1","below_average_diet_vitamin_b_1","average_diet_vitamin_b_1","above_average_diet_vitamin_b_1","excellent_diet_vitamin_b_1"]
          )
          
 
@@ -3731,7 +3921,6 @@ def longevity_bayes():
         cpt["diet_substances"] = avg(bayesianNetwork,cpt,
           [
          "dietary_caffeine",
-                 'salt_how_often',
          "dietary_sodium",
          "alcohol_consumption_last_year",
          "num_alcoholic_drinks_when_drinking"
@@ -3776,13 +3965,193 @@ def longevity_bayes():
 
         cpt["poor_diet"] = dependency(bayesianNetwork,cpt,
                         [
-                            ({"low_socioeconomic_status":["low_socioeconomic_status"]},{"relative_risk":1.66}),
-                            ({"diet_quality":["deficient_diet_quality"]},{"sensitivity":0.9}),
-                            ({"diet_quality":["below_average_diet_quality"]},{"sensitivity":0.8}),
+                            ({"low_socioeconomic_status":["low_socioeconomic_status"]},{"relative_risk":2.66}),
+                            ({"diet_quality":["deficient_diet_quality"]},{"sensitivity":0.8}),
+                            ({"diet_quality":["below_average_diet_quality"]},{"sensitivity":0.7}),
                             ({"poor_diet_flag":["poor_diet_flag"]},{"sensitivity":0.5})
                         ],
-                        {"poor_diet":0.07,"no_poor_diet":0.93}
+                        {"poor_diet":0.17,"no_poor_diet":0.83}
                         )
+ 
+ 
+        outstr = outstr + addCpt(bayesianNetwork,cpt) 
+        cpt = {}
+         
+                        
+
+        cpt["inflammation_from_diet"] = dependency(bayesianNetwork,cpt,
+                        [
+                            ({"omega_3":["deficient_omega_3"]},{"sensitivity":.75}),
+                            ({"poor_diet":["poor_diet"]},{"sensitivity":.75}),
+                            ({"blood_metabolism_disorder_indicators":["blood_metabolism_disorder_indicators"]},{"sensitivity":0.6}),
+                            ({"dietary_carbohydrate":["dietary_carbohydrate_above_477.91"]},{"sensitivity":0.5}),
+                            ({"water_drank_yesterday":["water_drank_yesterday_above_0.00_to_330.00_and_below"]},{"sensitivity":0.3})
+                        ],
+                        {"inflammation_from_diet":0.07,"no_inflammation_from_diet":0.93}
+                        )
+ 
+  
+        outstr = outstr + addCpt(bayesianNetwork,cpt) 
+        cpt = {}
+         
+           
+
+        cpt["inflammation"] = dependency(bayesianNetwork,cpt,
+                        [
+                            ({"inflammation_from_behavior":["inflammation_from_behavior"]},{"sensitivity":.75}),
+                            ({"c_reactive_protein":["c_reactive_protein_high_above_2"]},{"sensitivity":0.85}),
+                            ({"inflammation_from_diet":["inflammation_from_diet"]},{"sensitivity":0.5}),
+                            ({"age":["elderly"]},{"sensitivity":0.4})
+                        ],
+                        {"inflammation":0.07,"no_inflammation":0.93}
+                        )
+                
+  
+        outstr = outstr + addCpt(bayesianNetwork,cpt) 
+        cpt = {}
+                 
+        cpt["hypertension"] = dependency(bayesianNetwork,cpt,
+        [
+        ({"age":["elderly"]},{"relative_risk":3.5}),
+        ({"age":["adult"]},{"relative_risk":2}),
+        ({"dietary_sodium":["dietary_sodium_above_4297.00"]},{"relative_risk":2.17}),
+        ({"inflammation":["inflammation"]},{"relative_risk":2}),
+        ({"reported_hypertension":["reported_hypertension"]},{"sensitivity":0.9})
+        ],
+        {"hypertension":0.17,"no_hypertension":0.83}
+        )
+                
+                                 
+        outstr = outstr + addCpt(bayesianNetwork,cpt) 
+        cpt = {}
+         
+        cpt["kidney_disease"] = dependency(bayesianNetwork,cpt,
+        [
+        ({"obesity":["obesity"]},{"relative_risk":2.14}),
+        ({"bmi":["bmi_25_to_29_overweight"]},{"relative_risk":1.21}),
+        ({"hypertension":["hypertension"]},{"relative_risk":2}),
+        ({"blood_kidney_disorder_indicators":["blood_kidney_disorder_indicators"]},{"sensitivity":0.4})
+        ],
+        {"kidney_disease":0.14,"no_kidney_disease":0.86}
+        )
+        
+        cpt["psychological_disorders"] = dependency(bayesianNetwork,cpt, ##
+        [
+        ({"anxious_how_often":["anxious_daily"]},{"sensitivity":2}),
+        ({"marital_status":["widowed"]},{"relative_risk":4}),
+        ({"marital_status":["separated","divorced","never_married"]},{"relative_risk":1.7}),
+        ({"inflammation":["inflammation"]},{"sensitivity": 0.3}),
+        ({"heart_rate_variability_anomaly":["heart_rate_variability_anomaly"]},{"sensitivity": 0.5}),
+        ],
+        {"psychological_disorders":0.09,"no_psychological_disorders":0.91}
+        )        
+                
+                
+                
+        cpt["hearing_difficulty"] = avg(bayesianNetwork,cpt,
+        [
+        "hearing_difficulty_how_often",
+                "hearing_frustration_how_often",
+                "wear_hearing_aid",
+                "loud_noise_job",
+                "loud_music"
+        ],
+        ["hearing_difficulty","no_hearing_difficulty"]
+
+        )
+                 
+
+        cpt["general_aging_signs"] = any_of(bayesianNetwork,cpt,
+        {
+        "urine_leakage_bother":{"urine_leakage_bother_greatly","urine_leakage_bother_very_much"},
+        "osteoporosis":{"osteoporosis_yes"},
+        "artificial_joints":{"artificial_joints_yes"},
+        "dental_bone_loss":{"dental_bone_loss_yes"},
+                "hearing_difficulty":{"hearing_difficulty"}
+        },
+        ["general_aging_signs","no_general_aging_signs"]
+
+        )
+
+       
+                
+        cpt["sarcopenia_movement"] = avg(bayesianNetwork,cpt,
+        [
+        "walking_difficulty",
+                "two_hour_standing_difficulty",
+                "stand_from_sit_difficulty",
+                "ten_stairs_difficulty",
+                "two_hour_sitting_difficulty"
+        ],
+        ["sarcopenia_movement","no_sarcopenia_movement"]
+
+        )
+                
+        cpt["sarcopenia_function"] = avg(bayesianNetwork,cpt,
+        [
+        "chore_difficulty",
+                "social_activity_difficulty",
+                "work_limiting_problem",
+                "birth_weight",
+                "lack_of_exercise"
+        ],
+        ["sarcopenia_function","no_sarcopenia_function"]
+
+        )
+
+
+
+        cpt["sarcopenia_reported"] = any_of(bayesianNetwork,cpt,
+        {
+        "sarcopenia_movement":{"sarcopenia_movement"},
+        "sarcopenia_function":{"sarcopenia_function"}
+        },
+        ["sarcopenia_reported","no_sarcopenia_reported"]
+
+        )
+
+              
+        cpt["frailty_signals"] = any_of(bayesianNetwork,cpt,
+        {
+        "step_variability_anomaly":{"step_variability_anomaly"},
+        "double_support_stepping_anomaly":{"double_support_stepping_anomaly"},
+        "step_assymetry_anomaly":{"step_assymetry_anomaly"},
+        "stride_variability_anomaly":{"stride_variability_anomaly"},
+        "walking_speed_variability_anomaly":{"walking_speed_variability_anomaly"}
+        },
+        ["frailty_signals","no_frailty_signals"]
+
+        )
+                
+              
+          
+         
+        outstr = outstr + addCpt(bayesianNetwork,cpt) 
+        cpt = {}
+         
+                        
+
+        cpt["sarcopenia"] = dependency(bayesianNetwork,cpt,
+                        [
+                            ({"sarcopenia_reported":["sarcopenia_reported"]},{"relative_risk":1.66}),
+                            ({"frailty_signals":["frailty_signals"]},{"sensitivity":0.9}),
+                            ({"age":["elderly"]},{"sensitivity":0.8}),
+                            ({"lack_of_exercise":["lack_of_exercise"]},{"sensitivity":0.5})
+                        ],
+                        {"sarcopenia":0.07,"no_sarcpenia":0.93}
+                        )
+ 
+
+        #cpt["sarcopenia"] = any_of(bayesianNetwork,cpt,
+        #{
+        #"sarcopenia_movement":{"sarcopenia_movement"},
+        #"sarcopenia_function":{"sarcopenia_function"},
+        #"frailty_signals":{frailty_signals}
+        #},
+        #["sarcopenia","no_sarcopenia"]
+        #)
+
+
  
         cpt["smoking"] = any_of(bayesianNetwork,cpt,
                 {
@@ -3796,6 +4165,17 @@ def longevity_bayes():
          )
          
  
+         
+        cpt["smoking"] = avg(bayesianNetwork,cpt,
+         [
+         "second_hand_smoke",
+         "five_days_smoke_cigarettes",
+         "ever_vaped",
+         "cotinine"
+         ],
+         ["smoking","no_smoking"]
+         )
+         
          
 
         cpt["inactivated_sirtuins"] = dependency(bayesianNetwork,cpt,
@@ -3818,28 +4198,13 @@ def longevity_bayes():
         ["lung_or_kidney_or_liver_disease","no_lung_or_kidney_or_liver_disease"]
 
         )
-
-              
-        cpt["frailty_signals"] = any_of(bayesianNetwork,cpt,
-        {
-        "step_variability_anomaly":{"step_variability_anomaly"},
-        "double_support_stepping_anomaly":{"double_support_stepping_anomaly"},
-        "step_assymetry_anomaly":{"step_assymetry_anomaly"},
-        "stride_variability_anomaly":{"stride_variability_anomaly"},
-        "walking_speed_variability_anomaly":{"walking_speed_variability_anomaly"}
-        },
-        ["frailty_signals","no_frailty_signals"]
-
-        )
-                
-                
+  
                 
         cpt["frailty_signs"] = avg(bayesianNetwork,cpt,
         [
                 "general_aging_signs",
                 "sarcopenia",
-                "blood_age_indicators",
-                "frailty_signals"
+                "blood_age_indicators"
         ],
         ["frailty_signs","no_frailty_signs"]
 
@@ -3857,7 +4222,7 @@ def longevity_bayes():
                     ({"poor_diet":["poor_diet"]},{"sensitivity":0.3}),
                     ({"blood_age_indicators":["blood_age_indicators"]},{"sensitivity":0.3})
                 ],
-                {"hallmark_1_genomic_instability":0.1, "no_halmark_1_genomic_instability":0.9}
+                {"hallmark_1_genomic_instability":0.1, "no_hallmark_1_genomic_instability":0.9}
                 )
  
         outstr = outstr + addCpt(bayesianNetwork,cpt) 
@@ -3929,18 +4294,6 @@ def longevity_bayes():
         )
                 
            
-         
-        cpt["mitochondrial_dysfunction_or_cellular_senescence"] = any_of(bayesianNetwork,cpt,
-                {
-         "hallmark_6_mitochondrial_dysfunction":{"hallmark_6_mitochondrial_dysfunction"},
-         "hallmark_7_cellular_senescence":{"hallmark_7_cellular_senescence"}
-         },
-         ["mitochondrial_dysfunction_or_cellular_senescence","no_mitochondrial_dysfunction_or_cellular_senescence"]
-         )
-
-
-        outstr = outstr + addCpt(bayesianNetwork,cpt) 
-        cpt = {}
                  
         cpt["diabetes"] = dependency(bayesianNetwork,cpt,
         [
@@ -3950,25 +4303,31 @@ def longevity_bayes():
         ({"bmi":["bmi_30_to_34_low_risk"]},{"relative_risk":2.5}),
         ({"bmi":["bmi_25_to_29_overweight"]},{"relative_risk":1.5}),
         ({"hypertension":["hypertension"]},{"relative_risk":3.8}),
-        ({"mitochondrial_dysfunction_or_cellular_senescence":["mitochondrial_dysfunction_or_cellular_senescence"]},{"sensitivity":0.3}),
-        ({"blood_diabetes_indicators":["blood_diabetes_indicators"]},{"sensitivity":0.85})
+        ({"a1c":["a1c_diabetes_5.7_and_above"]},{"sensitivity":0.99}) # true sensitivites are in the blood diabetes rule and this carries them over
         ],
         {"diabetes":0.12,"no_diabetes":0.88}
         )
          
- 
         outstr = outstr + addCpt(bayesianNetwork,cpt) 
         cpt = {}
+        
+        cpt["mitochondrial_dysfunction_or_cellular_senescence"] = any_of(bayesianNetwork,cpt,
+                {
+         "diabetes":{"diabetes"},
+         "hallmark_6_mitochondrial_dysfunction":{"hallmark_6_mitochondrial_dysfunction"},
+         "hallmark_7_cellular_senescence":{"hallmark_7_cellular_senescence"}
+         },
+         ["mitochondrial_dysfunction_or_cellular_senescence","no_mitochondrial_dysfunction_or_cellular_senescence"]
+         )
 
-                          
+
         cpt["cardiovascular_disease"] = dependency(bayesianNetwork,cpt, 
         [
         ({"age":["elderly"]},{"relative_risk":7}),
         ({"diabetes":["diabetes"]},{"relative_risk":3}),
         ({"obesity":["obesity"]},{"relative_risk":2}),
         ({"heart_disorder_indicators":["heart_disorder_indicators"]},{"sensitivity":8}),
-        ({"hypertension":["hypertension"]},{"relative_risk":3.15}),
-        ({"lack_of_exercise":["lack_of_exercise"]},{"relative_risk":1.53}),
+        ({"hypertension":["hypertension"]},{"relative_risk":3.15})
                 
         ],
         {"cardiovascular_disease":0.09,"no_cardiovascular_disease":0.91}
@@ -4004,7 +4363,6 @@ def longevity_bayes():
                 
         cpt["frailty"] = dependency(bayesianNetwork,cpt,
                 [
-                    ({"age":["elderly"]},{"sensitivity":0.5}),
                     ({"inactivated_sirtuins":["inactivated_sirtuins"]},{"sensitivity":0.3}),
                     ({"comorbidities":["comorbidities"]},{"sensitivity":0.4}),
                     ({"frailty_signs":["frailty_signs"]},{"sensitivity":0.7}),
@@ -4015,16 +4373,30 @@ def longevity_bayes():
 
 
                 
-        cpt["hallmark_3_epigenetic_alterations"] = any_of(bayesianNetwork,cpt,
-        {
-        "liver_disorders":{"liver_disorders"},
-                "poor_sleep":{"poor_sleep"},
-                "folate_labs":{"deficient_folate_labs"},
-        "frailty":{"frailty"}
-        },
+        #cpt["hallmark_3_epigenetic_alterations"] = any_of(bayesianNetwork,cpt,
+        #{
+        #"liver_disorders":{"liver_disorders"},
+               # "poor_sleep":{"poor_sleep"},
+                #"folate_labs":{"deficient_folate_labs"},
+        #"frailty":{"frailty"}
+        #},
+        #["hallmark_3_epigenetic_alterations","no_hallmark_3_epigenetic_alterations"]
+
+        #)
+        
+        
+                
+        cpt["hallmark_3_epigenetic_alterations"] = avg(bayesianNetwork,cpt,
+        [
+                "liver_disorders",
+                "poor_sleep",
+                "folate_labs",
+                "frailty"
+        ],
         ["hallmark_3_epigenetic_alterations","no_hallmark_3_epigenetic_alterations"]
 
         )
+                
                 
                 
                 

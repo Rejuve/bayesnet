@@ -1170,6 +1170,11 @@ def dependency(bayesianNetwork, cpt, invars, outvars):
         import itertools
         from scipy.optimize import linprog
 
+        import time
+
+        print("start timing...")
+        tic = time.perf_counter()
+
         #window = 1.0
         #cut = 1.0
         #lastTrue = None
@@ -1486,8 +1491,10 @@ def dependency(bayesianNetwork, cpt, invars, outvars):
                 cpt_rows.append(cpt_row)
         #print ("cpt_rows")
         #print(cpt_rows)
+        toc = time.perf_counter()
+        diff = toc - tic
 
-        print(outvars)
+        print (f"{outvars} took {diff} seconds")
         return (cpt_rows,keylist,outvars,description)
 
 
