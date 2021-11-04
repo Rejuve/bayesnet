@@ -49,7 +49,7 @@ We offer a function that expresses depenency, that makes it easy to add data fro
         ({"age":["elderly"]},{"relative_risk":7}),
         ({"diabetes":["diabetes"]},{"relative_risk":3}),
         ({"obesity":["obesity"]},{"relative_risk":2}),
-        ({"heart_disorder_indicators":["heart_disorder_indicators"]},{"sensitivity":8}),
+        ({"heart_disorder_indicators":["heart_disorder_indicators"]},{"sensitivity":0.8}),
         ({"hypertension":["hypertension"]},{"relative_risk":3.15})
                 
         ],
