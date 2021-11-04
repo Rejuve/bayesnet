@@ -38,22 +38,23 @@ Conditional Probability Tables (CPTs) are notoriously hard to fill in by hand.  
 		variable.name = "no_cough"
 		variable.probability = 0.90
 
-We offer a function that expresses depenency, that makes it easy to add data from the medical literature because statistics are expressed in the same way they in the medical literature.  The relative_risk function enters into the net the most common from Randomized Controlled Trials, and Systematic Analyses and Metareviews of RCTs, the relative risk statistic.  Simply put the statistics from the literature after the cpt variable in the literature, including a list of all the values of the variable that are included in the relative risk.  The incidence of the disease regardless of variable values is listedd afterwards.  Relative risk values just show how many times more likely you are to get a condition if you have the given variable values.  Odds risk can be used for low prevalence conditions.  This function uses linear programming underneath to assume linearity unless determined otherwise in cases where the information given underdetermines the distribution.
+We offer a function that expresses depenency, that makes it easy to add data from the medical literature because statistics are expressed in the same way they in the medical literature.  The dependency function enters into the net the most common statistics from Randomized Controlled Trials, and Systematic Analyses and Metareviews of RCTs, the relative risk statistic and the sensitivity statistic.  Simply put the statistics from the literature after the cpt variable in the literature, including a list of all the values of the variable that are included in the relative risk.  The incidence of the disease regardless of variable values is listed afterwards.  Relative risk values just show how many times more likely you are to get a condition if you have the given variable values.  Odds risk can be used for low prevalence conditions. Sensitivity can be used to indicate the sensitivity of tests to a condition. This function uses linear programming underneath to assume linearity unless determined otherwise in cases where the information given underdetermines the distribution.
 
 
 
-	cpt["diabetes"] = relative_risk(bayesianNetwork,cpt,
-		[
-		({"age":["elderly"]},4.5),
-		({"bmi":["bmi_over_40_high_risk"]},5.1),
-		({"bmi":["bmi_35_to_39_moderate_risk"]},3.6),
-		({"bmi":["bmi_30_to_34_low_risk"]},2.5),
-		({"bmi":["bmi_25_to_29_overweight"]},1.5),
-		({"hypertension":["hypertension"]},3.8),
-		({"psychological_disorders":["psychological_disorders"]},1.7)
-		],
-		{"diabetes":0.12,"no_diabetes":0.88}
-		)
+	
+
+        cpt["cardiovascular_disease"] = dependency(bayesianNetwork,cpt, 
+        [
+        ({"age":["elderly"]},{"relative_risk":7}),
+        ({"diabetes":["diabetes"]},{"relative_risk":3}),
+        ({"obesity":["obesity"]},{"relative_risk":2}),
+        ({"heart_disorder_indicators":["heart_disorder_indicators"]},{"sensitivity":8}),
+        ({"hypertension":["hypertension"]},{"relative_risk":3.15})
+                
+        ],
+        {"cardiovascular_disease":0.09,"no_cardiovascular_disease":0.91}
+        )
 
 CPTs are made from these variables and the variables in other CPTs.  We offer an "all_of" function, which is true when all of the input variables have values stated in a list (in this case, a python set).  This and the other functions list the output values.  If all have values in their respective lists, then the first value is true, else the second value.  "all_of" can thus have only two output values:  
 
