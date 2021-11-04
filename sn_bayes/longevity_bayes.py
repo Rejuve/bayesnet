@@ -4037,7 +4037,7 @@ def longevity_bayes():
         
         cpt["psychological_disorders"] = dependency(bayesianNetwork,cpt, ##
         [
-        ({"anxious_how_often":["anxious_daily"]},{"sensitivity":2}),
+        ({"anxious_how_often":["anxious_daily"]},{"sensitivity":0.2}),
         ({"marital_status":["widowed"]},{"relative_risk":4}),
         ({"marital_status":["separated","divorced","never_married"]},{"relative_risk":1.7}),
         ({"inflammation":["inflammation"]},{"sensitivity": 0.3}),
@@ -4326,7 +4326,7 @@ def longevity_bayes():
         ({"age":["elderly"]},{"relative_risk":7}),
         ({"diabetes":["diabetes"]},{"relative_risk":3}),
         ({"obesity":["obesity"]},{"relative_risk":2}),
-        ({"heart_disorder_indicators":["heart_disorder_indicators"]},{"sensitivity":8}),
+        ({"heart_disorder_indicators":["heart_disorder_indicators"]},{"sensitivity":0.8}),
         ({"hypertension":["hypertension"]},{"relative_risk":3.15})
                 
         ],
