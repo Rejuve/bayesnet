@@ -262,6 +262,9 @@ def quan(s,percentile):
     sr = s.quantile(percentile)
     return sr[0]
 
+def std(s):
+    sr = s.std()
+    return sr
 
 def iqr(s,c):
         sr = s.quantile(0.25)
@@ -431,7 +434,9 @@ def detect_anomalies(anomaly_tuples,bayesianNetwork,anomaly_params):
                             from adtk.detector import VolatilityShiftAD
                             volatility_shift_ad = VolatilityShiftAD(c=anomaly_params[var]['c'], side=anomaly_params[var]['side'],window=anomaly_params[var]['window'])
                             anomaly_dict[var][detector] = volatility_shift_ad.detect(s)
+                            fitted[var]['std'] = std(s)
 
+               
                         except RuntimeError as e:
                             print(f'VolatilityShiftAD-{var}')
                             print(e)

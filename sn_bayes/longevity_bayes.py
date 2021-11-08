@@ -58,7 +58,7 @@ def longevity_bayes():
 
 
         anomaly = bayesianNetwork.anomalies.add()
-        anomaly.varName = "step_assymetry_anomaly"
+        anomaly.varName = "step_asymmetry_anomaly"
         anomaly.n_steps = 14
         anomaly.step_size = 24
         anomaly.c = 12.0
@@ -773,12 +773,12 @@ def longevity_bayes():
 
 
         discreteDistribution = bayesianNetwork.discreteDistributions.add()
-        discreteDistribution.name = "step_assymetry_anomaly"
+        discreteDistribution.name = "step_asymmetry_anomaly"
         variable = discreteDistribution.variables.add()
-        variable.name = "step_assymetry_anomaly"
+        variable.name = "step_asymmetry_anomaly"
         variable.probability = 0.05
         variable = discreteDistribution.variables.add()
-        variable.name = "no_step_assymetry_anomaly"
+        variable.name = "no_step_asymmetry_anomaly"
         variable.probability = 0.95
         
 
@@ -4115,7 +4115,7 @@ def longevity_bayes():
         {
         "step_variability_anomaly":{"step_variability_anomaly"},
         "double_support_stepping_anomaly":{"double_support_stepping_anomaly"},
-        "step_assymetry_anomaly":{"step_assymetry_anomaly"},
+        "step_asymmetry_anomaly":{"step_asymmetry_anomaly"},
         "stride_variability_anomaly":{"stride_variability_anomaly"},
         "walking_speed_variability_anomaly":{"walking_speed_variability_anomaly"}
         },

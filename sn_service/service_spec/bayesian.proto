@@ -68,6 +68,7 @@ message BayesianNetwork{
 	float low = 11;
 	float high_percent = 12;
 	float low_percent = 13;
+	float std = 14;
   }
   
   repeated Anomaly anomalies = 3;
