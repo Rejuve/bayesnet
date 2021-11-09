@@ -106,7 +106,7 @@ def longevity_bayes():
         anomaly = bayesianNetwork.anomalies.add()
         anomaly.varName = "walking_speed_anomaly"
         anomaly.low = 40
-        anomaly.n = 30 
+        anomaly.n = 2 
         detectors = anomaly.detectors.add()
         detectors.name = "ThresholdAD"
                 
@@ -114,7 +114,7 @@ def longevity_bayes():
         anomaly = bayesianNetwork.anomalies.add()
         anomaly.varName = "steps_anomaly"
         anomaly.low = 4400
-        anomaly.n = 30 
+        anomaly.n = 2 
         detectors = anomaly.detectors.add()
         detectors.name = "ThresholdAD"
                 
@@ -122,7 +122,7 @@ def longevity_bayes():
         anomaly = bayesianNetwork.anomalies.add()
         anomaly.varName = "workout_anomaly"
         anomaly.low = 10
-        anomaly.n = 30 
+        anomaly.n = 2 
         detectors = anomaly.detectors.add()
         detectors.name = "ThresholdAD"
 
@@ -131,7 +131,7 @@ def longevity_bayes():
         anomaly.varName = "sleep_anomaly"
         anomaly.low = 6
         anomaly.high = 13
-        anomaly.n = 30 
+        anomaly.n = 2 
         detectors = anomaly.detectors.add()
         detectors.name = "ThresholdAD"
                 
@@ -155,7 +155,7 @@ def longevity_bayes():
         anomaly.n_steps = 14
         anomaly.step_size = 24
         anomaly.c = 12.0
-        anomaly.n = 24
+        anomaly.n = 2
         anomaly.window = 5
         anomaly.side = "positive"
         anomaly.is_all = False
