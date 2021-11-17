@@ -1179,6 +1179,24 @@ def dependency(bayesianNetwork, cpt, invars, outvars):
 
         print("start timing...")
         tic = time.perf_counter()
+ 
+        var_positions = get_var_positions(bayesianNetwork)
+        vdict = dictVarsAndValues(bayesianNetwork, cpt)
+ 
+        # non elderly hbp prevalence = (prevalence of hbp regardless)/ ((prevalence of elderly X elderly with hbp relative risk) + (1-prevalence of elderly))
+        
+        prevalence_condition_regardless = list(outvars.items())[0][1]
+  
+        priors = get_priors(bayesianNetwork,invars,prevalence_condition_regardless,cpt)
+        #print("priors")
+        #print(priors)
+        better_than_val_prevalence={}
+        val_prevalence = {}
+        keyset = OrderedSet([])
+        keys_vals_risks = {}
+
+        better_than_val_prevalence1 = {}
+ 
 
         #window = 1.0
         #cut = 1.0
@@ -1194,20 +1212,23 @@ def dependency(bayesianNetwork, cpt, invars, outvars):
                 phrase = "" if firsttime else " and "
                 description + phrase + k + " of " + str(v) + " , "
                 firsttime = False
-        prevalence = list(outvars.items())[0][1]
         firsttime = True
         for vardict,numval_dict in invars:
                     numval = numval_dict["relative_risk"] if "relative_risk" in numval_dict else (
-                            (numval_dict["sensitivity"]/prevalence) if "sensitivity" in numval_dict else 1) 
+                            numval_dict["sensitivity"] if "sensitivity" in numval_dict else 1) 
                     for val, varlist in vardict.items():
                             phrase = "" if firsttime else (" , and " if varlist [-1] is val else " , " )
 
                             description= description + phrase + "the relative risk of {0} for those in the " + val + " category of " 
                             firsttime1 = True
+                            sum_priors = 0
                             for var in varlist:                                
                                     phrase = "" if firsttime1 else " or "
                                     description = description + phrase + var
                                     firsttime1 = False
+                                    sum_priors += priors[val][var]
+                            if "sensitivity" in numval_dict:
+                                numval = (1-sum_priors)*numval_dict["sensitivity"]/(prevalence_condition_regardless-(numval_dict["sensitivity"]* sum_priors))
                             description = description + " is " + str(numval)
                             if "sensitivity" in numval_dict:
                                 description = description + ", calculated from a sensitivity of " + str(numval_dict["sensitivity"])
@@ -1215,29 +1236,10 @@ def dependency(bayesianNetwork, cpt, invars, outvars):
                             firsttime = False
                                     
         description = description + "."
-        
-        priors = get_priors(bayesianNetwork,invars,prevalence,cpt)
-        #print("priors")
-        #print(priors)
- 
-        var_positions = get_var_positions(bayesianNetwork)
-        vdict = dictVarsAndValues(bayesianNetwork, cpt)
- 
-        # non elderly hbp prevalence = (prevalence of hbp regardless)/ ((prevalence of elderly X elderly with hbp relative risk) + (1-prevalence of elderly))
-        
-        prevalence_condition_regardless = list(outvars.items())[0][1]
-        better_than_val_prevalence={}
-        val_prevalence = {}
-        keyset = OrderedSet([])
-        keys_vals_risks = {}
-
-        better_than_val_prevalence1 = {}
-
-
-
+       
         for vardict,numval_dict in invars:                            
                 numval = numval_dict["relative_risk"] if "relative_risk" in numval_dict else (
-                            (numval_dict["sensitivity"]/prevalence) if "sensitivity" in numval_dict else 1) 
+                            numval_dict["sensitivity"] if "sensitivity" in numval_dict else 1) 
 
                 for k, varlist in vardict.items():
                         keyset.add(k)
@@ -1245,7 +1247,9 @@ def dependency(bayesianNetwork, cpt, invars, outvars):
                                 keys_vals_risks[k] = {}
                         for v in varlist:
                                 keys_vals_risks[k][v]=numval
-
+                                sum_priors += priors[k][v]
+                        if "sensitivity" in numval_dict:
+                                numval = (1-sum_priors)*numval_dict["sensitivity"]/(prevalence_condition_regardless-(numval_dict["sensitivity"]* sum_priors))
         keylist = list(keyset) 
         
         for k in keylist:
@@ -1257,7 +1261,7 @@ def dependency(bayesianNetwork, cpt, invars, outvars):
                
         for vardict,numval_dict in invars:
                 numval = numval_dict["relative_risk"] if "relative_risk" in numval_dict else (
-                            (numval_dict["sensitivity"]/prevalence) if "sensitivity" in numval_dict else 1) 
+                            numval_dict["sensitivity"] if "sensitivity" in numval_dict else 1) 
                 for k, varlist in vardict.items():
                         keyset.add(k)
                         group_sum = 0
@@ -1275,6 +1279,9 @@ def dependency(bayesianNetwork, cpt, invars, outvars):
                                 #print (prevalence_condition_regardless)
                                 #print ("priors[k][v]")
                                 #print (priors[k][v])
+                                sum_priors += priors[k][v]
+                                if "sensitivity" in numval_dict:
+                                        numval = (1-sum_priors)*numval_dict["sensitivity"]/(prevalence_condition_regardless-(numval_dict["sensitivity"]* sum_priors))
                                 #print ("numval")
                                 #print (numval)
                                 # better_than_val_prevalence[k][v]= prevalence_condition_regardless/((group_sum*numval)+(1.-group_sum))
@@ -1371,8 +1378,8 @@ def dependency(bayesianNetwork, cpt, invars, outvars):
                 #+ (prevalence of hbp among elderly healthy psych) * prevalence of elderly healthy psych
                 
                 for vardict,numval_dict in invars:
-                        relative_risk = numval_dict["relative_risk"] if "relative_risk" in numval_dict else (
-                            (numval_dict["sensitivity"]/prevalence) if "sensitivity" in numval_dict else 1) 
+                        #relative_risk = numval_dict["relative_risk"] if "relative_risk" in numval_dict else (
+                        #    (prevalence_condition_regardless-numval_dict["sensitivity"])/numval_dict["sensitivity"] if "sensitivity" in numval_dict else 1) 
                         for k, varlist in vardict.items():
                         
                                 if k not in lhs_equality_equation1:
@@ -1427,8 +1434,8 @@ def dependency(bayesianNetwork, cpt, invars, outvars):
                 rhs_eq = []
                                 
                 for vardict,numval_dict in invars:
-                        relative_risk= numval_dict["relative_risk"] if "relative_risk" in numval_dict else (
-                                    (numval_dict["sensitivity"]/prevalence) if "sensitivity" in numval_dict else 1) 
+                        #relative_risk= numval_dict["relative_risk"] if "relative_risk" in numval_dict else (
+                         #           (prevalence_condition_regardless-numval_dict["sensitivity"])/numval_dict["sensitivity"] if "sensitivity" in numval_dict else 1) 
                         for k, varlist in vardict.items():
                                 for v in varlist:
 

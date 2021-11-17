@@ -3046,7 +3046,7 @@ def longevity_bayes():
                 [
                     ({"glucose_serum":["glucose_serum_above_155.00","glucose_serum_above_101.00_to_155.00_and_below"]},{"sensitivity":0.68})
                     ],
-                {"fasting_glucose_high_above_100":0.57, "no_fasting_glucose_high_above_100":0.43}
+                {"fasting_glucose_high_above_100":0.43, "no_fasting_glucose_high_above_100":0.57}
                 )
 
 
