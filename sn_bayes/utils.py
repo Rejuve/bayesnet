@@ -1168,6 +1168,92 @@ def get_frequencies(bayesianNetwork,keylist,cpt):
         return frequencies
         
                 
+def prob_a_given_b_and_not_b (invars, priors, outvars):
+    
+        # This function will find prob_a_given_b and prob_a_given_not_b.
+        # Applies to variables with "relative_risk" values and those with "sensitivity" values
+        # For the relative_risk case,
+        # We have the equation 1, prob_a = (prob_good_b)(prob_a_given_good_b) + (prob_b1)(prob_a_given_b1) 
+        # + (prob_b2)(prob_a_given_b2) +.... + (prob_bi)(prob_a_given_bi) where i is the number of key,value pairs for a key b.
+        # (in invars, the keys may be variables like "age" and the values what fills them in, like "elderly" and "young_adult"
+        # For each key,value pair in the invars there is the equation RRi * prob_a_given_good_b = prob_a_given_bi
+        # That makes b + 1 equations and b +1 unknowns, where unknowns are prob_a_given_good_b, prob_a_given_b1, prob_a_given_b2, 
+        # ... prob_a_given_bi.  We already know the values prob_a, prob_good_b, prob RRi and prob_bi, etc.
+        # To solve, we eliminate all prob_a_given_bi in equation 1 using the other equations, and get 
+        # prob_a = (prob_good_b)(prob_a_given_good_b) + (prob_b1)(RR1 * prob_a_given_good_b) 
+        # + (prob_b2)(RR2 * prob_a_given_good_b) +.... + (prob_bi)(RRi * prob_a_given_good_b)
+        # So this function computes prob_a_given_good_b = prob_a/( prob_good_b + RR1*prob_b1 + RR2*prob_b2 + ... + RRi*prob_bi)
+        # Which is used to find prob_a_given_b = rr * prob_a_given_good_b 
+        # For the sensitivity case,  prob_a_given_b = sensitivity 
+        # For both the sensitivity and relative_risk cases,  prob_a given_not_b is from
+        # prob_b * prob_a_given_b + (1-prob_b)(prob_a_given_not_b = prob_a
+        # sensitivity for a variable should only occur once, because it is binary, so the last sensitivity is used 
+        
+        prob_a_given_b = {}
+        prob_a_given_not_b = {}
+        prob_a_given_good_b = {}
+        prob_good_b={}
+        
+        prob_a = list(outvars.items())[0][1]
+        
+        
+        for vardict,numval_dict in invars:
+            for k,varlist in vardict.items():
+                
+                if k not in prob_a_given_b:
+                    prob_a_given_b[k] = {}
+                if k not in prob_a_given_not_b:
+                    prob_a_given_not_b[k] = {}
+                if k not in prob_a_given_good_b:
+                    prob_a_given_good_b[k]=0
+                if k not in prob_good_b:
+                    prob_good_b[k] = 0
+                if "relative_risk" in numval_dict:
+                    rr = numval_dict["relative_risk"] 
+                    #print("rr")
+                    #print(rr)
+                    #print("k")
+                    #print(k)
+                    for v in priors[k]:
+                        #print("v")
+                        #print(v)
+                    
+                        #print("priors[k][v]")
+                        #print(priors[k][v])
+                        if v in varlist:
+                            prob_a_given_good_b[k] += rr*priors[k][v] 
+                        else:
+                            prob_good_b[k] += priors[k][v]
+                elif "sensitivity" in numval_dict:
+                    for v in varlist:
+                        prob_b = priors[k][v]
+                        prob_a_given_b[k][v] = numval_dict["sensitivity"]
+                        prob_a_given_not_b[k][v] = (prob_a - (prob_b*prob_a_given_b[k][v] ))/(1-prob_b)
+                        
+                        
+
+        for vardict,numval_dict in invars:
+            for k,varlist in vardict.items():
+                if "relative_risk" in numval_dict:  
+                    rr = numval_dict["relative_risk"]
+                    #print("k")
+                    #print(k)
+                    #print("prob_a_given_good_b[k]")
+                    #print(prob_a_given_good_b[k])
+                    prob_a_given_good_b[k] += prob_good_b[k]
+                    #print("prob_a_given_good_b[k] after add prob_good_b[k]")
+                    #print(prob_a_given_good_b[k])
+                    prob_a_given_good_b [k]= prob_a/prob_a_given_good_b[k]
+                    #print("prob_a_given_good_b[k] after div prob_a")
+                    #print(prob_a_given_good_b[k])
+                    for v in varlist:
+                        prob_b = priors[k][v]
+                        prob_a_given_b[k][v] = rr * prob_a_given_good_b[k]
+                        prob_a_given_not_b [k][v] = (prob_a - (prob_b* prob_a_given_b[k][v]))/(1.-prob_b)
+                
+        
+        return prob_a_given_b, prob_a_given_not_b
+
 
 
 def dependency(bayesianNetwork, cpt, invars, outvars):
@@ -1179,32 +1265,12 @@ def dependency(bayesianNetwork, cpt, invars, outvars):
 
         print("start timing...")
         tic = time.perf_counter()
- 
-        var_positions = get_var_positions(bayesianNetwork)
-        vdict = dictVarsAndValues(bayesianNetwork, cpt)
- 
-        # non elderly hbp prevalence = (prevalence of hbp regardless)/ ((prevalence of elderly X elderly with hbp relative risk) + (1-prevalence of elderly))
-        
+        keyset = OrderedSet([])
         prevalence_condition_regardless = list(outvars.items())[0][1]
-  
         priors = get_priors(bayesianNetwork,invars,prevalence_condition_regardless,cpt)
         #print("priors")
         #print(priors)
-        better_than_val_prevalence={}
-        val_prevalence = {}
-        keyset = OrderedSet([])
-        keys_vals_risks = {}
-
-        better_than_val_prevalence1 = {}
- 
-
-        #window = 1.0
-        #cut = 1.0
-        #lastTrue = None
-        #while cut > 0.05:
-                #windows of 1.0 goes from zero to 2*risk, .5 goes from .5 risk to 1.5 rish, from LB to UB
-                #print("bayesianNetwork")
-                #print(bayesianNetwork)
+        val_prevalence, better_than_val_prevalence =  prob_a_given_b_and_not_b (invars, priors, outvars)
 
         description = "Against the baseline risks, "
         firsttime = True
@@ -1217,6 +1283,7 @@ def dependency(bayesianNetwork, cpt, invars, outvars):
                     numval = numval_dict["relative_risk"] if "relative_risk" in numval_dict else (
                             numval_dict["sensitivity"] if "sensitivity" in numval_dict else 1) 
                     for val, varlist in vardict.items():
+                            keyset.add(val)
                             phrase = "" if firsttime else (" , and " if varlist [-1] is val else " , " )
 
                             description= description + phrase + "the relative risk of {0} for those in the " + val + " category of " 
@@ -1237,70 +1304,14 @@ def dependency(bayesianNetwork, cpt, invars, outvars):
                                     
         description = description + "."
        
-        for vardict,numval_dict in invars:                            
-                numval = numval_dict["relative_risk"] if "relative_risk" in numval_dict else (
-                            numval_dict["sensitivity"] if "sensitivity" in numval_dict else 1) 
+        #print("better_than_val_prevalence")
+        #print (better_than_val_prevalence)
+        #print("val_prevalence")
+        #print(val_prevalence)
 
-                for k, varlist in vardict.items():
-                        keyset.add(k)
-                        if k not in keys_vals_risks:
-                                keys_vals_risks[k] = {}
-                        for v in varlist:
-                                keys_vals_risks[k][v]=numval
-                                sum_priors += priors[k][v]
-                        if "sensitivity" in numval_dict:
-                                numval = (1-sum_priors)*numval_dict["sensitivity"]/(prevalence_condition_regardless-(numval_dict["sensitivity"]* sum_priors))
-        keylist = list(keyset) 
-        
-        for k in keylist:
-                asum = 0
-                for val in vdict[k]:
-                    asum += (keys_vals_risks[k][val] * priors[k][val])  if val in keys_vals_risks[k] else priors[k][val]
-                            
-                better_than_val_prevalence1 [k] = prevalence_condition_regardless/asum
-               
-        for vardict,numval_dict in invars:
-                numval = numval_dict["relative_risk"] if "relative_risk" in numval_dict else (
-                            numval_dict["sensitivity"] if "sensitivity" in numval_dict else 1) 
-                for k, varlist in vardict.items():
-                        keyset.add(k)
-                        group_sum = 0
-                        for v in varlist:
-                                group_sum += priors[k][v]
-                        if k not in better_than_val_prevalence:        
-                                better_than_val_prevalence[k] = {}
-                                val_prevalence[k] = {}
-                        for v in varlist:
-                                #print ("k")
-                                #print (k)
-                                #print ("v")
-                                #print (v)
-                                #print ("prevalence_condition_regardless")
-                                #print (prevalence_condition_regardless)
-                                #print ("priors[k][v]")
-                                #print (priors[k][v])
-                                sum_priors += priors[k][v]
-                                if "sensitivity" in numval_dict:
-                                        numval = (1-sum_priors)*numval_dict["sensitivity"]/(prevalence_condition_regardless-(numval_dict["sensitivity"]* sum_priors))
-                                #print ("numval")
-                                #print (numval)
-                                # better_than_val_prevalence[k][v]= prevalence_condition_regardless/((group_sum*numval)+(1.-group_sum))
-                                # better_than_val_prevalence[k][v]= prevalence_condition_regardless/((priors[k][v]*numval)+(1.-priors[k][v]))
-                                better_than_val_prevalence[k][v]= (prevalence_condition_regardless- (better_than_val_prevalence1[k]
-                                        *numval*priors[k][v]))/(1-priors[k][v])
-                                #val_prevalence[k][v] = better_than_val_prevalence1[k][v] * numval
-                                val_prevalence[k][v] = better_than_val_prevalence1[k] * numval
-
-
-                                #print("better_than_val_prevalence1")
-                                #print (better_than_val_prevalence1)
-                                #print("better_than_val_prevalence")
-                                #print (better_than_val_prevalence[k][v])
-                                #print("val_prevalence")
-                                #print(val_prevalence[k][v])
-
-       
+        keylist = list(keyset)
         pos = {k:n for n,k in enumerate(keylist)}
+        vdict = dictVarsAndValues(bayesianNetwork, cpt)
 
         #print("vdict")
         #print(vdict)
@@ -1312,7 +1323,7 @@ def dependency(bayesianNetwork, cpt, invars, outvars):
                         #natural order is worse to better, and we want to fill in worse first because better is more accurate
                         if k in val_prevalence and v in val_prevalence[k]:
                                 val_prev[k][v] = val_prevalence[k][v] 
-                                previous = better_than_val_prevalence1[k]
+                                previous = better_than_val_prevalence[k][v]
                         elif previous is not None:
                                 val_prev [k][v] = previous
                         else:
@@ -1473,6 +1484,7 @@ def dependency(bayesianNetwork, cpt, invars, outvars):
                 #opt = linprog(c=obj, A_eq=lhs_eq, b_eq=rhs_eq, bounds=bnd,method="revised simplex")
          
                 opt = linprog(c=obj, A_ub=lhs_eq, b_ub=rhs_eq, bounds=bnd,method="revised simplex")
+                #print("opt")
                 #print (opt)
                 if window == 1.0 and not opt.success:
                     break
@@ -1503,6 +1515,350 @@ def dependency(bayesianNetwork, cpt, invars, outvars):
                 cpt_rows.append(cpt_row)
         #print ("cpt_rows")
         #print(cpt_rows)
+        toc = time.perf_counter()
+        diff = toc - tic
+
+        print (f"{outvars} took {diff} seconds")
+        return (cpt_rows,keylist,outvars,description)
+
+
+
+
+
+def dependency_old(bayesianNetwork, cpt, invars, outvars):
+        
+        import itertools
+        from scipy.optimize import linprog
+
+        import time
+
+        print("start timing...")
+        tic = time.perf_counter()
+ 
+        var_positions = get_var_positions(bayesianNetwork)
+        vdict = dictVarsAndValues(bayesianNetwork, cpt)
+ 
+        # non elderly hbp prevalence = (prevalence of hbp regardless)/ ((prevalence of elderly X elderly with hbp relative risk) + (1-prevalence of elderly))
+        
+        prevalence_condition_regardless = list(outvars.items())[0][1]
+  
+        priors = get_priors(bayesianNetwork,invars,prevalence_condition_regardless,cpt)
+        print("priors")
+        print(priors)
+        better_than_val_prevalence={}
+        val_prevalence = {}
+        keyset = OrderedSet([])
+        keys_vals_risks = {}
+
+        better_than_val_prevalence1 = {}
+ 
+
+        #window = 1.0
+        #cut = 1.0
+        #lastTrue = None
+        #while cut > 0.05:
+                #windows of 1.0 goes from zero to 2*risk, .5 goes from .5 risk to 1.5 rish, from LB to UB
+                #print("bayesianNetwork")
+                #print(bayesianNetwork)
+
+        description = "Against the baseline risks, "
+        firsttime = True
+        for k,v in outvars.items():                        
+                phrase = "" if firsttime else " and "
+                description + phrase + k + " of " + str(v) + " , "
+                firsttime = False
+        firsttime = True
+        for vardict,numval_dict in invars:
+                    numval = numval_dict["relative_risk"] if "relative_risk" in numval_dict else (
+                            numval_dict["sensitivity"] if "sensitivity" in numval_dict else 1) 
+                    for val, varlist in vardict.items():
+                            phrase = "" if firsttime else (" , and " if varlist [-1] is val else " , " )
+
+                            description= description + phrase + "the relative risk of {0} for those in the " + val + " category of " 
+                            firsttime1 = True
+                            sum_priors = 0
+                            for var in varlist:                                
+                                    phrase = "" if firsttime1 else " or "
+                                    description = description + phrase + var
+                                    firsttime1 = False
+                                    sum_priors += priors[val][var]
+                            if "sensitivity" in numval_dict:
+                                numval = (1-sum_priors)*numval_dict["sensitivity"]/(prevalence_condition_regardless-(numval_dict["sensitivity"]* sum_priors))
+                            description = description + " is " + str(numval)
+                            if "sensitivity" in numval_dict:
+                                description = description + ", calculated from a sensitivity of " + str(numval_dict["sensitivity"])
+
+                            firsttime = False
+                                    
+        description = description + "."
+       
+        for vardict,numval_dict in invars:                            
+                numval = numval_dict["relative_risk"] if "relative_risk" in numval_dict else (
+                            numval_dict["sensitivity"] if "sensitivity" in numval_dict else 1) 
+
+                for k, varlist in vardict.items():
+                        keyset.add(k)
+                        if k not in keys_vals_risks:
+                                keys_vals_risks[k] = {}
+                        for v in varlist:
+                                keys_vals_risks[k][v]=numval
+                                sum_priors += priors[k][v]
+                        if "sensitivity" in numval_dict:
+                                numval = (1-sum_priors)*numval_dict["sensitivity"]/(prevalence_condition_regardless-(numval_dict["sensitivity"]* sum_priors))
+        keylist = list(keyset) 
+        
+        for k in keylist:
+                asum = 0
+                for val in vdict[k]:
+                    asum += (keys_vals_risks[k][val] * priors[k][val])  if val in keys_vals_risks[k] else priors[k][val]
+                            
+                better_than_val_prevalence1 [k] = prevalence_condition_regardless/asum
+               
+        for vardict,numval_dict in invars:
+                numval = numval_dict["relative_risk"] if "relative_risk" in numval_dict else (
+                            numval_dict["sensitivity"] if "sensitivity" in numval_dict else 1) 
+                for k, varlist in vardict.items():
+                        keyset.add(k)
+                        group_sum = 0
+                        for v in varlist:
+                                group_sum += priors[k][v]
+                        if k not in better_than_val_prevalence:        
+                                better_than_val_prevalence[k] = {}
+                                val_prevalence[k] = {}
+                        for v in varlist:
+                                print ("k")
+                                print (k)
+                                print ("v")
+                                print (v)
+                                print ("prevalence_condition_regardless")
+                                print (prevalence_condition_regardless)
+                                print ("priors[k][v]")
+                                print (priors[k][v])
+                                sum_priors += priors[k][v]
+                                if "sensitivity" in numval_dict:
+                                        numval = (1-sum_priors)*numval_dict["sensitivity"]/(prevalence_condition_regardless-(numval_dict["sensitivity"]* sum_priors))
+                                print ("numval")
+                                print (numval)
+                                # better_than_val_prevalence[k][v]= prevalence_condition_regardless/((group_sum*numval)+(1.-group_sum))
+                                # better_than_val_prevalence[k][v]= prevalence_condition_regardless/((priors[k][v]*numval)+(1.-priors[k][v]))
+                                better_than_val_prevalence[k][v]= (prevalence_condition_regardless- (better_than_val_prevalence1[k]
+                                        *numval*priors[k][v]))/(1-priors[k][v])
+                                #val_prevalence[k][v] = better_than_val_prevalence1[k][v] * numval
+                                val_prevalence[k][v] = better_than_val_prevalence1[k] * numval
+
+
+                                print("better_than_val_prevalence1")
+                                print (better_than_val_prevalence1)
+                                print("better_than_val_prevalence")
+                                print (better_than_val_prevalence[k][v])
+                                print("val_prevalence")
+                                print(val_prevalence[k][v])
+
+       
+        pos = {k:n for n,k in enumerate(keylist)}
+
+        print("vdict")
+        print(vdict)
+        val_prev = {}
+        for k in keylist:
+                val_prev[k]={}
+                previous = None
+                for v in vdict[k]:
+                        #natural order is worse to better, and we want to fill in worse first because better is more accurate
+                        if k in val_prevalence and v in val_prevalence[k]:
+                                val_prev[k][v] = val_prevalence[k][v] 
+                                previous = better_than_val_prevalence1[k]
+                        elif previous is not None:
+                                val_prev [k][v] = previous
+                        else:
+                                val_prev [k][v] = prevalence_condition_regardless
+        print("val_prev")                        
+        print(val_prev)                            
+
+
+        vlist = [vdict[v] for v in keylist]
+        cartesian = list(itertools.product(*vlist))
+       #in cartesian, worst is first and best comes later
+        cpt_rows = []
+        lhs_equality_equation1 = {}
+        lhs_equality_equation2 = {}
+        rhs_equality_equation1 = {}
+        rhs_equality_equation2 = {}
+        obj = np.zeros(len(cartesian))
+        frequencies = get_frequencies(bayesianNetwork,keylist,cpt)
+        print ("frequencies")
+        print(frequencies)
+        #bnd = [(1.0,1.0)] * len(cartesian)
+        bnd = []
+        for i,c in enumerate(cartesian):
+                print ("c")
+                print (c)
+        
+        
+                #equation1  (doesnt have every one in it )
+                #(non elderly hbp prevalence from 1.) = 
+                #(prevalence of hbp among adult obese psych) * prevalence of adult obese psych 
+                #+ (prevalence of hbp among youngadult obese psych) * prevalence of youngadult obese psych
+                #+ (prevalence of hbp among teen obese psych) * prevalence of teen obese psych
+                #+ (prevalence of hbp among child obese psych) * prevalence of child obese psych
+                #+ (prevalence of hbp among adult overweight psych) * prevalence of adult overweight psych
+                #+ (prevalence of hbp among youngadult overweight psych) * prevalence of youngadult overweight psych
+                #+ (prevalence of hbp among teen overweight psych) * prevalence of teen overweight psych
+                #+ (prevalence of hbp among child overweight psych) * prevalence of child overweight psych
+                #+ (prevalence of hbp among adult healthy psych) * prevalence of adult healthy psych
+                #+ (prevalence of hbp among youngadult healthy psych) * prevalence of youngadult healthy psych
+                #+ (prevalence of hbp among teen healthy psych) * prevalence of teen healthy psych
+                #+ (prevalence of hbp among child healthy psych) * prevalence of child healthy psych
+                #+ (prevalence of hbp among adult obese psych) * prevalence of adult obese psych 
+                #+ (prevalence of hbp among youngadult obese psych) * prevalence of youngadult obese psych
+                #+ (prevalence of hbp among teen obese psych) * prevalence of teen obese psych
+                #+ (prevalence of hbp among child obese psych) * prevalence of child obese psych
+                #+ (prevalence of hbp among adult overweight psych) * prevalence of adult overweight psych
+                #+ (prevalence of hbp among youngadult overweight psych) * prevalence of youngadult overweight psych
+                #+ (prevalence of hbp among teen overweight psych) * prevalence of teen overweight psych
+                #+ (prevalence of hbp among child overweight psych) * prevalence of child overweight psych
+                #+ (prevalence of hbp among adult healthy psych) * prevalence of adult healthy psych
+                #+ (prevalence of hbp among youngadult healthy psych) * prevalence of youngadult healthy psych
+                #+ (prevalence of hbp among teen healthy psych) * prevalence of teen healthy psych
+                #+ (prevalence of hbp among child healthy psych) * prevalence of child healthy psych
+                         
+                         
+                #equation2 (has the balance)         
+                # elderly with hbp relative risk X (non elderly hbp prevalence from 1.) = 
+                #(prevalence of hbp among elderly obese psych) * prevalence of elderly obese psych 
+                #+ (prevalence of hbp among elderly overweight psych) * prevalence of elderly overweight psych
+                #+ (prevalence of hbp among elderly healthy psych) * prevalence of elderly healthy psych
+                #+ (prevalence of hbp among elderly obese psych) * prevalence of elderly obese psych 
+                #+ (prevalence of hbp among elderly overweight psych) * prevalence of elderly overweight psych
+                #+ (prevalence of hbp among elderly healthy psych) * prevalence of elderly healthy psych
+                
+                for vardict,numval_dict in invars:
+                        #relative_risk = numval_dict["relative_risk"] if "relative_risk" in numval_dict else (
+                        #    (prevalence_condition_regardless-numval_dict["sensitivity"])/numval_dict["sensitivity"] if "sensitivity" in numval_dict else 1) 
+                        for k, varlist in vardict.items():
+                        
+                                if k not in lhs_equality_equation1:
+                                        lhs_equality_equation1[k] = {}
+                                if k not in lhs_equality_equation2:
+                                        lhs_equality_equation2[k] = {}
+                                if k not in rhs_equality_equation1:
+                                        rhs_equality_equation1[k] = {}
+                                if k not in rhs_equality_equation2:
+                                        rhs_equality_equation2[k] = {}
+                
+                                for v in varlist:
+                                        if v not in lhs_equality_equation1[k]:
+                                                lhs_equality_equation1[k][v] = np.zeros(len(cartesian)) #lhs will be list of lists
+                                        if v not in lhs_equality_equation2[k]:
+                                                lhs_equality_equation2[k][v] = np.zeros(len(cartesian))
+                                        if v not in rhs_equality_equation1[k]:
+                                                rhs_equality_equation1[k][v] = 0 #rhs will be list of floats
+                                        if v not in rhs_equality_equation2[k]:
+                                                rhs_equality_equation2[k][v] = 0
+                                        print ("c[pos[k]]")
+                                        print (c[pos[k]])
+                                        if c[pos[k]]  == v:
+                                                # rhs_equality_equation2[k][v] = priors[k][v]*relative_risk* val_prev[k][v]
+                                                rhs_equality_equation2[k][v] = val_prevalence[k][v]
+                                                lhs_equality_equation2[k][v][i] = frequencies [c]
+                                        else:
+                                                # rhs_equality_equation1[k][v] = val_prev[k][v]
+                                                rhs_equality_equation1[k][v] = better_than_val_prevalence[k][v]
+                                                lhs_equality_equation1[k][v][i] = frequencies [c]
+                                                
+                obj[i]=frequencies[c]
+
+                #make independence the lower bound
+                #product = 1
+                #for j,k in enumerate(keylist):
+                        #product *= 1.-val_prev [k][c[j]] 
+                #bnd.append(( 1-product, 1.0))
+
+                minimum = 1.0
+                for j,k in enumerate(keylist):
+                        if val_prev [k][c[j]] < minimum:
+                            minimum = val_prev [k][c[j]] 
+                bnd.append(( minimum, 1.0))
+
+        window = 1.0
+        cut = 1.0
+        lastTrue = None
+        while cut > 0.05:
+                                        
+                lhs_eq = []
+                rhs_eq = []
+                                
+                for vardict,numval_dict in invars:
+                        #relative_risk= numval_dict["relative_risk"] if "relative_risk" in numval_dict else (
+                         #           (prevalence_condition_regardless-numval_dict["sensitivity"])/numval_dict["sensitivity"] if "sensitivity" in numval_dict else 1) 
+                        for k, varlist in vardict.items():
+                                for v in varlist:
+
+                                        #equality doesnt work
+                                        #lhs_eq.append(lhs_equality_equation1[k][v])
+                                        #rhs_eq.append(rhs_equality_equation1[k][v])
+                                        #lhs_eq.append(lhs_equality_equation2[k][v])
+                                        #rhs_eq.append(rhs_equality_equation2[k][v])
+
+                                        #UB    
+                                        lhs_eq.append(np.multiply(lhs_equality_equation1[k][v],1))
+                                        rhs_eq.append(rhs_equality_equation1[k][v]*(1+window))
+                                        lhs_eq.append(np.multiply(lhs_equality_equation2[k][v],1))
+                                        rhs_eq.append(rhs_equality_equation2[k][v]*(1+window))
+
+                                        #LB
+                                        lhs_eq.append(np.multiply(lhs_equality_equation1[k][v],-1))
+                                        rhs_eq.append(rhs_equality_equation1[k][v]*(-1+window))
+                                        lhs_eq.append(np.multiply(lhs_equality_equation2[k][v],-1))
+                                        rhs_eq.append(rhs_equality_equation2[k][v]*(-1+window))
+
+
+                               
+                
+                #opt = linprog(c=obj, A_ub=lhs_ineq, b_ub=rhs_ineq,A_eq=lhs_eq, b_eq=rhs_eq, bounds=bnd,method="revised simplex")
+                print ("obj")
+                print (obj)
+                print ("lhs_eq")
+                print(lhs_eq)
+                print("rhs_eq")
+                print (rhs_eq)
+                print ("bnd")
+                print(bnd)
+
+                #opt = linprog(c=obj, A_eq=lhs_eq, b_eq=rhs_eq, bounds=bnd,method="revised simplex")
+         
+                opt = linprog(c=obj, A_ub=lhs_eq, b_ub=rhs_eq, bounds=bnd,method="revised simplex")
+                print("opt")
+                print (opt)
+                if window == 1.0 and not opt.success:
+                    break
+                cut /= 2
+                window = window - cut if opt.success else window + cut
+                if opt.success:
+                    lastTrue = opt
+                print("window")
+                print (window)
+
+
+        if lastTrue is not None:
+            opt = lastTrue
+        for i,c in enumerate(cartesian):
+                #there are only two values of outvars for relative risk
+                cpt_row = []
+                cpt_row.extend(c)
+                cpt_row.append(list(outvars.items())[0][0])
+                val = opt.x[i] 
+                cpt_row.append(val)
+                cpt_rows.append(cpt_row)
+                
+                cpt_row = []
+                cpt_row.extend(c)
+                cpt_row.append(list(outvars.items())[1][0])
+                val =  1.0-opt.x[i]
+                cpt_row.append(val)
+                cpt_rows.append(cpt_row)
+        print ("cpt_rows")
+        print(cpt_rows)
         toc = time.perf_counter()
         diff = toc - tic
 
