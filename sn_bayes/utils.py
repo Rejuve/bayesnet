@@ -1210,16 +1210,16 @@ def prob_a_given_b_and_not_b (invars, priors, outvars):
                     prob_good_b[k] = 0
                 if "relative_risk" in numval_dict:
                     rr = numval_dict["relative_risk"] 
-                    #print("rr")
-                    #print(rr)
-                    #print("k")
-                    #print(k)
+                    print("rr")
+                    print(rr)
+                    print("k")
+                    print(k)
                     for v in priors[k]:
-                        #print("v")
-                        #print(v)
+                        print("v")
+                        print(v)
                     
-                        #print("priors[k][v]")
-                        #print(priors[k][v])
+                        print("priors[k][v]")
+                        print(priors[k][v])
                         if v in varlist:
                             prob_a_given_good_b[k] += rr*priors[k][v] 
                         else:
@@ -1229,28 +1229,32 @@ def prob_a_given_b_and_not_b (invars, priors, outvars):
                         prob_b = priors[k][v]
                         prob_a_given_b[k][v] = numval_dict["sensitivity"]
                         prob_a_given_not_b[k][v] = (prob_a - (prob_b*prob_a_given_b[k][v] ))/(1-prob_b)
-                        
+                        if prob_a_given_not_b[k][v] <0:
+                            prob_a_given_not_b[k][v] = 0.0001
                         
 
         for vardict,numval_dict in invars:
             for k,varlist in vardict.items():
                 if "relative_risk" in numval_dict:  
                     rr = numval_dict["relative_risk"]
-                    #print("k")
-                    #print(k)
-                    #print("prob_a_given_good_b[k]")
-                    #print(prob_a_given_good_b[k])
+                    print("k")
+                    print(k)
+                    print("prob_a_given_good_b[k]")
+                    print(prob_a_given_good_b[k])
                     prob_a_given_good_b[k] += prob_good_b[k]
-                    #print("prob_a_given_good_b[k] after add prob_good_b[k]")
-                    #print(prob_a_given_good_b[k])
+                    print("prob_a_given_good_b[k] after add prob_good_b[k]")
+                    print(prob_a_given_good_b[k])
                     prob_a_given_good_b [k]= prob_a/prob_a_given_good_b[k]
-                    #print("prob_a_given_good_b[k] after div prob_a")
-                    #print(prob_a_given_good_b[k])
+                    print("prob_a_given_good_b[k] after div prob_a")
+                    print(prob_a_given_good_b[k])
                     for v in varlist:
                         prob_b = priors[k][v]
                         prob_a_given_b[k][v] = rr * prob_a_given_good_b[k]
                         prob_a_given_not_b [k][v] = (prob_a - (prob_b* prob_a_given_b[k][v]))/(1.-prob_b)
-                
+                        if prob_a_given_b[k][v] < 0:
+                            prob_a_given_b[k][v] = 0.0001
+                        if prob_a_given_not_b[k][v] <0:
+                            prob_a_given_not_b[k][v] = 0.0001
         
         return prob_a_given_b, prob_a_given_not_b
 
@@ -1268,8 +1272,8 @@ def dependency(bayesianNetwork, cpt, invars, outvars):
         keyset = OrderedSet([])
         prevalence_condition_regardless = list(outvars.items())[0][1]
         priors = get_priors(bayesianNetwork,invars,prevalence_condition_regardless,cpt)
-        #print("priors")
-        #print(priors)
+        print("priors")
+        print(priors)
         val_prevalence, better_than_val_prevalence =  prob_a_given_b_and_not_b (invars, priors, outvars)
 
         description = "Against the baseline risks, "
@@ -1304,17 +1308,17 @@ def dependency(bayesianNetwork, cpt, invars, outvars):
                                     
         description = description + "."
        
-        #print("better_than_val_prevalence")
-        #print (better_than_val_prevalence)
-        #print("val_prevalence")
-        #print(val_prevalence)
+        print("better_than_val_prevalence")
+        print (better_than_val_prevalence)
+        print("val_prevalence")
+        print(val_prevalence)
 
         keylist = list(keyset)
         pos = {k:n for n,k in enumerate(keylist)}
         vdict = dictVarsAndValues(bayesianNetwork, cpt)
 
-        #print("vdict")
-        #print(vdict)
+        print("vdict")
+        print(vdict)
         val_prev = {}
         for k in keylist:
                 val_prev[k]={}
@@ -1328,8 +1332,8 @@ def dependency(bayesianNetwork, cpt, invars, outvars):
                                 val_prev [k][v] = previous
                         else:
                                 val_prev [k][v] = prevalence_condition_regardless
-        #print("val_prev")                        
-        #print(val_prev)                            
+        print("val_prev")                        
+        print(val_prev)                            
 
 
         vlist = [vdict[v] for v in keylist]
@@ -1342,13 +1346,13 @@ def dependency(bayesianNetwork, cpt, invars, outvars):
         rhs_equality_equation2 = {}
         obj = np.zeros(len(cartesian))
         frequencies = get_frequencies(bayesianNetwork,keylist,cpt)
-        #print ("frequencies")
-        #print(frequencies)
+        print ("frequencies")
+        print(frequencies)
         #bnd = [(1.0,1.0)] * len(cartesian)
         bnd = []
         for i,c in enumerate(cartesian):
-                #print ("c")
-                #print (c)
+                print ("c")
+                print (c)
         
         
                 #equation1  (doesnt have every one in it )
@@ -1411,8 +1415,8 @@ def dependency(bayesianNetwork, cpt, invars, outvars):
                                                 rhs_equality_equation1[k][v] = 0 #rhs will be list of floats
                                         if v not in rhs_equality_equation2[k]:
                                                 rhs_equality_equation2[k][v] = 0
-                                        #print ("c[pos[k]]")
-                                        #print (c[pos[k]])
+                                        print ("c[pos[k]]")
+                                        print (c[pos[k]])
                                         if c[pos[k]]  == v:
                                                 # rhs_equality_equation2[k][v] = priors[k][v]*relative_risk* val_prev[k][v]
                                                 rhs_equality_equation2[k][v] = val_prevalence[k][v]
@@ -1439,6 +1443,7 @@ def dependency(bayesianNetwork, cpt, invars, outvars):
         window = 1.0
         cut = 1.0
         lastTrue = None
+        #At first test window at 1.0 to ensure that there is a solution at all , then narrow down on it with binary search to get the smallest feasable window
         while cut > 0.05:
                                         
                 lhs_eq = []
@@ -1472,28 +1477,28 @@ def dependency(bayesianNetwork, cpt, invars, outvars):
                                
                 
                 #opt = linprog(c=obj, A_ub=lhs_ineq, b_ub=rhs_ineq,A_eq=lhs_eq, b_eq=rhs_eq, bounds=bnd,method="revised simplex")
-                #print ("obj")
-                #print (obj)
-                #print ("lhs_eq")
-                #print(lhs_eq)
-                #print("rhs_eq")
-                #print (rhs_eq)
-                #print ("bnd")
-                #print(bnd)
+                print ("obj")
+                print (obj)
+                print ("lhs_eq")
+                print(lhs_eq)
+                print("rhs_eq")
+                print (rhs_eq)
+                print ("bnd")
+                print(bnd)
 
                 #opt = linprog(c=obj, A_eq=lhs_eq, b_eq=rhs_eq, bounds=bnd,method="revised simplex")
          
                 opt = linprog(c=obj, A_ub=lhs_eq, b_ub=rhs_eq, bounds=bnd,method="revised simplex")
-                #print("opt")
-                #print (opt)
+                print("opt")
+                print (opt)
                 if window == 1.0 and not opt.success:
                     break
                 cut /= 2
                 window = window - cut if opt.success else window + cut
                 if opt.success:
                     lastTrue = opt
-                #print("window")
-                #print (window)
+                print("window")
+                print (window)
 
 
         if lastTrue is not None:
@@ -1513,8 +1518,8 @@ def dependency(bayesianNetwork, cpt, invars, outvars):
                 val =  1.0-opt.x[i]
                 cpt_row.append(val)
                 cpt_rows.append(cpt_row)
-        #print ("cpt_rows")
-        #print(cpt_rows)
+        print ("cpt_rows")
+        print(cpt_rows)
         toc = time.perf_counter()
         diff = toc - tic
 
