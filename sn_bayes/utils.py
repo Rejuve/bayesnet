@@ -433,9 +433,10 @@ def detect_anomalies(anomaly_tuples,bayesianNetwork,anomaly_params):
                         try:
                             from adtk.detector import VolatilityShiftAD
                             volatility_shift_ad = VolatilityShiftAD(c=anomaly_params[var]['c'], side=anomaly_params[var]['side'],window=anomaly_params[var]['window'])
-                            anomaly_dict[var][detector] = volatility_shift_ad.detect(s)
+                            anomaly_dict[var][detector] = volatility_shift_ad.fit_detect(s)
                             fitted[var]['std'] = std(s)
-
+                            #print (f"fitted[{var}]['std']")
+                            #print (fitted[var]['std'])
                
                         except RuntimeError as e:
                             print(f'VolatilityShiftAD-{var}')
