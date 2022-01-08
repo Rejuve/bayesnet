@@ -479,7 +479,8 @@ def longevity_bayes():
 
         cpt["greatest_weight"] = dependency(bayesianNetwork,cpt, 
         [
-        ({"weight_at_25":["weight_at_25_above_300.00","weight_at_25_above_180.00_to_300.00_and_below"]},{"sensitivity":0.66})
+        ({"weight_at_25":["weight_at_25_above_300.00"]},{"sensitivity":0.4, "specificity":0.99}),
+        ({"weight_at_25":["weight_at_25_above_180.00_to_300.00_and_below"]},{"sensitivity":0.5, "specificity":0.66 })
         ],
         {"greatest_weight_above_230.00":0.25,"no_greatest_weight_above_230.00":0.75}
         )
@@ -532,12 +533,13 @@ def longevity_bayes():
 
         cpt["weight"] = dependency(bayesianNetwork,cpt, 
         [
-        ({"greatest_weight":["greatest_weight_above_230.00"]},{"sensitivity":0.66}),        
-        ({"bmi":["bmi_over_40_high_risk","bmi_35_to_39_moderate_risk"]},{"sensitivity":0.90})
+        ({"greatest_weight":["greatest_weight_above_230.00"]},{"sensitivity":0.4, "specificity":0.85}),        
+        ({"bmi":["bmi_over_40_high_risk","bmi_35_to_39_moderate_risk"]},{"sensitivity":0.90, "specificity":0.7})
         ],
         {"weight_above_92.60":0.25,"no_weight_above_92.60":0.75}
         )
-
+        #92 kg is 200 lbs
+        #5'2" a2 200 lbs is 35 BMI
 
 
         #discreteDistribution = bayesianNetwork.discreteDistributions.add()
@@ -562,7 +564,7 @@ def longevity_bayes():
 
         cpt["height"] = dependency(bayesianNetwork,cpt, 
         [       
-        ({"bmi":["bmi_over_40_high_risk","bmi_35_to_39_moderate_risk"]},{"sensitivity":0.50})
+        ({"bmi":["bmi_over_40_high_risk","bmi_35_to_39_moderate_risk"]},{"sensitivity":0.15, "specificity":0.15})
         ],
         {"height_above_173.40":0.25,"no_height_above_173.40":0.75}
         )
@@ -591,7 +593,7 @@ def longevity_bayes():
 
         cpt["hip"] = dependency(bayesianNetwork,cpt, 
         [       
-        ({"bmi":["bmi_over_40_high_risk","bmi_35_to_39_moderate_risk"]},{"sensitivity":0.66})
+        ({"bmi":["bmi_over_40_high_risk","bmi_35_to_39_moderate_risk"]},{"sensitivity":0.75, "specificity":0.85})
         ],
         {"hip_above_112.70":0.25,"no_hip_above_112.70":0.75}
         )
@@ -644,7 +646,7 @@ def longevity_bayes():
 
         cpt["waist"] = dependency(bayesianNetwork,cpt, 
         [
-        ({"hip":["hip_above_112.70"]},{"sensitivity":0.80})
+        ({"hip":["hip_above_112.70"]},{"sensitivity":0.75, "specificity":0.85})
         ],
         {"waist_above_109.00":0.25,"no_waist_above_109.00":0.75}
         )
@@ -848,12 +850,12 @@ def longevity_bayes():
 
         cpt["obesity"] = dependency(bayesianNetwork,cpt, 
         [
-        ({"dietary_energy":["dietary_energy_above_3939.00"]},{"sensitivity":0.99}),
-        ({"dietary_energy":["dietary_energy_above_2612.00_to_3939.00_and_below"]},{"sensitivity":0.9}),
-        ({"bmi":["bmi_over_40_high_risk"]},{"sensitivity":0.99}),
-        ({"bmi":["bmi_35_to_39_moderate_risk"]},{"sensitivity":0.95}),
-        ({"bmi":["bmi_30_to_34_low_risk"]},{"sensitivity":0.9}),
-        ({"lack_of_exercise":["lack_of_exercise"]},{"sensitivity":0.9})
+        ({"dietary_energy":["dietary_energy_above_3939.00"]},{"sensitivity":0.5, "specificity":0.75}),
+        ({"dietary_energy":["dietary_energy_above_2612.00_to_3939.00_and_below"]},{"sensitivity":0.75, "specificity":0.76}),
+        ({"bmi":["bmi_over_40_high_risk"]},{"sensitivity":0.3, "specificity":0.99}),
+        ({"bmi":["bmi_35_to_39_moderate_risk"]},{"sensitivity":0.35, "specificity":0.99}),
+        ({"bmi":["bmi_30_to_34_low_risk"]},{"sensitivity":0.35, "specificity":0.99}),
+        ({"lack_of_exercise":["lack_of_exercise"]},{"sensitivity":0.75, "specificity":0.5})
         ],
         {"obesity":0.38,"no_obesity":0.62}
         )
@@ -893,7 +895,7 @@ def longevity_bayes():
         variable.name = "never_married"
         variable.probability = 0.18
         variable = discreteDistribution.variables.add()
-        variable.name = "living_with_partner-or_married"
+        variable.name = "living_with_partner_or_married"
         variable.probability = 0.59
 
      
@@ -1925,21 +1927,21 @@ def longevity_bayes():
 
 
         discreteDistribution = bayesianNetwork.discreteDistributions.add()
-        discreteDistribution.name = "weekday_sleep_hours_per_night"
+        discreteDistribution.name = "weekend_sleep_hours_per_night"
         variable = discreteDistribution.variables.add()
-        variable.name = "weekday_sleep_under_5"
+        variable.name = "weekend_sleep_under_5"
         variable.probability = 0.02
         variable = discreteDistribution.variables.add()
-        variable.name = "weekday_sleep_5.0_to_6.5"
+        variable.name = "weekend_sleep_5.0_to_6.5"
         variable.probability = 0.12
         variable = discreteDistribution.variables.add()
-        variable.name = "weekday_sleep_7.0_to_8.5"
+        variable.name = "weekend_sleep_7.0_to_8.5"
         variable.probability = 0.42
         variable = discreteDistribution.variables.add()
-        variable.name = "weekday_sleep_9.0_to_10.5"
+        variable.name = "weekend_sleep_9.0_to_10.5"
         variable.probability = 0.34
         variable = discreteDistribution.variables.add()
-        variable.name = "weekday_sleep_11_or_more"
+        variable.name = "weekend_sleep_11_or_more"
         variable.probability = 0.09
         
 #Poor diet
@@ -2012,7 +2014,7 @@ def longevity_bayes():
 
         cpt["salt_how_often"] = dependency(bayesianNetwork,cpt, 
         [
-        ({"eat_out_how_many_times_per_week":["eat_out_more_than_7_times_per_week"]},{"sensitivity":0.80})
+        ({"eat_out_how_many_times_per_week":["eat_out_more_than_7_times_per_week"]},{"sensitivity":0.40, "specificity":0.75})
         ],
         {"salt_very_often":0.18,"no_salt_very_often":0.82}
         )
@@ -2199,7 +2201,7 @@ def longevity_bayes():
 
         cpt["total_cholesterol"] = dependency(bayesianNetwork,cpt, 
         [
-        ({"dietary_cholesterol":["dietary_cholesterol_above_403.00"]},{"sensitivity":0.2})
+        ({"dietary_cholesterol":["dietary_cholesterol_above_403.00"]},{"sensitivity":0.7, "specificity":0.5})
         ],
         {"total_cholesterol_high_above_200":0.3,"no_total_cholesterol_high_above_200":0.7}
         )
@@ -2411,7 +2413,7 @@ def longevity_bayes():
 
         cpt["dietary_sodium"] = dependency(bayesianNetwork,cpt, 
         [
-        ({"salt_how_often":["salt_very_often"]},{"sensitivity":0.80})
+        ({"salt_how_often":["salt_very_often"]},{"sensitivity":0.95, "specificity":0.40})
         ],
         {"dietary_sodium_above_4297.00":0.25,"no_dietary_sodium_above_4297.00":0.75}
         )
@@ -2837,7 +2839,7 @@ def longevity_bayes():
                 
         cpt["times_brush_teeth_daily"] = dependency(bayesianNetwork,cpt,
                 [
-                    ({"last_dentist_visit":["last_dentist_visit_never","last_dentist_visit_2_or_more_years"]},{"sensitivity":0.66})
+                    ({"last_dentist_visit":["last_dentist_visit_never","last_dentist_visit_2_or_more_years"]},{"sensitivity":0.7, "specificity":0.66})
                     ],
                 {"times_brush_teeth_daily_1_or_less":0.33, "no_times_brush_teeth_daily_1_or_less":0.66}
                 )
@@ -2865,8 +2867,8 @@ def longevity_bayes():
                 
         cpt["floss_days_per_week"] = dependency(bayesianNetwork,cpt,
                 [
-                    ({"times_brush_teeth_daily":["times_brush_teeth_daily_1_or_less"]},{"sensitivity":0.75}),
-                    ({"last_dentist_visit":["last_dentist_visit_never","last_dentist_visit_2_or_more_years"]},{"sensitivity":0.66})
+                    ({"times_brush_teeth_daily":["times_brush_teeth_daily_1_or_less"]},{"sensitivity":0.75, "specificity":0.85}),
+                    ({"last_dentist_visit":["last_dentist_visit_never","last_dentist_visit_2_or_more_years"]},{"sensitivity":0.66, "specificity":0.66})
                     ],
                 {"floss_days_per_week_3_or_less":0.56, "no_floss_days_per_week_3_or_less":0.44}
                 )
@@ -2894,8 +2896,8 @@ def longevity_bayes():
                 
         cpt["teeth_health"] = dependency(bayesianNetwork,cpt,
                 [
-                    ({"times_brush_teeth_daily":["times_brush_teeth_daily_1_or_less"]},{"sensitivity":0.75}),
-                    ({"floss_days_per_week":["floss_days_per_week_3_or_less"]},{"sensitivity":0.66})
+                    ({"times_brush_teeth_daily":["times_brush_teeth_daily_1_or_less"]},{"sensitivity":0.75, "specificity":0.9}),
+                    ({"floss_days_per_week":["floss_days_per_week_3_or_less"]},{"sensitivity":0.66, "specificity":0.85})
                     ],
                 {"teeth_health_poor":0.09, "no_teeth_health_poor":0.91}
                 )
@@ -2917,8 +2919,8 @@ def longevity_bayes():
                 
         cpt["gum_disease"] = dependency(bayesianNetwork,cpt,
                 [
-                    ({"times_brush_teeth_daily":["times_brush_teeth_daily_1_or_less"]},{"sensitivity":0.75}),
-                    ({"floss_days_per_week":["floss_days_per_week_3_or_less"]},{"sensitivity":0.66})
+                    ({"times_brush_teeth_daily":["times_brush_teeth_daily_1_or_less"]},{"sensitivity":0.75, "specificity":0.66}),
+                    ({"floss_days_per_week":["floss_days_per_week_3_or_less"]},{"sensitivity":0.66, "specificity":0.75})
                     ],
                 {"gum_disease_yes":0.19, "gum_disease_no":0.81}
                 )
@@ -2947,8 +2949,8 @@ def longevity_bayes():
                 
         cpt["mouth_pain_last_year"] = dependency(bayesianNetwork,cpt,
                 [
-                    ({"gum_disease":["gum_disease_yes"]},{"sensitivity":0.75}),
-                    ({"teeth_health":["teeth_health_poor"]},{"sensitivity":0.66})
+                    ({"gum_disease":["gum_disease_yes"]},{"sensitivity":0.75, "specificity":0.25}),
+                    ({"teeth_health":["teeth_health_poor"]},{"sensitivity":0.66, "specificity":0.15})
                     ],
                 {"mouth_pain_last_year_fairly_often":0.09, "no_mouth_pain_last_year_fairly_often":0.91}
                 )
@@ -3044,7 +3046,7 @@ def longevity_bayes():
                 
         cpt["fasting_glucose"] = dependency(bayesianNetwork,cpt,
                 [
-                    ({"glucose_serum":["glucose_serum_above_155.00","glucose_serum_above_101.00_to_155.00_and_below"]},{"sensitivity":0.68})
+                    ({"glucose_serum":["glucose_serum_above_155.00","glucose_serum_above_101.00_to_155.00_and_below"]},{"sensitivity":0.85, "specificity":0.85})
                     ],
                 {"fasting_glucose_high_above_100":0.43, "no_fasting_glucose_high_above_100":0.57}
                 )
@@ -3056,7 +3058,7 @@ def longevity_bayes():
                 
         cpt["a1c"] = dependency(bayesianNetwork,cpt,
                 [
-                    ({"fasting_glucose":["fasting_glucose_high_above_100"]},{"sensitivity":0.59})
+                    ({"fasting_glucose":["fasting_glucose_high_above_100"]},{"sensitivity":0.80, "specificity":0.75})
                     ],
                 {"a1c_diabetes_5.7_and_above":0.33, "no_a1c_diabetes_5.7_and_above":0.66}
                 )
@@ -3126,7 +3128,7 @@ def longevity_bayes():
 
         cpt["heart_rate_variability_anomaly"] = dependency(bayesianNetwork,cpt,
         [
-            ({"heart_rate_anomaly":["heart_rate_anomaly"]},{"sensitivity":0.8})
+            ({"heart_rate_anomaly":["heart_rate_anomaly"]},{"sensitivity":0.3, "specificity":0.75})
         ],
         {"heart_rate_variability_anomaly":0.05,"no_heart_rate_variability_anomaly":0.95}
         )
@@ -3134,8 +3136,8 @@ def longevity_bayes():
 
         cpt["oxygen_anomaly"] = dependency(bayesianNetwork,cpt,
         [
-            ({"obesity":["obesity"]},{"sensitivity":0.8}),
-            ({"heart_rate_anomaly":["heart_rate_anomaly"]},{"sensitivity":0.2})
+            ({"obesity":["obesity"]},{"sensitivity":0.8, "specificity":0.5}),
+            ({"heart_rate_anomaly":["heart_rate_anomaly"]},{"sensitivity":0.7, "specificity":0.3})
         ],
         {"oxygen_anomaly":0.02,"no_oxygen_anomaly":0.98}
         )
@@ -3160,8 +3162,8 @@ def longevity_bayes():
 
         cpt["sleep_anomaly"] = dependency(bayesianNetwork,cpt,
         [
-            ({"lack_of_exercise":["lack_of_exercise"]},{"sensitivity":0.7}),
-            ({"oxygen_anomaly":["oxygen_anomaly"]},{"sensitivity":0.6})
+            ({"lack_of_exercise":["lack_of_exercise"]},{"sensitivity":0.65, "specificity":0.1}),
+            ({"oxygen_anomaly":["oxygen_anomaly"]},{"sensitivity":0.4, "specificity":0.85})
         ],
         {"sleep_anomaly":0.05,"no_sleep_anomaly":0.95}
         )
@@ -3241,8 +3243,8 @@ def longevity_bayes():
  
         cpt["resting_heart_rate"] = dependency(bayesianNetwork,cpt,
         [
-            ({"lack_of_exercise":["lack_of_exercise"]},{"sensitivity":0.8}),
-            ({"heart_rate_anomaly":["heart_rate_anomaly"]},{"sensitivity":0.8})
+            ({"lack_of_exercise":["lack_of_exercise"]},{"sensitivity":0.9, "specificity":0.2}),
+            ({"heart_rate_anomaly":["heart_rate_anomaly"]},{"sensitivity":0.9, "specificity":0.9})
         ],
         {"resting_heart_rate_very_high_91_and_above":0.09,"no_resting_heart_rate_very_high_91_and_above":0.91}
         )
@@ -3356,10 +3358,10 @@ def longevity_bayes():
  
         cpt["medicated_hypertension"] = dependency(bayesianNetwork,cpt,
         [
-            ({"diastolic":["diastolic_120_or_higher_crisis","diastolic_90_to_119_high_stage_2","diastolic_80_to_89_high_stage_1"]},{"sensitivity":0.4}),
-            ({"systolic":["systolic_180_over_crisis","systolic_140_to_179_high_stage_2","systolic_130_to_139_high_stage_1"]},{"sensitivity":0.6}),
-            ({"high_blood_pressure_patient_prescription":["high_blood_pressure_patient_prescription_yes"]},{"sensitivity":0.85}),
-            ({"high_blood_pressure_medication_compliance":["high_blood_pressure_medication_compliance_no"]},{"sensitivity":0.8})
+            ({"diastolic":["diastolic_120_or_higher_crisis","diastolic_90_to_119_high_stage_2","diastolic_80_to_89_high_stage_1"]},{"sensitivity":0.8, "specificity":0.65}),
+            ({"systolic":["systolic_180_over_crisis","systolic_140_to_179_high_stage_2","systolic_130_to_139_high_stage_1"]},{"sensitivity":0.95, "specificity":0.75}),
+            ({"high_blood_pressure_patient_prescription":["high_blood_pressure_patient_prescription_yes"]},{"sensitivity":0.99, "specificity":0.6}),
+            ({"high_blood_pressure_medication_compliance":["high_blood_pressure_medication_compliance_no"]},{"sensitivity":0.99, "specificity":0.99})
         ],
         {"medicated_hypertension":0.09,"no_medicated_hypertension":0.91}
         )
@@ -3461,7 +3463,7 @@ def longevity_bayes():
          "toxic_metal_labs":{  "toxic_metal_labs"},
          "toxic_compound_labs":{"toxic_compound_labs"}
          },
-         ["toxin_labs","no_toxiin_labs"]
+         ["toxin_labs","no_toxin_labs"]
          )
                  
                  
@@ -3515,15 +3517,29 @@ def longevity_bayes():
 
         )
                 
-        cpt["inflammation_from_illness"] = any_of(bayesianNetwork,cpt,
-                {
-         "blood_illness_indicators":{ "blood_illness_indicators"},
-         "obesity":{"obesity"},
-         "asthma_attack_last_year":{"asthma_attack_last_year_yes"},
-         "fatiqued_in_2_weeks":{"fatiqued_in_2_weeks_nearly_everyday"}
-         },
-         ["inflammation_from_illness","no_inflammation_from_illness"]
+        #cpt["inflammation_from_illness"] = any_of(bayesianNetwork,cpt,
+         #       {
+         #"blood_illness_indicators":{ "blood_illness_indicators"},
+         #"obesity":{"obesity"},
+         #"asthma_attack_last_year":{"asthma_attack_last_year_yes"},
+         #"fatiqued_in_2_weeks":{"fatiqued_in_2_weeks_nearly_everyday"}
+         #},
+         #["inflammation_from_illness","no_inflammation_from_illness"]
+         #)
+         
+            
+                 
+        cpt["inflammation_from_illness"] = avg(bayesianNetwork,cpt,
+                [
+                                "blood_illness_indicators",
+                                "obesity",
+                                "asthma_attack_last_year",
+                                "fatiqued_in_2_weeks"
+                                
+                ],
+                ["inflammation_from_illness","no_inflammation_from_illness"]
          )
+                 
          
             
  
@@ -3532,7 +3548,7 @@ def longevity_bayes():
                 
         cpt["c_reactive_protein"] = dependency(bayesianNetwork,cpt,
         [
-            ({"inflammation_from_illness":["inflammation_from_illness"]},{"sensitivity":0.8})
+            ({"inflammation_from_illness":["inflammation_from_illness"]},{"sensitivity":0.85, "specificity":0.5})
         ],
         {"c_reactive_protein_high_above_2":0.45,"no_c_reactive_protein_high_above_2":0.55}
         )
@@ -3543,7 +3559,7 @@ def longevity_bayes():
                 [
                                 "work_schedule",
                                 "workday_sleep_hours_per_night",
-                                "weekday_sleep_hours_per_night"
+                                "weekend_sleep_hours_per_night"
                 ],
                 ["poor_sleep_schedule","no_poor_sleep_schedule"]
          )
@@ -3559,17 +3575,31 @@ def longevity_bayes():
          )
                 
         
+        
                 
-        cpt["inflammation_from_behavior"] = any_of(bayesianNetwork,cpt,
-                {
-         "uv_exposure":{ "uv_exposure"},
-         "poor_oral_health":{"poor_oral_health"},
-                "toxin_labs":{"toxin_labs"},
-                "poor_sleep":{"poor_sleep"},
-                "lack_of_exercise":{"lack_of_exercise"}
-         },
-         ["inflammation_from_behavior","no_inflammation_from_behavior"]
-         )
+        #cpt["inflammation_from_behavior"] = any_of(bayesianNetwork,cpt,
+         #"uv_exposure":{ "uv_exposure"},
+         #"poor_oral_health":{"poor_oral_health"},
+          #      "toxin_labs":{"toxin_labs"},
+           #     "poor_sleep":{"poor_sleep"},
+            #    "lack_of_exercise":{"lack_of_exercise"}
+         #},
+         #["inflammation_from_behavior","no_inflammation_from_behavior"]
+         #)
+                   
+        
+        cpt["inflammation_from_behavior"] = avg(bayesianNetwork,cpt,
+                [
+                        "uv_exposure",
+                        "poor_oral_health",
+                        "toxin_labs",
+                        "poor_sleep",
+                        "lack_of_exercise"
+                ],
+                ["inflammation_from_behavior","no_inflammation_from_behavior"]
+
+                )
+                
                 
                 
                 
@@ -3775,14 +3805,26 @@ def longevity_bayes():
          )
          
            
-        cpt["poor_diet_quantity"] = any_of(bayesianNetwork,cpt,
-                {
-         "poor_diet_substances":{"poor_diet_substances"},
-         "poor_diet_supplements":{"poor_diet_supplements"},
-         "poor_diet_basics":{"poor_diet_basics"}
-         },
+        #cpt["poor_diet_quantity"] = any_of(bayesianNetwork,cpt,
+                #{
+         #"poor_diet_substances":{"poor_diet_substances"},
+         #"poor_diet_supplements":{"poor_diet_supplements"},
+         #"poor_diet_basics":{"poor_diet_basics"}
+         #},
+         #["poor_diet_quantity","no_poor_diet_quantity"]
+         #)
+         
+         
+         
+        cpt["poor_diet_quantity"] = avg(bayesianNetwork,cpt,
+         [
+         "poor_diet_substances",
+         "poor_diet_supplements",
+         "poor_diet_basics"
+         ],
          ["poor_diet_quantity","no_poor_diet_quantity"]
          )
+         
 
         cpt["poor_diet_food"] = any_of(bayesianNetwork,cpt,
                 {
@@ -3962,16 +4004,16 @@ def longevity_bayes():
         cpt = {}
          
                         
-
         cpt["poor_diet"] = dependency(bayesianNetwork,cpt,
                         [
                             ({"low_socioeconomic_status":["low_socioeconomic_status"]},{"relative_risk":2.66}),
-                            ({"diet_quality":["deficient_diet_quality"]},{"sensitivity":0.8}),
-                            ({"diet_quality":["below_average_diet_quality"]},{"sensitivity":0.7}),
-                            ({"poor_diet_flag":["poor_diet_flag"]},{"sensitivity":0.5})
+                            ({"diet_quality":["deficient_diet_quality"]},{"sensitivity":0.95, "specificity":0.95}),
+                            ({"diet_quality":["below_average_diet_quality"]},{"sensitivity":0.65, "specificity":0.4}),
+                            ({"poor_diet_flag":["poor_diet_flag"]},{"sensitivity":0.5, "specificity":0.1})
                         ],
                         {"poor_diet":0.17,"no_poor_diet":0.83}
                         )
+ 
  
  
         outstr = outstr + addCpt(bayesianNetwork,cpt) 
@@ -3981,11 +4023,11 @@ def longevity_bayes():
 
         cpt["inflammation_from_diet"] = dependency(bayesianNetwork,cpt,
                         [
-                            ({"omega_3":["deficient_omega_3"]},{"sensitivity":.75}),
-                            ({"poor_diet":["poor_diet"]},{"sensitivity":.75}),
-                            ({"blood_metabolism_disorder_indicators":["blood_metabolism_disorder_indicators"]},{"sensitivity":0.6}),
-                            ({"dietary_carbohydrate":["dietary_carbohydrate_above_477.91"]},{"sensitivity":0.5}),
-                            ({"water_drank_yesterday":["water_drank_yesterday_above_0.00_to_330.00_and_below"]},{"sensitivity":0.3})
+                            ({"omega_3":["deficient_omega_3"]},{"sensitivity":.3, "specificity":0.15}),
+                            ({"poor_diet":["poor_diet"]},{"sensitivity":.85, "specificity":0.6}),
+                            ({"blood_metabolism_disorder_indicators":["blood_metabolism_disorder_indicators"]},{"sensitivity":0.5, "specificity":0.5}),
+                            ({"dietary_carbohydrate":["dietary_carbohydrate_above_477.91"]},{"sensitivity":0.2, "specificity":0.45}),
+                            ({"water_drank_yesterday":["water_drank_yesterday_above_0.00_to_330.00_and_below"]},{"sensitivity":0.2, "specificity":0.3})
                         ],
                         {"inflammation_from_diet":0.07,"no_inflammation_from_diet":0.93}
                         )
@@ -3998,13 +4040,14 @@ def longevity_bayes():
 
         cpt["inflammation"] = dependency(bayesianNetwork,cpt,
                         [
-                            ({"inflammation_from_behavior":["inflammation_from_behavior"]},{"sensitivity":.75}),
-                            ({"c_reactive_protein":["c_reactive_protein_high_above_2"]},{"sensitivity":0.85}),
-                            ({"inflammation_from_diet":["inflammation_from_diet"]},{"sensitivity":0.5}),
-                            ({"age":["elderly"]},{"sensitivity":0.4})
+                            ({"inflammation_from_behavior":["inflammation_from_behavior"]},{"sensitivity":.35, "specificity":0.99}),
+                            ({"c_reactive_protein":["c_reactive_protein_high_above_2"]},{"sensitivity":0.85, "specificity":0.99}),
+                            ({"inflammation_from_diet":["inflammation_from_diet"]},{"sensitivity":0.35, "specificity":0.99}),
+                            ({"age":["elderly"]},{"sensitivity":0.4, "specificity":0.6})
                         ],
                         {"inflammation":0.07,"no_inflammation":0.93}
                         )
+                
                 
   
         outstr = outstr + addCpt(bayesianNetwork,cpt) 
@@ -4016,7 +4059,7 @@ def longevity_bayes():
         ({"age":["adult"]},{"relative_risk":2}),
         ({"dietary_sodium":["dietary_sodium_above_4297.00"]},{"relative_risk":2.17}),
         ({"inflammation":["inflammation"]},{"relative_risk":2}),
-        ({"reported_hypertension":["reported_hypertension"]},{"sensitivity":0.9})
+        ({"reported_hypertension":["reported_hypertension"]},{"sensitivity":0.6, "specificity":0.95})
         ],
         {"hypertension":0.17,"no_hypertension":0.83}
         )
@@ -4030,18 +4073,18 @@ def longevity_bayes():
         ({"obesity":["obesity"]},{"relative_risk":2.14}),
         ({"bmi":["bmi_25_to_29_overweight"]},{"relative_risk":1.21}),
         ({"hypertension":["hypertension"]},{"relative_risk":2}),
-        ({"blood_kidney_disorder_indicators":["blood_kidney_disorder_indicators"]},{"sensitivity":0.4})
+        ({"blood_kidney_disorder_indicators":["blood_kidney_disorder_indicators"]},{"sensitivity":0.8, "specificity":0.8})
         ],
         {"kidney_disease":0.14,"no_kidney_disease":0.86}
         )
         
         cpt["psychological_disorders"] = dependency(bayesianNetwork,cpt, ##
         [
-        ({"anxious_how_often":["anxious_daily"]}, {"sensitivity":0.2}),
+        ({"anxious_how_often":["anxious_daily"]}, {"sensitivity":0.4, "specificity":0.2}),
         ({"marital_status":["widowed"]},{"relative_risk":4}),
         ({"marital_status":["separated","divorced","never_married"]},{"relative_risk":1.7}),
-        ({"inflammation":["inflammation"]},{"sensitivity": 0.3}),
-        ({"heart_rate_variability_anomaly":["heart_rate_variability_anomaly"]},{"sensitivity": 0.5}),
+        ({"inflammation":["inflammation"]},{"sensitivity": 0.3, "specificity":0.1}),
+        ({"heart_rate_variability_anomaly":["heart_rate_variability_anomaly"]},{"sensitivity": 0.4, "specificity":0.2}),
         ],
         {"psychological_disorders":0.09,"no_psychological_disorders":0.91}
         )        
@@ -4134,9 +4177,9 @@ def longevity_bayes():
         cpt["sarcopenia"] = dependency(bayesianNetwork,cpt,
                         [
                             ({"sarcopenia_reported":["sarcopenia_reported"]},{"relative_risk":1.66}),
-                            ({"frailty_signals":["frailty_signals"]},{"sensitivity":0.9}),
-                            ({"age":["elderly"]},{"sensitivity":0.8}),
-                            ({"lack_of_exercise":["lack_of_exercise"]},{"sensitivity":0.5})
+                            ({"frailty_signals":["frailty_signals"]},{"sensitivity":0.9, "specificity":0.6}),
+                            ({"age":["elderly"]},{"sensitivity":0.8, "specificity":0.15}),
+                            ({"lack_of_exercise":["lack_of_exercise"]},{"sensitivity":0.9, "specificity":0.05})
                         ],
                         {"sarcopenia":0.07,"no_sarcpenia":0.93}
                         )
@@ -4181,8 +4224,8 @@ def longevity_bayes():
         cpt["inactivated_sirtuins"] = dependency(bayesianNetwork,cpt,
                 [
                     ({"dietary_energy":["dietary_energy_above_3939.00","dietary_energy_above_2612.00_to_3939.00_and_below",
-                        "dietary_energy_above_1930.00_to_2612.00_and_below","dietary_energy_above_1399.00_to_1930.00_and_below"]},{"sensitivity":0.9}),
-                    ({"diet_quality": ["deficient_diet_quality","below_average_diet_quality","avg_diet_quality","above_average_diet_quality"]},{"sensitivity":0.85})
+                        "dietary_energy_above_1930.00_to_2612.00_and_below","dietary_energy_above_1399.00_to_1930.00_and_below"]},{"sensitivity":0.9, "specificity":0.6}),
+                    ({"diet_quality": ["deficient_diet_quality","below_average_diet_quality","avg_diet_quality","above_average_diet_quality"]},{"sensitivity":0.85, "specificity":0.6})
                     ],
                 {"inactivated_sirtuins":0.8,"no_inactivated_sirtuins":0.2}
                 )
@@ -4217,10 +4260,10 @@ def longevity_bayes():
 
         cpt["hallmark_1_genomic_instability"] = dependency(bayesianNetwork,cpt,
                 [
-                    ({"age":["elderly"]},{"sensitivity":0.4}),
-                    ({"age":["adult"]},{"sensitivity":0.2}),
-                    ({"poor_diet":["poor_diet"]},{"sensitivity":0.3}),
-                    ({"blood_age_indicators":["blood_age_indicators"]},{"sensitivity":0.3})
+                    ({"age":["elderly"]},{"sensitivity":0.75, "specificity":0.4}),
+                    ({"age":["adult"]},{"sensitivity":0.2, "specificity":0.2}),
+                    ({"poor_diet":["poor_diet"]},{"sensitivity":0.6, "specificity":0.2}),
+                    ({"blood_age_indicators":["blood_age_indicators"]},{"sensitivity":0.8, "specificity":0.4})
                 ],
                 {"hallmark_1_genomic_instability":0.1, "no_hallmark_1_genomic_instability":0.9}
                 )
@@ -4235,7 +4278,7 @@ def longevity_bayes():
             ({"poor_diet":["poor_diet"]},{"relative_risk":0.3}), ## get relative risks
             ({"smoking":["smoking"]},{"relative_risk":0.3}), ##
             ({"age":["elderly"]},{"relative_risk":5.8}),
-            ({"hallmark_1_genomic_instability":["hallmark_1_genomic_instability"]},{"sensitivity":0.3})
+            ({"hallmark_1_genomic_instability":["hallmark_1_genomic_instability"]},{"sensitivity":0.3, "specificity":0.6})
         ],
         {"cancer":0.055,"no_cancer":0.945}
         )
@@ -4303,7 +4346,7 @@ def longevity_bayes():
         ({"bmi":["bmi_30_to_34_low_risk"]},{"relative_risk":2.5}),
         ({"bmi":["bmi_25_to_29_overweight"]},{"relative_risk":1.5}),
         ({"hypertension":["hypertension"]},{"relative_risk":3.8}),
-        ({"a1c":["a1c_diabetes_5.7_and_above"]},{"sensitivity":0.99}) # true sensitivites are in the blood diabetes rule and this carries them over
+        ({"a1c":["a1c_diabetes_5.7_and_above"]},{"sensitivity":0.95, "specificity":0.99}) # true sensitivites are in the blood diabetes rule and this carries them over
         ],
         {"diabetes":0.12,"no_diabetes":0.88}
         )
@@ -4326,7 +4369,7 @@ def longevity_bayes():
         ({"age":["elderly"]},{"relative_risk":7}),
         ({"diabetes":["diabetes"]},{"relative_risk":3}),
         ({"obesity":["obesity"]},{"relative_risk":2}),
-        ({"heart_disorder_indicators":["heart_disorder_indicators"]},{"sensitivity":0.8}),
+        ({"heart_disorder_indicators":["heart_disorder_indicators"]},{"sensitivity":0.4, "specificity":0.3}),
         ({"hypertension":["hypertension"]},{"relative_risk":3.15})
                 
         ],
@@ -4363,10 +4406,10 @@ def longevity_bayes():
                 
         cpt["frailty"] = dependency(bayesianNetwork,cpt,
                 [
-                    ({"inactivated_sirtuins":["inactivated_sirtuins"]},{"sensitivity":0.3}),
-                    ({"comorbidities":["comorbidities"]},{"sensitivity":0.4}),
-                    ({"frailty_signs":["frailty_signs"]},{"sensitivity":0.7}),
-                    ({"hallmark_1_genomic_instability":["hallmark_1_genomic_instability"]},{"sensitivity":0.4})
+                    ({"inactivated_sirtuins":["inactivated_sirtuins"]},{"sensitivity":0.9, "specificity":0.3 }),
+                    ({"comorbidities":["comorbidities"]},{"sensitivity":0.6, "specificity":0.2 }),
+                    ({"frailty_signs":["frailty_signs"]},{"sensitivity":0.95, "specificity":0.9 }),
+                    ({"hallmark_1_genomic_instability":["hallmark_1_genomic_instability"]},{"sensitivity":0.6, "specificity":0.4 })
                     ],
                 {"frailty":0.15, "no_frailty":0.85}
                 )
