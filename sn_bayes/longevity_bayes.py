@@ -31,7 +31,7 @@ def longevity_bayes():
         anomaly = bayesianNetwork.anomalies.add()
         anomaly.varName = "step_variability_anomaly"
         anomaly.side = "positive"
-        anomaly.c = 3.0 
+        anomaly.c = 12.0 
         anomaly.window = 5
         detectors = anomaly.detectors.add()
         detectors.name = "VolatilityShiftAD"
@@ -82,7 +82,7 @@ def longevity_bayes():
         anomaly = bayesianNetwork.anomalies.add()
         anomaly.varName = "stride_variability_anomaly"
         anomaly.side = "positive"
-        anomaly.c = 3.0 
+        anomaly.c = 12.0 
         anomaly.window = 5
         detectors = anomaly.detectors.add()
         detectors.name = "VolatilityShiftAD"
@@ -91,7 +91,7 @@ def longevity_bayes():
         anomaly = bayesianNetwork.anomalies.add()
         anomaly.varName = "walking_speed_variability_anomaly"
         anomaly.side = "positive"
-        anomaly.c = 3.0 
+        anomaly.c = 12.0 
         anomaly.window = 5
         detectors = anomaly.detectors.add()
         detectors.name = "VolatilityShiftAD"
