@@ -208,10 +208,10 @@ class BayesNetServicer(grpc_bt_grpc.BayesNetServicer):
               var_answer1 = answer.signal_anomalies.add()
               var_num = var_positions[var]
               var_answer1.var_num = var_num
-              for tup in anomaly_out['signal'][var]:
-                var_state1 = var_answer1.signals.add()
-                var_state1.interval = tup[0]
-                var_state1.val = tup[1]
+              #for tup in anomaly_out['signal'][var]:
+                #var_state1 = var_answer1.signals.add()
+                #var_state1.interval = tup[0]
+                #var_state1.val = tup[1]
               for is_anomaly in anomaly_out['anomalies'][var]:
                 var_state2 = var_answer1.anomalies.add()
                 #var_state2.is_anomaly = bool(distutils.util.strtobool(is_anomaly))
