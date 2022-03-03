@@ -559,9 +559,11 @@ def create_query (bayesianNetwork,evidence_dict,outvar_list,explainvars=[],
 def batch_query(baked_net, netspec, evidence_list,out_var_list):
         answer_list = []
         var_positions = get_var_positions(netspec)
-        #print ('evidence_list')
-        #print (evidence_list)
+        print ('evidence_list')
+        print (evidence_list)
         evidence_list = list(evidence_list)
+        if "always_true" in var_positions:
+                evidence_list["always_true"]="always_true"
         description = baked_net.predict_proba(evidence_list,max_iterations=1,check_input = False, n_jobs=1)
         #print ("description")
         #print (description)
@@ -582,6 +584,8 @@ def batch_query(baked_net, netspec, evidence_list,out_var_list):
 def query(baked_net, netspec, evidence,out_var_list):
         answer = {}
         var_positions = get_var_positions(netspec)
+        if "always_true" in var_positions:
+                evidence["always_true"]="always_true"
         description = baked_net.predict_proba(evidence)
         for dist_name in out_var_list:
                 try:
@@ -1079,7 +1083,10 @@ def get_priors(bayesianNetwork,invars,prevalence,cpt):
         pomegranate= bayesInitialize(bayesianNetwork)
         #print(bayesianNetwork)
         pomegranate.bake()
-        probs = pomegranate.predict_proba({})
+        evidence = {}
+        if "always_true" in var_positions:
+                evidence["always_true"]="always_true"
+        probs = pomegranate.predict_proba(evidence)
         priors = {}
         vdict = dictVarsAndValues(bayesianNetwork, cpt)
         for vardict,numval_dict in invars:
@@ -1113,9 +1120,12 @@ def get_priors(bayesianNetwork,invars,prevalence,cpt):
                         #print(asum)
         return priors
                 
-def get_frequencies(bayesianNetwork,keylist,cpt):
+def get_frequencies(bayesianNetwork,keylist,cpt,preconditionals = {}):
         #print ("keylist")
         #print (keylist)
+        #print ("preconditionals")
+        #print(preconditionals)
+
         pomegranate= bayesInitialize(bayesianNetwork)
         #print(bayesianNetwork)
         pomegranate.bake()
@@ -1138,6 +1148,9 @@ def get_frequencies(bayesianNetwork,keylist,cpt):
                 #print(cartesian)
                 for c in cartesian:
                         evidence = {} if i == 0 else {k:v for k,v in zip(short_keylist,c)} 
+                        if "always_true" in keylist:
+                            evidence["always_true"]="always_true"
+                        evidence.update(preconditionals)
                         #print ("evidence")
                         #print (evidence)
                         probs = pomegranate.predict_proba(evidence)
@@ -1427,7 +1440,7 @@ def prob_a_and_not_a_given_b_and_not_b2 (invars, priors, outvars):
 
 
 
-def prob_a_and_not_a_given_b_and_not_b (invars, priors, outvars):
+def prob_a_and_not_a_given_b_and_not_b3 (invars, priors, outvars):
     
         # This function will find prob_a_given_b and prob_a_given_not_b.
         # Applies to variables with "relative_risk" values and those with "sensitivity" values
@@ -1566,6 +1579,108 @@ def prob_a_and_not_a_given_b_and_not_b (invars, priors, outvars):
    
 
         return prob_a_given_b, prob_a_given_not_b, prob_not_a_given_b, prob_not_a_given_not_b
+  
+
+def rr_prob_a_and_not_a_given_b_and_not_b (rr,prior_a,prior_b):
+    #Four equations with 4 unknowns:
+    #1.  rr = prob_a_given_b/prob_a_given_not_b
+    #2.  (probagivenb * priorb) + (probagivennotb * (1.0 - priorb)) = priora, 
+    #3.  prob_a_given_b + prob_not_a_given_b = 1
+    #4.  prob_a_given_not_b + prob_not_a_given_not_b = 1
+
+    # Solution:
+    prob_a_given_b = ( prior_a * rr)/(1. - prior_b + (prior_b * rr))
+    prob_not_a_given_b = (1. - prior_b - (prior_a * rr) + (prior_b * rr))/(1. - prior_b + (prior_b * rr))
+    prob_a_given_not_b = (rr*prior_a)/(rr*(1. - prior_b + (rr*prior_b)))
+    prob_not_a_given_not_b = (rr - (prior_a * rr)- (prior_b * rr) + (prior_b * rr * rr))/(rr*(1. - prior_b + (prior_b * rr)))
+ 
+
+    return prob_a_given_b, prob_a_given_not_b, prob_not_a_given_b, prob_not_a_given_not_b
+  
+
+    
+
+def ss_prob_a_and_not_a_given_b_and_not_b (sensitivity,specificity,prior_a,prior_b):
+    #Strategy:  break down into TP, TN, FP, FN
+    # 4 equations with 4 unknowns:
+    #1.  sensitivity = TP/(TP+FN)
+    #2.  specificity = TN/(TN+FP)
+    #3.  prior_b = TP+FP
+    #4.  prior_a = FN+TP
+    #
+    #Therefore:
+    TP = sensitivity * prior_a
+    TN = specificity * (1.-prior_a)
+    FN = prior_a - TP
+    FP = (1.-prior_a) - TN 
+
+    #print ("tp tn fn fp")
+    #print (f"{TP} {TN} {FN} {FP}")
+    
+    #Solution:
+    prob_a_given_b = TP/(TP+FP)
+    prob_a_given_not_b = FN/(TN+FN)
+    prob_not_a_given_b = FP/(TP+FP)
+    prob_not_a_given_not_b = TN/(TN+FN)
+
+ 
+    return prob_a_given_b, prob_a_given_not_b, prob_not_a_given_b, prob_not_a_given_not_b
+ 
+
+
+def prob_a_and_not_a_given_b_and_not_b (invars, priors, outvars):
+ 
+        prob_a_given_b = {}
+        prob_a_given_not_b = {}
+        prob_not_a_given_b = {}
+        prob_not_a_given_not_b = {}
+         
+        
+        prior_a = list(outvars.items())[0][1]
+        
+        for vardict,numval_dict in invars:
+            for k,varlist in vardict.items():
+                #print("k")
+                #print(k)
+                 
+                if k not in prob_a_given_b:
+                    prob_a_given_b[k] = {}
+                if k not in prob_a_given_not_b:
+                    prob_a_given_not_b[k] = {}
+                if k not in prob_not_a_given_b:
+                    prob_not_a_given_b[k] = {}
+                if k not in prob_not_a_given_not_b:
+                    prob_not_a_given_not_b[k] = {}
+                for v in priors[k]:
+                    #print("v")
+                    #print(v)
+                
+                    #print("priors[k][v]")
+                    #print(priors[k][v])
+                    prior_b = priors[k][v] 
+                    prob_a_given_b[k][v], prob_a_given_not_b[k][v], prob_not_a_given_b[k][v], prob_not_a_given_not_b[k][v] = ( 
+                            rr_prob_a_and_not_a_given_b_and_not_b(numval_dict["relative_risk"],prior_a,prior_b) 
+                            if "relative_risk" in numval_dict else 
+                            ss_prob_a_and_not_a_given_b_and_not_b(numval_dict["sensitivity"],numval_dict["specificity"],prior_a,prior_b)
+                            )
+                    category = f"relative_risk:{numval_dict['relative_risk']}" if "relative_risk" in numval_dict else (
+                            f"sensitivity/specificity:{numval_dict['sensitivity']}/{numval_dict['specificity']}")
+                    #print(category)
+                    #print("prob_a_given_not_b[k][v] ")
+                    #print (prob_a_given_not_b[k][v] )
+                    #print("prob_a_given_b[k][v] ")
+                    #print(prob_a_given_b[k][v] )
+
+
+                    #print("prob_not_a_given_not_b[k][v] ")
+                    #print (prob_not_a_given_not_b[k][v] )
+                    #print("prob_not_a_given_b[k][v] ")
+                    #print(prob_not_a_given_b[k][v] )
+
+                    
+
+        return prob_a_given_b, prob_a_given_not_b, prob_not_a_given_b, prob_not_a_given_not_b
+
 
 
 
@@ -1584,7 +1699,7 @@ def dependency(bayesianNetwork, cpt, invars, outvars):
         priors = get_priors(bayesianNetwork,invars,prevalence_condition_regardless,cpt)
         #print("priors")
         #print(priors)
-        prob_a_given_b, prob_a_given_not_b, prob_not_a_given_b, prob_not_a_given_not_b =  prob_a_and_not_a_given_b_and_not_b2 (invars, priors, outvars)
+        prob_a_given_b, prob_a_given_not_b, prob_not_a_given_b, prob_not_a_given_not_b =  prob_a_and_not_a_given_b_and_not_b (invars, priors, outvars)
 
         description = "Against the baseline risks, "
         firsttime = True
@@ -1628,8 +1743,8 @@ def dependency(bayesianNetwork, cpt, invars, outvars):
         pos = {k:n for n,k in enumerate(keylist)}
         vdict = dictVarsAndValues(bayesianNetwork, cpt)
 
-        print("vdict")
-        print(vdict)
+        #print("vdict")
+        #print(vdict)
         val_prev = {}
         not_val_prev = {}
         for k in keylist:
@@ -1657,8 +1772,8 @@ def dependency(bayesianNetwork, cpt, invars, outvars):
         #print(val_prev)                            
 
         vlist = [vdict[v] for v in keylist]
-        print("vlist")
-        print (vlist)
+        #print("vlist")
+        #print (vlist)
         cartesian = list(itertools.product(*vlist))
        #in cartesian, worst is first and best comes later
         cpt_rows = []
@@ -1680,14 +1795,14 @@ def dependency(bayesianNetwork, cpt, invars, outvars):
         lhs_eq = []
         rhs_eq = []
                                 
-
-
+        included_vars = {}                        
+        for excluded in keylist:
+            included_vars[excluded]= keylist[:pos[excluded]] + keylist[pos[excluded]+1:] 
         for i,c in enumerate(cartesian):
-                print ("i:c")
-                print (i)
-                print (c)
-        
-                 
+                #print ("i:c")
+                #print (i)
+                #print (c)
+                
                 #equation1  (doesnt have every one in it )
                 #non elderly hbp prevalence  = 
                 #  (prevalence of hbp among adult obese psych) * prevalence of adult obese psych 
@@ -1812,21 +1927,25 @@ def dependency(bayesianNetwork, cpt, invars, outvars):
                                                 rhs_inequality_equation3[k][v] = 0 #rhs will be list of floats
                                         if v not in rhs_inequality_equation4[k]:
                                                 rhs_inequality_equation4[k][v] = 0
-                                        print ("c[pos[k]]")
-                                        print (c[pos[k]])
+                                        #print ("c[pos[k]]")
+                                        #print (c[pos[k]])
+                                        prob_others_given_b = get_frequencies(bayesianNetwork,included_vars[k],cpt,preconditionals = {k:v})
+                                        #print ("prob_others_given_b")
+                                        #print (prob_others_given_b)
+                                        c_no_k = c[:pos[k]]+c[pos[k]+1:]
                                         if c[pos[k]]  == v:
                                                 # rhs_equality_equation2[k][v] = priors[k][v]*relative_risk* val_prev[k][v]
                                                 rhs_inequality_equation2[k][v] = prob_a_given_b [k][v]
-                                                lhs_inequality_equation2[k][v][i] = frequencies [c]
+                                                lhs_inequality_equation2[k][v][i] = prob_others_given_b[c_no_k]
                                                 rhs_inequality_equation4[k][v] = prob_not_a_given_b [k][v]  
-                                                lhs_inequality_equation4[k][v][i+len(cartesian)] = frequencies [c]
+                                                lhs_inequality_equation4[k][v][i+len(cartesian)] = prob_others_given_b[c_no_k]
                                         else:
                                                 # rhs_equality_equation1[k][v] = val_prev[k][v]
                                                 rhs_inequality_equation1[k][v] = prob_a_given_not_b[k][v]
-                                                lhs_inequality_equation1[k][v][i] = frequencies [c]
+                                                lhs_inequality_equation1[k][v][i] = prob_others_given_b[c_no_k]
                                                 rhs_inequality_equation3[k][v] =  prob_not_a_given_not_b [k][v] 
-                                                lhs_inequality_equation3[k][v][i+len(cartesian)] = frequencies [c]
-                                                
+                                                lhs_inequality_equation3[k][v][i+len(cartesian)] = prob_others_given_b[c_no_k]
+                                                                                       
 
                 #make independence the lower bound
                 #product = 1
@@ -1849,6 +1968,19 @@ def dependency(bayesianNetwork, cpt, invars, outvars):
                 #bnd.append((minimum_not, 1.0))
                 bnd.append((0, 1.0))
 
+
+                #for vardict,numval_dict in invars:
+                        #for k, varlist in vardict.items():
+                            #for v in varlist:
+                                #norm = np.linalg.norm(lhs_inequality_equation1[k][v])
+                                #lhs_inequality_equation1[k][v]=lhs_inequality_equation1[k][v]/norm
+                                #norm = np.linalg.norm(lhs_inequality_equation2[k][v])
+                                #lhs_inequality_equation2[k][v]=lhs_inequality_equation2[k][v]/norm
+                                #norm = np.linalg.norm(lhs_inequality_equation3[k][v])
+                                #lhs_inequality_equation3[k][v]=lhs_inequality_equation3[k][v]/norm
+                                #norm = np.linalg.norm(lhs_inequality_equation4[k][v])
+                                #lhs_inequality_equation4[k][v]=lhs_inequality_equation4[k][v]/norm
+
         #We also want to include that the first half adds to the prevaence of a and the sencond to the prevalence of ~a
 
 
@@ -1863,30 +1995,32 @@ def dependency(bayesianNetwork, cpt, invars, outvars):
         lhs_eq.append(prev_not_a)
 
                
-        print("rhs_inequality_equation2") 
-        print(rhs_inequality_equation2) 
-        print("lhs_inequality_equation2")
-        print(lhs_inequality_equation2)
-        print("rhs_inequality_equation4") 
-        print(rhs_inequality_equation4) 
-        print("lhs_inequality_equation4")
-        print(lhs_inequality_equation4)
-        print("rhs_inequality_equation1")
-        print(rhs_inequality_equation1)
-        print("lhs_inequality_equation1")
-        print(lhs_inequality_equation1)
-        print("rhs_inequality_equation3")
-        print(rhs_inequality_equation3)
-        print("lhs_inequality_equation3")
-        print(lhs_inequality_equation3)
+        #print("rhs_inequality_equation2") 
+        #print(rhs_inequality_equation2) 
+        #print("lhs_inequality_equation2")
+        #print(lhs_inequality_equation2)
+        #print("rhs_inequality_equation4") 
+        #print(rhs_inequality_equation4) 
+        #print("lhs_inequality_equation4")
+        #print(lhs_inequality_equation4)
+        #print("rhs_inequality_equation1")
+        #print(rhs_inequality_equation1)
+        #print("lhs_inequality_equation1")
+        #print(lhs_inequality_equation1)
+        #print("rhs_inequality_equation3")
+        #print(rhs_inequality_equation3)
+        #print("lhs_inequality_equation3")
+        #print(lhs_inequality_equation3)
                                                
 
 
-        window = 1.0
-        cut = 1.0
+        #window = 1.0
+        window = .1
+        #cut = 1.0
+        cut = .1
         lastTrue = None
         #At first test window at 1.0 to ensure that there is a solution at all , then narrow down on it with binary search to get the smallest feasable window
-        while cut > 0.05:
+        while cut > 0.005:
                                         
                 lhs_ineq = []
                 rhs_ineq = []
@@ -1971,22 +2105,23 @@ def dependency(bayesianNetwork, cpt, invars, outvars):
                                
                 
                 #opt = linprog(c=obj, A_ub=lhs_ineq, b_ub=rhs_ineq,A_eq=lhs_eq, b_eq=rhs_eq, bounds=bnd,method="revised simplex")
-                print ("obj")
-                print (obj)
-                print ("lhs_eq")
-                print(lhs_eq)
-                print("rhs_eq")
-                print (rhs_eq)
+                #print ("obj")
+                #print (obj)
+                #print ("lhs_eq")
+                #print(lhs_eq)
+                #print("rhs_eq")
+                #print (rhs_eq)
 
-                print ("lhs_ineq")
-                print(lhs_ineq)
-                print("rhs_ineq")
-                print (rhs_ineq)
-                print ("bnd")
-                print(bnd)
+                #print ("lhs_ineq")
+                #print(lhs_ineq)
+                #print("rhs_ineq")
+                #print (rhs_ineq)
+                #print ("bnd")
+                #print(bnd)
 
                 #opt = linprog(c=obj, A_eq=lhs_eq, b_eq=rhs_eq, bounds=bnd,method="revised simplex")
                 err = False
+                opt = None
                 try:
                     opt = linprog(c=obj, A_ub=lhs_ineq, b_ub=rhs_ineq,A_eq=lhs_eq, b_eq=rhs_eq,  bounds=bnd,method="revised simplex")
                 except ValueError as ve:
@@ -1994,16 +2129,16 @@ def dependency(bayesianNetwork, cpt, invars, outvars):
                     err = True
 
                         
-                print("opt")
-                print (opt)
+                #print("opt")
+                #print (opt)
                 if window == 1.0 and (err or not opt.success):
                     break
                 cut /= 2
                 window = window - cut if not err and opt.success else window + cut
                 if not err and opt.success:
                     lastTrue = opt
-                print("window")
-                print (window)
+                #print("window")
+                #print (window)
 
 
         if lastTrue is not None:
@@ -2023,8 +2158,8 @@ def dependency(bayesianNetwork, cpt, invars, outvars):
                 val =  1.0-opt.x[i]
                 cpt_row.append(val)
                 cpt_rows.append(cpt_row)
-        print ("cpt_rows")
-        print(cpt_rows)
+        #print ("cpt_rows")
+        #print(cpt_rows)
         toc = time.perf_counter()
         diff = toc - tic
 
