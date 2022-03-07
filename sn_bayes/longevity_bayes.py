@@ -27,7 +27,7 @@ def longevity_bayes():
                 # https://www.nature.com/articles/s41467-021-23014-1
                 
                 #variablility of number of steps within a day
-                
+
         anomaly = bayesianNetwork.anomalies.add()
         anomaly.varName = "step_variability_anomaly"
         anomaly.side = "positive"
@@ -3805,25 +3805,25 @@ def longevity_bayes():
          )
          
            
-        #cpt["poor_diet_quantity"] = any_of(bayesianNetwork,cpt,
-                #{
-         #"poor_diet_substances":{"poor_diet_substances"},
-         #"poor_diet_supplements":{"poor_diet_supplements"},
-         #"poor_diet_basics":{"poor_diet_basics"}
-         #},
-         #["poor_diet_quantity","no_poor_diet_quantity"]
-         #)
-         
-         
-         
-        cpt["poor_diet_quantity"] = avg(bayesianNetwork,cpt,
-         [
-         "poor_diet_substances",
-         "poor_diet_supplements",
-         "poor_diet_basics"
-         ],
+        cpt["poor_diet_quantity"] = any_of(bayesianNetwork,cpt,
+                {
+         "poor_diet_substances":{"poor_diet_substances"},
+         "poor_diet_supplements":{"poor_diet_supplements"},
+         "poor_diet_basics":{"poor_diet_basics"}
+         },
          ["poor_diet_quantity","no_poor_diet_quantity"]
          )
+         
+         
+         
+        #cpt["poor_diet_quantity"] = avg(bayesianNetwork,cpt,
+         #[
+         #"poor_diet_substances",
+         #"poor_diet_supplements",
+         #"poor_diet_basics"
+         #],
+         #["poor_diet_quantity","no_poor_diet_quantity"]
+         #)
          
 
         cpt["poor_diet_food"] = any_of(bayesianNetwork,cpt,

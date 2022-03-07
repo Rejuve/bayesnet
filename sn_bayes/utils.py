@@ -559,8 +559,8 @@ def create_query (bayesianNetwork,evidence_dict,outvar_list,explainvars=[],
 def batch_query(baked_net, netspec, evidence_list,out_var_list):
         answer_list = []
         var_positions = get_var_positions(netspec)
-        print ('evidence_list')
-        print (evidence_list)
+        #print ('evidence_list')
+        #print (evidence_list)
         evidence_list = list(evidence_list)
         if "always_true" in var_positions:
                 evidence_list["always_true"]="always_true"
@@ -1694,6 +1694,7 @@ def dependency(bayesianNetwork, cpt, invars, outvars):
         print("start timing...")
         tic = time.perf_counter()
         keyset = OrderedSet([])
+        frequency_cache = {}
         prevalence_condition_regardless = list(outvars.items())[0][1]
         condition_val = list(outvars.items())[0][0]
         priors = get_priors(bayesianNetwork,invars,prevalence_condition_regardless,cpt)
@@ -1786,6 +1787,7 @@ def dependency(bayesianNetwork, cpt, invars, outvars):
         rhs_inequality_equation3 = {}
         rhs_inequality_equation4 = {}
         obj = np.ones(2*len(cartesian))
+
         frequencies = get_frequencies(bayesianNetwork,keylist,cpt)
         #print ("frequencies")
         #print(frequencies)
@@ -1929,7 +1931,15 @@ def dependency(bayesianNetwork, cpt, invars, outvars):
                                                 rhs_inequality_equation4[k][v] = 0
                                         #print ("c[pos[k]]")
                                         #print (c[pos[k]])
-                                        prob_others_given_b = get_frequencies(bayesianNetwork,included_vars[k],cpt,preconditionals = {k:v})
+                                        tup1 = included_vars[k].copy().sort() if len(included_vars[k]) > 0 else ()
+                                        input_tuple = (tup1,v)
+                                        if input_tuple not in frequency_cache:
+                                            prob_others_given_b = get_frequencies(bayesianNetwork,included_vars[k],cpt,preconditionals = {k:v})
+                                            frequency_cache[input_tuple] = prob_others_given_b
+                                            #print (f"{input_tuple} stored in frequency cache")
+                                        else:
+                                            prob_others_given_b = frequency_cache[input_tuple]
+                                            #print(f"{input_tuple} retrieved from frequency cache of size {len(frequency_cache)}")
                                         #print ("prob_others_given_b")
                                         #print (prob_others_given_b)
                                         c_no_k = c[:pos[k]]+c[pos[k]+1:]
@@ -2015,13 +2025,13 @@ def dependency(bayesianNetwork, cpt, invars, outvars):
 
 
         #window = 1.0
-        window = .1
+        window = 1.0
         #cut = 1.0
-        cut = .1
+        cut = 1.0
         lastTrue = None
         #At first test window at 1.0 to ensure that there is a solution at all , then narrow down on it with binary search to get the smallest feasable window
-        while cut > 0.005:
-                                        
+        #while cut > 0.05: 
+        while cut > 0.005:                                
                 lhs_ineq = []
                 rhs_ineq = []
                                 
@@ -2105,19 +2115,19 @@ def dependency(bayesianNetwork, cpt, invars, outvars):
                                
                 
                 #opt = linprog(c=obj, A_ub=lhs_ineq, b_ub=rhs_ineq,A_eq=lhs_eq, b_eq=rhs_eq, bounds=bnd,method="revised simplex")
-                #print ("obj")
-                #print (obj)
-                #print ("lhs_eq")
-                #print(lhs_eq)
-                #print("rhs_eq")
-                #print (rhs_eq)
+                print ("obj")
+                print (obj)
+                print ("lhs_eq")
+                print(lhs_eq)
+                print("rhs_eq")
+                print (rhs_eq)
 
-                #print ("lhs_ineq")
-                #print(lhs_ineq)
-                #print("rhs_ineq")
-                #print (rhs_ineq)
-                #print ("bnd")
-                #print(bnd)
+                print ("lhs_ineq")
+                print(lhs_ineq)
+                print("rhs_ineq")
+                print (rhs_ineq)
+                print ("bnd")
+                print(bnd)
 
                 #opt = linprog(c=obj, A_eq=lhs_eq, b_eq=rhs_eq, bounds=bnd,method="revised simplex")
                 err = False
@@ -2129,16 +2139,16 @@ def dependency(bayesianNetwork, cpt, invars, outvars):
                     err = True
 
                         
-                #print("opt")
-                #print (opt)
+                print("opt")
+                print (opt)
                 if window == 1.0 and (err or not opt.success):
                     break
                 cut /= 2
                 window = window - cut if not err and opt.success else window + cut
                 if not err and opt.success:
                     lastTrue = opt
-                #print("window")
-                #print (window)
+                print("window")
+                print (window)
 
 
         if lastTrue is not None:
@@ -2158,8 +2168,8 @@ def dependency(bayesianNetwork, cpt, invars, outvars):
                 val =  1.0-opt.x[i]
                 cpt_row.append(val)
                 cpt_rows.append(cpt_row)
-        #print ("cpt_rows")
-        #print(cpt_rows)
+        print ("cpt_rows")
+        print(cpt_rows)
         toc = time.perf_counter()
         diff = toc - tic
 
