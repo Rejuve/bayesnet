@@ -1581,7 +1581,38 @@ def prob_a_and_not_a_given_b_and_not_b3 (invars, priors, outvars):
         return prob_a_given_b, prob_a_given_not_b, prob_not_a_given_b, prob_not_a_given_not_b
   
 
-def rr_prob_a_and_not_a_given_b_and_not_b (rr,prior_a,prior_b):
+def rr_prob_a_and_not_a_given_b_and_not_b (rr_dict,prior_a,prior_b_dict):
+
+#Solution to these equations:
+#rri=probagivenbi / probagivengood
+#probagivengood= sum(probagivengoodbi*priorgoodbi)/sum(priorgoodbi)
+#probagivenbi*priorbi +probagivennotbi * (1-prior bi) = priora
+#sumi(probagivenbi*priorbi)=priora
+#probagivenbi + probnotagivenbi = 1.0
+#probagivennotbi + probnotagivennotbi = 1.0
+
+#rr_dict: {v:rr}  (if no rr it is good) prior_b_dict: {v:prior}
+#returns {b:{prob_a_given_b, prob_a_given_not_b, prob_not_a_given_b, prob_not_a_given_not_b}}
+
+        b = {}
+        sum_prior_b_rr = 0
+        for v,prior in prior_b_dict.items():
+                rr = rr_dict[v] if v in rr_dict else 1.
+                sum_prior_b_rr += prior * rr
+        prob_a_given_good = prior_a/sum_prior_b_rr
+        
+        for v,prior in prior_b_dict.items():
+                b[v] = {}
+                rr = rr_dict[v] if v in rr_dict else 1.
+                b[v]["prob_a_given_b"] = prob_a_given_good * rr
+                b[v]["prob_not_a_given_b"] = 1. - b[v]["prob_a_given_b"]
+                b[v]["prob_a_given_not_b"] = -1*prior_a * (sum_prior_b_rr-prior*rr)/((prior-1.)*sum_prior_b_rr)
+                b[v]["prob_not_a_given_not_b"]= 1. - b[v]["prob_a_given_not_b"] 
+                
+        return b
+
+
+def rr_prob_a_and_not_a_given_b_and_not_b1 (rr,prior_a,prior_b):
     #Four equations with 4 unknowns:
     #1.  rr = prob_a_given_b/prob_a_given_not_b
     #2.  (probagivenb * priorb) + (probagivennotb * (1.0 - priorb)) = priora, 
@@ -1627,8 +1658,103 @@ def ss_prob_a_and_not_a_given_b_and_not_b (sensitivity,specificity,prior_a,prior
     return prob_a_given_b, prob_a_given_not_b, prob_not_a_given_b, prob_not_a_given_not_b
  
 
-
 def prob_a_and_not_a_given_b_and_not_b (invars, priors, outvars):
+ 
+        prob_a_given_b = {}
+        prob_a_given_not_b = {}
+        prob_not_a_given_b = {}
+        prob_not_a_given_not_b = {}
+         
+        dependency_dict = {}
+    
+        prior_a = list(outvars.items())[0][1]
+        
+        for vardict,numval_dict in invars:
+            for k,varlist in vardict.items():
+                #print("k")
+                #print(k)
+                if k not in dependency_dict:
+                    dependency_dict[k]={}
+                for v in priors[k]:
+                    #print("v")
+                    #print(v)
+                
+                    #print("priors[k][v]")
+                    #print(priors[k][v])
+                    #prior_b = priors[k][v] 
+                    if "relative_risk" in numval_dict:
+                        if "relative_risk" not in dependency_dict[k]:
+                            dependency_dict[k]["relative_risk"]={}
+                        if v in varlist:    
+                            dependency_dict[k]["relative_risk"][v]= numval_dict["relative_risk"]
+                    elif "sensitivity" in numval_dict:
+                        if "sensitivity" not in dependency_dict[k]:
+                            dependency_dict[k]["sensitivity"] = {}
+                            dependency_dict[k]["specificity"] = {}
+                        dependency_dict[k]["sensitivity"][v]= numval_dict["sensitivity"]
+                        dependency_dict[k]["specificity"][v]= numval_dict["specificity"]
+        
+        for k,var_dependency_dict in dependency_dict.items():
+          
+            if k not in prob_a_given_b:
+                prob_a_given_b[k] = {}
+            if k not in prob_a_given_not_b:
+                prob_a_given_not_b[k] = {}
+            if k not in prob_not_a_given_b:
+                prob_not_a_given_b[k] = {}
+            if k not in prob_not_a_given_not_b:
+                prob_not_a_given_not_b[k] = {}
+            for dependency_type, var_dict in var_dependency_dict.items():
+                if dependency_type == "relative_risk":
+                    print ("var_dict")
+                    print(var_dict)
+                    print("prior_a")
+                    print (prior_a)
+                    print(f"priors[{k}]")
+                    print (priors[k])
+                    prob_dict = rr_prob_a_and_not_a_given_b_and_not_b(var_dict,prior_a,priors[k])
+                    print("prob_dict")
+                    print(prob_dict)
+                    for v,prob_type_dict in prob_dict.items():
+                        for prob_type,val in prob_type_dict.items():
+                            if prob_type == 'prob_a_given_b':
+                                prob_a_given_b[k][v]= val
+                            elif prob_type == 'prob_a_given_not_b':
+                                prob_a_given_not_b[k][v] =val
+                            elif prob_type == 'prob_not_a_given_b':
+                                prob_not_a_given_b[k][v] =val
+                            elif prob_type == 'prob_not_a_given_not_b':
+                                prob_not_a_given_not_b[k][v] =val
+                elif dependency_type == "sensitivity":
+                    for v,val in var_dict.items():
+                        prob_a_given_b[k][v], prob_a_given_not_b[k][v], prob_not_a_given_b[k][v], prob_not_a_given_not_b[k][v] = ( 
+                            ss_prob_a_and_not_a_given_b_and_not_b(val,var_dependency_dict["specificity"][v],prior_a,priors[k][v])
+                            )
+                    
+
+
+                category = f"relative_risk:{numval_dict['relative_risk']}" if "relative_risk" in numval_dict else (
+                        f"sensitivity/specificity:{numval_dict['sensitivity']}/{numval_dict['specificity']}")
+                #print(category)
+                #print("prob_a_given_not_b[k][v] ")
+                #print (prob_a_given_not_b[k][v] )
+                #print("prob_a_given_b[k][v] ")
+                #print(prob_a_given_b[k][v] )
+
+
+                #print("prob_not_a_given_not_b[k][v] ")
+                #print (prob_not_a_given_not_b[k][v] )
+                #print("prob_not_a_given_b[k][v] ")
+                #print(prob_not_a_given_b[k][v] )
+
+                    
+            
+
+        return prob_a_given_b, prob_a_given_not_b, prob_not_a_given_b, prob_not_a_given_not_b
+
+
+
+def prob_a_and_not_a_given_b_and_not_b1 (invars, priors, outvars):
  
         prob_a_given_b = {}
         prob_a_given_not_b = {}
@@ -1801,10 +1927,11 @@ def dependency(bayesianNetwork, cpt, invars, outvars):
         for excluded in keylist:
             included_vars[excluded]= keylist[:pos[excluded]] + keylist[pos[excluded]+1:] 
         for i,c in enumerate(cartesian):
-                #print ("i:c")
-                #print (i)
-                #print (c)
-                
+                print ("i:c")
+                print (i)
+                print (c)
+                print ("frequencies[c]")
+                print(frequencies[c])
                 #equation1  (doesnt have every one in it )
                 #non elderly hbp prevalence  = 
                 #  (prevalence of hbp among adult obese psych) * prevalence of adult obese psych 
@@ -1931,30 +2058,30 @@ def dependency(bayesianNetwork, cpt, invars, outvars):
                                                 rhs_inequality_equation4[k][v] = 0
                                         #print ("c[pos[k]]")
                                         #print (c[pos[k]])
-                                        tup1 = included_vars[k].copy().sort() if len(included_vars[k]) > 0 else ()
-                                        input_tuple = (tup1,v)
-                                        if input_tuple not in frequency_cache:
-                                            prob_others_given_b = get_frequencies(bayesianNetwork,included_vars[k],cpt,preconditionals = {k:v})
-                                            frequency_cache[input_tuple] = prob_others_given_b
+                                        #tup1 = included_vars[k].copy().sort() if len(included_vars[k]) > 0 else ()
+                                        #input_tuple = (tup1,v)
+                                        #if input_tuple not in frequency_cache:
+                                            #prob_others_given_b = get_frequencies(bayesianNetwork,included_vars[k],cpt,preconditionals = {k:v})
+                                            #frequency_cache[input_tuple] = prob_others_given_b
                                             #print (f"{input_tuple} stored in frequency cache")
-                                        else:
-                                            prob_others_given_b = frequency_cache[input_tuple]
+                                        #else:
+                                            #prob_others_given_b = frequency_cache[input_tuple]
                                             #print(f"{input_tuple} retrieved from frequency cache of size {len(frequency_cache)}")
                                         #print ("prob_others_given_b")
                                         #print (prob_others_given_b)
-                                        c_no_k = c[:pos[k]]+c[pos[k]+1:]
+                                        #c_no_k = c[:pos[k]]+c[pos[k]+1:]
                                         if c[pos[k]]  == v:
                                                 # rhs_equality_equation2[k][v] = priors[k][v]*relative_risk* val_prev[k][v]
                                                 rhs_inequality_equation2[k][v] = prob_a_given_b [k][v]
-                                                lhs_inequality_equation2[k][v][i] = prob_others_given_b[c_no_k]
+                                                lhs_inequality_equation2[k][v][i] = frequencies[c] #prob_others_given_b[c_no_k]
                                                 rhs_inequality_equation4[k][v] = prob_not_a_given_b [k][v]  
-                                                lhs_inequality_equation4[k][v][i+len(cartesian)] = prob_others_given_b[c_no_k]
+                                                lhs_inequality_equation4[k][v][i+len(cartesian)] = frequencies[c]#prob_others_given_b[c_no_k]
                                         else:
                                                 # rhs_equality_equation1[k][v] = val_prev[k][v]
                                                 rhs_inequality_equation1[k][v] = prob_a_given_not_b[k][v]
-                                                lhs_inequality_equation1[k][v][i] = prob_others_given_b[c_no_k]
+                                                lhs_inequality_equation1[k][v][i] = frequencies[c]  #prob_others_given_b[c_no_k]
                                                 rhs_inequality_equation3[k][v] =  prob_not_a_given_not_b [k][v] 
-                                                lhs_inequality_equation3[k][v][i+len(cartesian)] = prob_others_given_b[c_no_k]
+                                                lhs_inequality_equation3[k][v][i+len(cartesian)] = frequencies[c] #prob_others_given_b[c_no_k]
                                                                                        
 
                 #make independence the lower bound
@@ -1979,17 +2106,37 @@ def dependency(bayesianNetwork, cpt, invars, outvars):
                 bnd.append((0, 1.0))
 
 
-                #for vardict,numval_dict in invars:
-                        #for k, varlist in vardict.items():
-                            #for v in varlist:
-                                #norm = np.linalg.norm(lhs_inequality_equation1[k][v])
-                                #lhs_inequality_equation1[k][v]=lhs_inequality_equation1[k][v]/norm
-                                #norm = np.linalg.norm(lhs_inequality_equation2[k][v])
-                                #lhs_inequality_equation2[k][v]=lhs_inequality_equation2[k][v]/norm
-                                #norm = np.linalg.norm(lhs_inequality_equation3[k][v])
-                                #lhs_inequality_equation3[k][v]=lhs_inequality_equation3[k][v]/norm
-                                #norm = np.linalg.norm(lhs_inequality_equation4[k][v])
-                                #lhs_inequality_equation4[k][v]=lhs_inequality_equation4[k][v]/norm
+        print("before norm:")       
+        print("rhs_inequality_equation2") 
+        print(rhs_inequality_equation2) 
+        print("lhs_inequality_equation2")
+        print(lhs_inequality_equation2)
+        print("rhs_inequality_equation4") 
+        print(rhs_inequality_equation4) 
+        print("lhs_inequality_equation4")
+        print(lhs_inequality_equation4)
+        print("rhs_inequality_equation1")
+        print(rhs_inequality_equation1)
+        print("lhs_inequality_equation1")
+        print(lhs_inequality_equation1)
+        print("rhs_inequality_equation3")
+        print(rhs_inequality_equation3)
+        print("lhs_inequality_equation3")
+        print(lhs_inequality_equation3)
+                                               
+
+
+        for vardict,numval_dict in invars:
+                for k, varlist in vardict.items():
+                    for v in varlist:
+                        norm = np.sum(lhs_inequality_equation1[k][v])
+                        lhs_inequality_equation1[k][v]=lhs_inequality_equation1[k][v]/norm
+                        norm = np.sum(lhs_inequality_equation2[k][v])
+                        lhs_inequality_equation2[k][v]=lhs_inequality_equation2[k][v]/norm
+                        norm = np.sum(lhs_inequality_equation3[k][v])
+                        lhs_inequality_equation3[k][v]=lhs_inequality_equation3[k][v]/norm
+                        norm = np.sum(lhs_inequality_equation4[k][v])
+                        lhs_inequality_equation4[k][v]=lhs_inequality_equation4[k][v]/norm
 
         #We also want to include that the first half adds to the prevaence of a and the sencond to the prevalence of ~a
 
@@ -2004,23 +2151,23 @@ def dependency(bayesianNetwork, cpt, invars, outvars):
         lhs_eq.append(prev_a)
         lhs_eq.append(prev_not_a)
 
-               
-        #print("rhs_inequality_equation2") 
-        #print(rhs_inequality_equation2) 
-        #print("lhs_inequality_equation2")
-        #print(lhs_inequality_equation2)
-        #print("rhs_inequality_equation4") 
-        #print(rhs_inequality_equation4) 
-        #print("lhs_inequality_equation4")
-        #print(lhs_inequality_equation4)
-        #print("rhs_inequality_equation1")
-        #print(rhs_inequality_equation1)
-        #print("lhs_inequality_equation1")
-        #print(lhs_inequality_equation1)
-        #print("rhs_inequality_equation3")
-        #print(rhs_inequality_equation3)
-        #print("lhs_inequality_equation3")
-        #print(lhs_inequality_equation3)
+        print("after norm:")       
+        print("rhs_inequality_equation2") 
+        print(rhs_inequality_equation2) 
+        print("lhs_inequality_equation2")
+        print(lhs_inequality_equation2)
+        print("rhs_inequality_equation4") 
+        print(rhs_inequality_equation4) 
+        print("lhs_inequality_equation4")
+        print(lhs_inequality_equation4)
+        print("rhs_inequality_equation1")
+        print(rhs_inequality_equation1)
+        print("lhs_inequality_equation1")
+        print(lhs_inequality_equation1)
+        print("rhs_inequality_equation3")
+        print(rhs_inequality_equation3)
+        print("lhs_inequality_equation3")
+        print(lhs_inequality_equation3)
                                                
 
 
