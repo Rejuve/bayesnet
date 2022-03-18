@@ -832,12 +832,20 @@ def longevity_bayes():
                  
          )
                 
+         #cpt["lack_of_exercise"] = any_of(bayesianNetwork,cpt,
+                #{
+         #"lack_of_exercise_signal":{ "lack_of_exercise_signal"},
+         #"lack_of_exercise_reported":{"lack_of_exercise_reported"}
+         #},
+         #["lack_of_exercise","no_lack_of_exercise"]
+                 
+         #)
  
-        cpt["lack_of_exercise"] = any_of(bayesianNetwork,cpt,
-                {
-         "lack_of_exercise_signal":{ "lack_of_exercise_signal"},
-         "lack_of_exercise_reported":{"lack_of_exercise_reported"}
-         },
+        cpt["lack_of_exercise"] = avg(bayesianNetwork,cpt,
+         [
+         "lack_of_exercise_signal",
+         "lack_of_exercise_reported",
+         ],
          ["lack_of_exercise","no_lack_of_exercise"]
                  
          )
@@ -852,9 +860,9 @@ def longevity_bayes():
         [
         ({"dietary_energy":["dietary_energy_above_3939.00"]},{"sensitivity":0.5, "specificity":0.75}),
         ({"dietary_energy":["dietary_energy_above_2612.00_to_3939.00_and_below"]},{"sensitivity":0.75, "specificity":0.76}),
-        ({"bmi":["bmi_over_40_high_risk"]},{"sensitivity":0.3, "specificity":0.99}),
-        ({"bmi":["bmi_35_to_39_moderate_risk"]},{"sensitivity":0.35, "specificity":0.99}),
-        ({"bmi":["bmi_30_to_34_low_risk"]},{"sensitivity":0.35, "specificity":0.99}),
+        ({"bmi":["bmi_over_40_high_risk"]},{"sensitivity":0.85, "specificity":0.9}),
+        ({"bmi":["bmi_35_to_39_moderate_risk"]},{"sensitivity":0.85, "specificity":0.9}),
+        ({"bmi":["bmi_30_to_34_low_risk"]},{"sensitivity":0.85, "specificity":0.9}),
         ({"lack_of_exercise":["lack_of_exercise"]},{"sensitivity":0.75, "specificity":0.5})
         ],
         {"obesity":0.38,"no_obesity":0.62}
@@ -1916,14 +1924,8 @@ def longevity_bayes():
         variable.name = "workday_sleep_5.0_to_6.5"
         variable.probability = 0.21
         variable = discreteDistribution.variables.add()
-        variable.name = "workday_sleep_7.0_to_8.5"
-        variable.probability = 0.50
-        variable = discreteDistribution.variables.add()
-        variable.name = "workday_sleep_9.0_to_10.5"
-        variable.probability = 0.21
-        variable = discreteDistribution.variables.add()
-        variable.name = "workday_sleep_11_or_more"
-        variable.probability = 0.03
+        variable.name = "workday_sleep_7.0_or_more"
+        variable.probability = 0.73
 
 
         discreteDistribution = bayesianNetwork.discreteDistributions.add()
@@ -1935,15 +1937,8 @@ def longevity_bayes():
         variable.name = "weekend_sleep_5.0_to_6.5"
         variable.probability = 0.12
         variable = discreteDistribution.variables.add()
-        variable.name = "weekend_sleep_7.0_to_8.5"
-        variable.probability = 0.42
-        variable = discreteDistribution.variables.add()
-        variable.name = "weekend_sleep_9.0_to_10.5"
-        variable.probability = 0.34
-        variable = discreteDistribution.variables.add()
-        variable.name = "weekend_sleep_11_or_more"
-        variable.probability = 0.09
-        
+        variable.name = "weekend_sleep_7.0_or_more"
+        variable.probability = 0.86
 #Poor diet
 
         discreteDistribution = bayesianNetwork.discreteDistributions.add()
@@ -3616,7 +3611,7 @@ def longevity_bayes():
         cpt = {}
          
                        
-        
+           
         cpt["low_socioeconomic_status_demography"] = avg(bayesianNetwork,cpt,
                 [
                         "race",
@@ -3624,7 +3619,7 @@ def longevity_bayes():
                         "what_is_your_annual_household_income",
                         "employment"
                 ],
-                ["low_socioeconomic_status_demography","no_low_socioeconomic_status_demography"]
+                ["low_socioeconomic_status_demography","middle_socioeconomic_status_demography","high_low_socioeconomic_status_demography"]
 
                 )
                         
@@ -3643,10 +3638,10 @@ def longevity_bayes():
                 [
                         "how_many_times_saw_doctor_last_year",
                         "how_long_since_saw_doctor",
-                                                'last_dentist_visit',
+                        'last_dentist_visit',
                         "age_at_first_child"
                 ],
-                ["low_socioeconomic_status_healthcare","no_low_socioeconomic_status_healthcare"]
+                ["low_socioeconomic_status_healthcare","middle_socioeconomic_status_healthcare","high_low_socioeconomic_status_healthcare"]
 
                 )
                         
@@ -3656,19 +3651,29 @@ def longevity_bayes():
                         "low_socioeconomic_status_health_insurance",
                         "low_socioeconomic_status_healthcare"
                 ],
-                ["low_socioeconomic_status_health","no_low_socioeconomic_status_health"]
+                ["low_socioeconomic_status_health","middle_socioeconomic_status_health","high_low_socioeconomic_status_health"]
 
                 )
                         
 
-        cpt["low_socioeconomic_status"] = any_of(bayesianNetwork,cpt,
-                {
-                "low_socioeconomic_status_health":{"low_socioeconomic_status_health"},
-                "low_socioeconomic_status_demography":{"low_socioeconomic_status_demography"}
-                },
-                ["low_socioeconomic_status","no_low_socioeconomic_status"]
+        #cpt["low_socioeconomic_status"] = any_of(bayesianNetwork,cpt,
+                #{
+                #"low_socioeconomic_status_health":{"low_socioeconomic_status_health"},
+                #"low_socioeconomic_status_demography":{"low_socioeconomic_status_demography"}
+                #},
+                #["low_socioeconomic_status","no_low_socioeconomic_status"]
+
+                #)
+                        
+        cpt["low_socioeconomic_status"] = avg(bayesianNetwork,cpt,
+                [
+                "low_socioeconomic_status_health",
+                "low_socioeconomic_status_demography"
+                ],
+                ["low_socioeconomic_status","middle_socioeconomic_status","high_low_socioeconomic_status"]
 
                 )
+        
                         
 
            
