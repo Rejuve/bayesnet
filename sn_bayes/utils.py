@@ -632,12 +632,15 @@ def explain(baked_net, netspec, evidence,explain_list, reverse_explain_list = []
         var_val_positions = get_var_val_positions(netspec)
         var_val_names = get_var_val_names(netspec)
         for var,val in evidence.items():
+                best_pos = len(var_val_positions[var])-1
                 new_pos = None
                 old_pos = var_val_positions[var][val]
                 if var in reverse_evidence and old_pos > 0:
-                        new_pos = old_pos-1
-                elif var not in reverse_evidence and old_pos < len(var_val_positions[var])-1: 
-                        new_pos = old_pos+ 1
+                        #new_pos = old_pos-1
+                        new_pos = 0
+                elif var not in reverse_evidence and old_pos < best_pos: 
+                        #new_pos = old_pos+ 1
+                        new_pos = best_pos
                 if new_pos is not None and (len(include_list) == 0 or var in include_list):
                         new_evidence = copy.deepcopy(evidence)
                         new_val = var_val_names[var][new_pos]
@@ -661,14 +664,15 @@ def explain(baked_net, netspec, evidence,explain_list, reverse_explain_list = []
         
         more_evidence = {}
         for var, val in internal_evidence.items():
-                
+                best_pos = len(var_val_positions[var])-1
                 new_pos = None
                 old_pos = var_val_positions[var][val]
                 if var in reverse_evidence and old_pos > 0:
-                        new_pos = old_pos-1
-                elif var not in reverse_evidence and old_pos < len(var_val_positions[var])-1: 
-                        new_pos = old_pos+ 1
-
+                        #new_pos = old_pos-1
+                        new_pos = 0
+                elif var not in reverse_evidence and old_pos < best_pos: 
+                        #new_pos = old_pos+ 1
+                        new_pos = best_pos
                 if new_pos is not None and (len(include_list) == 0 or var in include_list):
                         new_val = var_val_names[var][new_pos]
                         more_evidence[var] = copy.deepcopy(evidence)        
