@@ -821,34 +821,43 @@ def longevity_bayes():
 
                 )
  
+        #cpt["lack_of_exercise_signal"] = any_of(bayesianNetwork,cpt,
+                #{
+         #"workout_anomaly":{ "workout_anomaly"},
+         #"walking_speed_anomaly":{"walking_speed_anomaly"},
+         #"steps_anomaly":{"steps_anomaly"}
+         #},
+         #["lack_of_exercise_signal","no_lack_of_exercise_signal"]
+                 
+         #)
  
-        cpt["lack_of_exercise_signal"] = any_of(bayesianNetwork,cpt,
-                {
-         "workout_anomaly":{ "workout_anomaly"},
-         "walking_speed_anomaly":{"walking_speed_anomaly"},
-         "steps_anomaly":{"steps_anomaly"}
-         },
+        cpt["lack_of_exercise_signal"] = avg(bayesianNetwork,cpt,
+                [
+         "workout_anomaly",
+         "walking_speed_anomaly",
+         "steps_anomaly"
+         ],
          ["lack_of_exercise_signal","no_lack_of_exercise_signal"]
                  
          )
                 
-         #cpt["lack_of_exercise"] = any_of(bayesianNetwork,cpt,
-                #{
-         #"lack_of_exercise_signal":{ "lack_of_exercise_signal"},
-         #"lack_of_exercise_reported":{"lack_of_exercise_reported"}
-         #},
-         #["lack_of_exercise","no_lack_of_exercise"]
-                 
-         #)
- 
-        cpt["lack_of_exercise"] = avg(bayesianNetwork,cpt,
-         [
-         "lack_of_exercise_signal",
-         "lack_of_exercise_reported",
-         ],
+        cpt["lack_of_exercise"] = any_of(bayesianNetwork,cpt,
+                {
+         "lack_of_exercise_signal":{ "lack_of_exercise_signal"},
+         "lack_of_exercise_reported":{"lack_of_exercise_reported"}
+         },
          ["lack_of_exercise","no_lack_of_exercise"]
                  
          )
+ 
+        #cpt["lack_of_exercise"] = avg(bayesianNetwork,cpt,
+         #[
+         #"lack_of_exercise_signal",
+         #"lack_of_exercise_reported",
+         #],
+         #["lack_of_exercise","no_lack_of_exercise"]
+                 
+         #)
  
                         
         outstr = outstr + addCpt(bayesianNetwork,cpt) 
@@ -858,11 +867,11 @@ def longevity_bayes():
 
         cpt["obesity"] = dependency(bayesianNetwork,cpt, 
         [
+        ({"bmi":["bmi_over_40_high_risk"]},{"sensitivity":0.95, "specificity":0.95}),
+        ({"bmi":["bmi_35_to_39_moderate_risk"]},{"sensitivity":0.95, "specificity":0.95}),
+        ({"bmi":["bmi_30_to_34_low_risk"]},{"sensitivity":0.95, "specificity":0.95}),
         ({"dietary_energy":["dietary_energy_above_3939.00"]},{"sensitivity":0.5, "specificity":0.75}),
         ({"dietary_energy":["dietary_energy_above_2612.00_to_3939.00_and_below"]},{"sensitivity":0.75, "specificity":0.76}),
-        ({"bmi":["bmi_over_40_high_risk"]},{"sensitivity":0.85, "specificity":0.9}),
-        ({"bmi":["bmi_35_to_39_moderate_risk"]},{"sensitivity":0.85, "specificity":0.9}),
-        ({"bmi":["bmi_30_to_34_low_risk"]},{"sensitivity":0.85, "specificity":0.9}),
         ({"lack_of_exercise":["lack_of_exercise"]},{"sensitivity":0.75, "specificity":0.5})
         ],
         {"obesity":0.38,"no_obesity":0.62}
@@ -4195,9 +4204,9 @@ def longevity_bayes():
 
         cpt["sarcopenia"] = dependency(bayesianNetwork,cpt,
                         [
+                            ({"age":["elderly"]},{"sensitivity":0.95, "specificity":0.30}),
                             ({"sarcopenia_reported":["sarcopenia_reported"]},{"relative_risk":1.66}),
                             ({"frailty_signals":["frailty_signals"]},{"sensitivity":0.9, "specificity":0.6}),
-                            ({"age":["elderly"]},{"sensitivity":0.8, "specificity":0.15}),
                             ({"lack_of_exercise":["lack_of_exercise"]},{"sensitivity":0.9, "specificity":0.15})
                         ],
                         {"sarcopenia":0.07,"no_sarcpenia":0.93}
@@ -4359,13 +4368,13 @@ def longevity_bayes():
                  
         cpt["diabetes"] = dependency(bayesianNetwork,cpt,
         [
+        ({"a1c":["a1c_diabetes_5.7_and_above"]},{"sensitivity":0.95, "specificity":0.95}),
         ({"age":["elderly"]},{"relative_risk":4.5}),
         ({"bmi":["bmi_over_40_high_risk"]},{"relative_risk":5.1}),
         ({"bmi":["bmi_35_to_39_moderate_risk"]},{"relative_risk":3.6}),
         ({"bmi":["bmi_30_to_34_low_risk"]},{"relative_risk":2.5}),
         ({"bmi":["bmi_25_to_29_overweight"]},{"relative_risk":1.5}),
-        ({"hypertension":["hypertension"]},{"relative_risk":3.8}),
-        ({"a1c":["a1c_diabetes_5.7_and_above"]},{"sensitivity":0.9, "specificity":0.9}) # true sensitivites are in the blood diabetes rule and this carries them over
+        ({"hypertension":["hypertension"]},{"relative_risk":3.8}), # true sensitivites are in the blood diabetes rule and this carries them over
         ],
         {"diabetes":0.12,"no_diabetes":0.88}
         )

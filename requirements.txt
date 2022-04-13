@@ -3,3 +3,5 @@ grpcio-tools>=1.14.1
 pomegranate==0.14.0
 pandas
 adtk
+qpsolvers
+osqp
