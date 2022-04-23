@@ -219,6 +219,8 @@ def get_var_val_names(bayesianNetwork):
         return var_val_names
 
 def parse_net(query, bayesianNetwork):
+        print("parse_net query")
+        print(query)
         var_val_names = get_var_val_names(bayesianNetwork)
         var_names = get_var_names(bayesianNetwork)
         evidence_dict = {}
@@ -304,6 +306,10 @@ def iqr(s,c):
 
 
 def detect_anomalies(anomaly_tuples,bayesianNetwork,anomaly_params):
+        print ("anomaly_tuples")
+        print(anomaly_tuples)
+        print ("anomaly_params")
+        print (anomaly_params)
         evidence = {}
         anomaly_dict = {}
         signal_dict ={}
