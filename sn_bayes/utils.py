@@ -655,8 +655,8 @@ def explain(baked_net, netspec, evidence,explain_list, reverse_explain_list = []
                         
         # add in the internal nodes that arent the input nodes
         result = internal_query(baked_net,netspec,evidence) if internal_query_result == None else internal_query_result
-        #print ("result")
-        #print (result)
+        print ("result")
+        print (result)
         internal_winners = {}
         for key,val_dict in result.items():
                 winner = max(val_dict,key=val_dict.get)
@@ -701,6 +701,8 @@ def explain(baked_net, netspec, evidence,explain_list, reverse_explain_list = []
                     winner_val = val_dict[winner]
                     before_change[key] = (winner,winner_val)
                     explanation[key] = {}
+        print("before_change")
+        print(before_change)
         #print("reverse_explain_list")
         #print(reverse_explain_list)
         #for explaining_var, evidence in evidence_perturbations.items():

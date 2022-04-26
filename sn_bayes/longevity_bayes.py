@@ -43,7 +43,7 @@ def longevity_bayes():
         anomaly.varName = "double_support_stepping_anomaly"
         anomaly.n_steps = 7 
         anomaly.step_size = 1
-        anomaly.c = 3.0
+        anomaly.c = 0.5
         anomaly.n = 2
         anomaly.window = 5
         anomaly.side = "positive"
@@ -61,7 +61,7 @@ def longevity_bayes():
         anomaly.varName = "step_asymmetry_anomaly"
         anomaly.n_steps = 7
         anomaly.step_size = 1
-        anomaly.c = 3.0
+        anomaly.c = 0.5
         anomaly.n = 2
         anomaly.window = 5
         anomaly.side = "positive"
@@ -810,6 +810,19 @@ def longevity_bayes():
         
         
 
+ 
+        cpt["lack_of_exercise_reported"] = all_of(bayesianNetwork,cpt,
+                {
+                    "shortness_of_breath_exertion":"shortness_of_breath_exertion_yes",
+                    "daily_walk_or_bicycle_travel":"daily_walk_or_bicycle_travel_less_than_30_minutes",
+                    "daily_time_sitting":"daily_time_sitting_12_or_more_hours",
+                    "physical_work":"physical_work_no",
+                    'ten_minutes_daily_workout':"ten_minutes_daily_workout_no"
+                        },
+                ["lack_of_exercise_reported","no_lack_of_exercise_reported"]
+
+                )
+ 
 
  
         cpt["lack_of_exercise_reported"] = avg(bayesianNetwork,cpt,
@@ -3209,13 +3222,25 @@ def longevity_bayes():
 
 
               
-        cpt["blood_metabolism_disorder_indicators"] = any_of(bayesianNetwork,cpt,
-                {
-         "total_cholesterol":{ "total_cholesterol_high_above_200"},
-         "triglycerides":{"triglycerides_high_above_199"},#The most common causes of high triglycerides are obesity and poorly controlled diabetes. If you are overweight and are not active, you may have high triglycerides,
-         "a1c":{"a1c_diabetes_5.7_and_above"},
-         "direct_HDL":{"direct_HDL_low_below_40"}
-         },
+        #cpt["blood_metabolism_disorder_indicators"] = any_of(bayesianNetwork,cpt,
+         #       {
+         #"total_cholesterol":{ "total_cholesterol_high_above_200"},
+         #"triglycerides":{"triglycerides_high_above_199"},#The most common causes of high triglycerides are obesity and poorly controlled diabetes. If you are overweight and are not active, you may have high triglycerides,
+         #"a1c":{"a1c_diabetes_5.7_and_above"},
+         #"direct_HDL":{"direct_HDL_low_below_40"}
+         #},
+         #["blood_metabolism_disorder_indicators","no_blood_metabolism_disorder_indicators"]
+         #)
+         
+
+              
+        cpt["blood_metabolism_disorder_indicators"] = avg(bayesianNetwork,cpt,
+          [
+         "total_cholesterol",
+         "triglycerides",#The most common causes of high triglycerides are obesity and poorly controlled diabetes. If you are overweight and are not active, you may have high triglycerides,
+         "a1c",
+         "direct_HDL"
+         ],
          ["blood_metabolism_disorder_indicators","no_blood_metabolism_disorder_indicators"]
          )
          
@@ -3250,8 +3275,8 @@ def longevity_bayes():
  
         cpt["resting_heart_rate"] = dependency(bayesianNetwork,cpt,
         [
-            ({"lack_of_exercise":["lack_of_exercise"]},{"sensitivity":0.9, "specificity":0.5}),
-            ({"heart_rate_anomaly":["heart_rate_anomaly"]},{"sensitivity":0.9, "specificity":0.9})
+            ({"heart_rate_anomaly":["heart_rate_anomaly"]},{"sensitivity":0.9, "specificity":0.9}),
+            ({"lack_of_exercise":["lack_of_exercise"]},{"sensitivity":0.9, "specificity":0.5})
         ],
         {"resting_heart_rate_very_high_91_and_above":0.09,"no_resting_heart_rate_very_high_91_and_above":0.91}
         )
@@ -3310,16 +3335,26 @@ def longevity_bayes():
                  
          )
                  
-        cpt["severe_blood_liver_disorder_indicators"] = any_of(bayesianNetwork,cpt,
-                {
-         'bilirubin':{ "bilirubin_0.6_and_above"},
-         "total_protein":{"total_protein_7.5_and_above"},
-         'gamma_glutamyl_transferase':{"gamma_glutamyl_transferase_high_above_30"}
-         },
+        cpt["severe_blood_liver_disorder_indicators"] = avg(bayesianNetwork,cpt,
+         [
+         'bilirubin',
+         "total_protein",
+         'gamma_glutamyl_transferase'
+         ],
          ["severe_blood_liver_disorder_indicators","no_severe_blood_liver_disorder_indicators"]
                  
          )
+     
+        #cpt["severe_blood_liver_disorder_indicators"] = any_of(bayesianNetwork,cpt,
+         #       {
+         #'bilirubin':{ "bilirubin_0.6_and_above"},
+         #"total_protein":{"total_protein_7.5_and_above"},
+         #'gamma_glutamyl_transferase':{"gamma_glutamyl_transferase_high_above_30"}
+         #},
+         #["severe_blood_liver_disorder_indicators","no_severe_blood_liver_disorder_indicators"]
                  
+         #)
+                              
         
         cpt["liver_disorders"] = avg(bayesianNetwork,cpt,  
                 [
@@ -3375,8 +3410,8 @@ def longevity_bayes():
          
         cpt["reported_hypertension"] = any_of(bayesianNetwork,cpt,
                 {
-         "diastolic":{  "diastolic_120_or_higher_crisis","diastolic_90_to_119_high_stage_2","diastolic_80_to_89_high_stage_1"},
-         "systolic":{"systolic_180_over_crisis","systolic_140_to_179_high_stage_2","systolic_130_to_139_high_stage_1"},
+         "diastolic":{  "diastolic_120_or_higher_crisis","diastolic_90_to_119_high_stage_2"},
+         "systolic":{"systolic_180_over_crisis","systolic_140_to_179_high_stage_2"},
                  "medicated_hypertension":{"medicated_hypertension"}
          },
          ["reported_hypertension","no_reported_hypertension"]
@@ -3500,15 +3535,30 @@ def longevity_bayes():
                 ],
                 ["white_blood_age_indicators","no_white_blood_age_indicators"]
         )
-    
-        cpt["blood_age_indicators"] = any_of(bayesianNetwork,cpt,
-                {
+     
+        cpt["blood_age_indicators"] = all_of(bayesianNetwork,cpt,
+         {
          "red_blood_age_indicators":{  "red_blood_age_indicators"},
          "white_blood_age_indicators":{"white_blood_age_indicators"}
          },
          ["blood_age_indicators","no_blood_age_indicators"]
          )
+            
+        #cpt["blood_age_indicators"] = any_of(bayesianNetwork,cpt,
+         #       {
+         #"red_blood_age_indicators":{  "red_blood_age_indicators"},
+         #"white_blood_age_indicators":{"white_blood_age_indicators"}
+         #},
+         #["blood_age_indicators","no_blood_age_indicators"]
+         #)
                  
+        #cpt["blood_age_indicators"] = avg(bayesianNetwork,cpt,
+         # [
+         #"red_blood_age_indicators",
+         #"white_blood_age_indicators"
+         #],
+         #["blood_age_indicators","no_blood_age_indicators"]
+         #)
                  
                 
                 
@@ -4071,8 +4121,8 @@ def longevity_bayes():
 
         cpt["inflammation"] = dependency(bayesianNetwork,cpt,
                         [
-                            ({"inflammation_from_behavior":["inflammation_from_behavior"]},{"sensitivity":.35, "specificity":0.9}),
                             ({"c_reactive_protein":["c_reactive_protein_high_above_2"]},{"sensitivity":0.85, "specificity":0.9}),
+                            ({"inflammation_from_behavior":["inflammation_from_behavior"]},{"sensitivity":.35, "specificity":0.9}),
                             ({"inflammation_from_diet":["inflammation_from_diet"]},{"sensitivity":0.35, "specificity":0.9}),
                             ({"age":["elderly"]},{"sensitivity":0.4, "specificity":0.6})
                         ],
@@ -4086,11 +4136,11 @@ def longevity_bayes():
                  
         cpt["hypertension"] = dependency(bayesianNetwork,cpt,
         [
+        ({"reported_hypertension":["reported_hypertension"]},{"sensitivity":0.85, "specificity":0.9}),
         ({"age":["elderly"]},{"relative_risk":3.5}),
         ({"age":["adult"]},{"relative_risk":2}),
         ({"dietary_sodium":["dietary_sodium_above_4297.00"]},{"relative_risk":2.17}),
-        ({"inflammation":["inflammation"]},{"relative_risk":2}),
-        ({"reported_hypertension":["reported_hypertension"]},{"sensitivity":0.6, "specificity":0.85})
+        ({"inflammation":["inflammation"]},{"relative_risk":2})
         ],
         {"hypertension":0.17,"no_hypertension":0.83}
         )
@@ -4101,10 +4151,10 @@ def longevity_bayes():
          
         cpt["kidney_disease"] = dependency(bayesianNetwork,cpt,
         [
-        ({"obesity":["obesity"]},{"relative_risk":2.14}),
+        ({"blood_kidney_disorder_indicators":["blood_kidney_disorder_indicators"]},{"sensitivity":0.8, "specificity":0.8}),
         #({"bmi":["bmi_25_to_29_overweight"]},{"relative_risk":1.21}),
         ({"hypertension":["hypertension"]},{"relative_risk":2}),
-        ({"blood_kidney_disorder_indicators":["blood_kidney_disorder_indicators"]},{"sensitivity":0.8, "specificity":0.8})
+        ({"obesity":["obesity"]},{"relative_risk":2.14}),
         ],
         {"kidney_disease":0.14,"no_kidney_disease":0.86}
         )
@@ -4134,18 +4184,32 @@ def longevity_bayes():
 
         )
                  
+         
 
-        cpt["general_aging_signs"] = any_of(bayesianNetwork,cpt,
-        {
-        "urine_leakage_bother":{"urine_leakage_bother_greatly","urine_leakage_bother_very_much"},
-        "osteoporosis":{"osteoporosis_yes"},
-        "artificial_joints":{"artificial_joints_yes"},
-        "dental_bone_loss":{"dental_bone_loss_yes"},
-                "hearing_difficulty":{"hearing_difficulty"}
-        },
+        cpt["general_aging_signs"] = avg(bayesianNetwork,cpt,
+        [
+        "urine_leakage_bother",
+        "osteoporosis",
+        "artificial_joints",
+        "dental_bone_loss",
+        "hearing_difficulty"
+        ],
         ["general_aging_signs","no_general_aging_signs"]
 
         )
+
+
+        #cpt["general_aging_signs"] = any_of(bayesianNetwork,cpt,
+        #{
+        #"urine_leakage_bother":{"urine_leakage_bother_greatly","urine_leakage_bother_very_much"},
+        #"osteoporosis":{"osteoporosis_yes"},
+        #"artificial_joints":{"artificial_joints_yes"},
+        #"dental_bone_loss":{"dental_bone_loss_yes"},
+         #       "hearing_difficulty":{"hearing_difficulty"}
+        #},
+        #["general_aging_signs","no_general_aging_signs"]
+
+        #)
 
        
                 
@@ -4175,7 +4239,7 @@ def longevity_bayes():
 
 
 
-        cpt["sarcopenia_reported"] = any_of(bayesianNetwork,cpt,
+        cpt["sarcopenia_reported"] = all_of(bayesianNetwork,cpt,
         {
         "sarcopenia_movement":{"sarcopenia_movement"},
         "sarcopenia_function":{"sarcopenia_function"}
@@ -4291,51 +4355,15 @@ def longevity_bayes():
 
         cpt["hallmark_1_genomic_instability"] = dependency(bayesianNetwork,cpt,
                 [
+                    ({"blood_age_indicators":["blood_age_indicators"]},{"sensitivity":0.8, "specificity":0.8}),
                     ({"age":["elderly"]},{"sensitivity":0.75, "specificity":0.7}),
                     ({"age":["adult"]},{"sensitivity":0.6, "specificity":0.6}),
                     ({"poor_diet":["poor_diet"]},{"sensitivity":0.6, "specificity":0.8}),
-                    ({"blood_age_indicators":["blood_age_indicators"]},{"sensitivity":0.8, "specificity":0.8})
                 ],
                 {"hallmark_1_genomic_instability":0.1, "no_hallmark_1_genomic_instability":0.9}
                 )
- 
-        outstr = outstr + addCpt(bayesianNetwork,cpt) 
-        cpt = {}
-                 
-      
-        cpt["cancer"] = dependency(bayesianNetwork,cpt,
-        [
-            ({"uv_exposure":["uv_exposure"]},{"relative_risk":8.5}),
-            ({"poor_diet":["poor_diet"]},{"relative_risk":0.3}), ## get relative risks
-            ({"smoking":["smoking"]},{"relative_risk":0.3}), ##
-            ({"age":["elderly"]},{"relative_risk":5.8}),
-            ({"hallmark_1_genomic_instability":["hallmark_1_genomic_instability"]},{"sensitivity":0.3, "specificity":0.6})
-        ],
-        {"cancer":0.055,"no_cancer":0.945}
-        )
-
- 
-        
-        cpt["cancer_related"] = avg(bayesianNetwork,cpt,
-        [
-        "cancer",
-        "immunocompromised"
-        ],
-        ["cancer_related","no_cancer_related"]
-
-        )
-
- 
-        cpt["chronic_conditions"] = any_of(bayesianNetwork,cpt,
-        {
-        "lung_or_kidney_or_liver_disease":{"lung_or_kidney_or_liver_disease"},
-        "cancer_related":{"cancer_related"},
-        "psychological_disorders":{"psychological_disorders"}
-        },
-        ["chronic_conditions","no_chronic_conditions"]
-
-        )
-               
+   
+            
         
         cpt["hallmark_2_telomere_attrition"] = avg(bayesianNetwork,cpt,
         [
@@ -4346,28 +4374,19 @@ def longevity_bayes():
         ["hallmark_2_telomere_attrition","no_hallmark_2_telomere_attrition"]
 
         )
-                
-                
-        cpt["hallmark_6_mitochondrial_dysfunction"] = any_of(bayesianNetwork,cpt,
-        {
-        "inflammation":{"inflammation"}
-        },
-        ["hallmark_6_mitochondrial_dysfunction","no_hallmark_6_mitochondrial_dysfunction"]
-
+  
+        outstr = outstr + addCpt(bayesianNetwork,cpt) 
+        cpt = {}
+                      
+        
+        cpt["age_related_macular_degeneration"] = dependency(bayesianNetwork,cpt,
+        [
+           ({"hallmark_2_telomere_attrition":["hallmark_2_telomere_attrition"]},{"sensitivity":0.7, "specificity":0.85})
+        ],
+        {"age_related_macular_degeneration":0.025,"no_age_related_macular_degeneration":0.975}
         )
-                
-                
-                
-        cpt["hallmark_7_cellular_senescence"] = any_of(bayesianNetwork,cpt,
-        {
-        "cancer":{"cancer"},
-        "inflammation":{"inflammation"}
-        },
-        ["hallmark_7_cellular_senescence","no_hallmark_7_cellular_senescence"]
 
-        )
-                
-           
+          
                  
         cpt["diabetes"] = dependency(bayesianNetwork,cpt,
         [
@@ -4381,26 +4400,24 @@ def longevity_bayes():
         ],
         {"diabetes":0.12,"no_diabetes":0.88}
         )
-         
+                
+        cpt["hallmark_6_mitochondrial_dysfunction"] = any_of(bayesianNetwork,cpt,
+        {
+        "inflammation":{"inflammation"}
+        },
+        ["hallmark_6_mitochondrial_dysfunction","no_hallmark_6_mitochondrial_dysfunction"]
+
+        )
+          
         outstr = outstr + addCpt(bayesianNetwork,cpt) 
         cpt = {}
-        
-        cpt["mitochondrial_dysfunction_or_cellular_senescence"] = any_of(bayesianNetwork,cpt,
-                {
-         "diabetes":{"diabetes"},
-         "hallmark_6_mitochondrial_dysfunction":{"hallmark_6_mitochondrial_dysfunction"},
-         "hallmark_7_cellular_senescence":{"hallmark_7_cellular_senescence"}
-         },
-         ["mitochondrial_dysfunction_or_cellular_senescence","no_mitochondrial_dysfunction_or_cellular_senescence"]
-         )
-
-
+       
         cpt["cardiovascular_disease"] = dependency(bayesianNetwork,cpt, 
         [
+        ({"heart_disorder_indicators":["heart_disorder_indicators"]},{"sensitivity":0.85, "specificity":0.9}),
         ({"age":["elderly"]},{"relative_risk":7}),
         ({"diabetes":["diabetes"]},{"relative_risk":3}),
         ({"obesity":["obesity"]},{"relative_risk":2}),
-        ({"heart_disorder_indicators":["heart_disorder_indicators"]},{"sensitivity":0.4, "specificity":0.3}),
         ({"hypertension":["hypertension"]},{"relative_risk":3.15})
                 
         ],
@@ -4419,6 +4436,18 @@ def longevity_bayes():
         )
     
  
+ 
+        cpt["chronic_conditions"] = any_of(bayesianNetwork,cpt,
+        {
+        "lung_or_kidney_or_liver_disease":{"lung_or_kidney_or_liver_disease"},
+        "immunocompromised":{"immunocompromised"},
+        "psychological_disorders":{"psychological_disorders"}
+        },
+        ["chronic_conditions","no_chronic_conditions"]
+
+        )
+               
+               
 
         cpt["comorbidities"] = avg(bayesianNetwork,cpt,
         [
@@ -4437,9 +4466,9 @@ def longevity_bayes():
                 
         cpt["frailty"] = dependency(bayesianNetwork,cpt,
                 [
+                    ({"frailty_signs":["frailty_signs"]},{"sensitivity":0.95, "specificity":0.9 }),
                     ({"inactivated_sirtuins":["inactivated_sirtuins"]},{"sensitivity":0.9, "specificity":0.7 }),
                     ({"comorbidities":["comorbidities"]},{"sensitivity":0.7, "specificity":7 }),
-                    ({"frailty_signs":["frailty_signs"]},{"sensitivity":0.95, "specificity":0.9 }),
                     ({"hallmark_1_genomic_instability":["hallmark_1_genomic_instability"]},{"sensitivity":0.6, "specificity":0.7})
                     ],
                 {"frailty":0.15, "no_frailty":0.85}
@@ -4470,9 +4499,57 @@ def longevity_bayes():
         ["hallmark_3_epigenetic_alterations","no_hallmark_3_epigenetic_alterations"]
 
         )
+                  
+ 
+        outstr = outstr + addCpt(bayesianNetwork,cpt) 
+        cpt = {}
+
+                
+  
+        cpt["cancer"] = dependency(bayesianNetwork,cpt,
+        [
+            ({"uv_exposure":["uv_exposure"]},{"relative_risk":8.5}),
+            ({"poor_diet":["poor_diet"]},{"relative_risk":0.3}), ## get relative risks
+            ({"smoking":["smoking"]},{"relative_risk":0.3}), ##
+            ({"age":["elderly"]},{"relative_risk":5.8}),
+            ({"hallmark_1_genomic_instability":["hallmark_1_genomic_instability"]},{"sensitivity":0.7, "specificity":0.85}),
+            ({"hallmark_3_epigenetic_alterations":["hallmark_3_epigenetic_alterations"]},{"sensitivity":0.7, "specificity":0.85})
+        ],
+        {"cancer":0.055,"no_cancer":0.945}
+        )
+
+        
+        #cpt["cancer_related"] = avg(bayesianNetwork,cpt,
+        #[
+        #"cancer",
+        #"immunocompromised"
+        #],
+        #["cancer_related","no_cancer_related"]
+
+        #)
+
                 
                 
-                
+        cpt["hallmark_7_cellular_senescence"] = any_of(bayesianNetwork,cpt,
+        {
+        "cancer":{"cancer"},
+        "inflammation":{"inflammation"}
+        },
+        ["hallmark_7_cellular_senescence","no_hallmark_7_cellular_senescence"]
+
+        )
+                      
+        
+        cpt["mitochondrial_dysfunction_or_cellular_senescence"] = any_of(bayesianNetwork,cpt,
+                {
+         "diabetes":{"diabetes"},
+         "hallmark_6_mitochondrial_dysfunction":{"hallmark_6_mitochondrial_dysfunction"},
+         "hallmark_7_cellular_senescence":{"hallmark_7_cellular_senescence"}
+         },
+         ["mitochondrial_dysfunction_or_cellular_senescence","no_mitochondrial_dysfunction_or_cellular_senescence"]
+         )
+
+         
                 
         cpt["hallmark_4_loss_of_proteostasis"] = any_of(bayesianNetwork,cpt,
         {
@@ -4482,6 +4559,30 @@ def longevity_bayes():
 
         )
                 
+                   
+ 
+        outstr = outstr + addCpt(bayesianNetwork,cpt) 
+        cpt = {}
+
+        
+        
+        cpt["parkinsons_disease"] = dependency(bayesianNetwork,cpt,
+        [
+           ({"hallmark_2_telomere_attrition":["hallmark_2_telomere_attrition"]},{"sensitivity":0.7, "specificity":0.85}),
+           ({"hallmark_4_loss_of_proteostasis":["hallmark_4_loss_of_proteostasis"]},{"sensitivity":0.7, "specificity":0.85})
+        ],
+        {"parkinsons_disease":0.0015,"no_parkinsons_disease":0.9885}
+        )
+         
+        
+        cpt["alzheimers_disease"] = dependency(bayesianNetwork,cpt,
+        [
+           ({"hallmark_2_telomere_attrition":["hallmark_2_telomere_attrition"]},{"sensitivity":0.7, "specificity":0.85}),
+           ({"hallmark_4_loss_of_proteostasis":["hallmark_4_loss_of_proteostasis"]},{"sensitivity":0.7, "specificity":0.85})
+        ],
+        {"alzheimers_disease":0.01,"no_alzheimers_disease":0.99}
+        )
+         
                 
                 
         cpt["hallmark_5_deregulated_nutrient_sensing"] = any_of(bayesianNetwork,cpt,
