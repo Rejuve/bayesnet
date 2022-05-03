@@ -589,14 +589,26 @@ def batch_query(baked_net, netspec, evidence_list,out_var_list):
 
 def query(baked_net, netspec, evidence,out_var_list):
         answer = {}
+        var_val_names = get_var_val_names(netspec)
+        var_names = get_var_names(netspec)
         var_positions = get_var_positions(netspec)
         if "always_true" in var_positions:
                 evidence["always_true"]="always_true"
+        for k,v in evidence.items(): 
+                var_vals = {}
+                for num,val in var_val_names[k].items():
+                        prob = 1.0 if v == val else 0.0
+                        var_vals[val]= prob
+                answer[k]=var_vals
+
         description = baked_net.predict_proba(evidence)
+        #print ("description")
+        #print(description)
         for dist_name in out_var_list:
                 try:
                         answer[dist_name] = (json.loads(description[var_positions[dist_name]].to_json()))['parameters'][0]
                 except AttributeError as e:
+                        #print("AttributeError")
                         #print(dist_name)
                         #print(e)
                         pass
@@ -655,8 +667,8 @@ def explain(baked_net, netspec, evidence,explain_list, reverse_explain_list = []
                         
         # add in the internal nodes that arent the input nodes
         result = internal_query(baked_net,netspec,evidence) if internal_query_result == None else internal_query_result
-        print ("result")
-        print (result)
+        #print ("result")
+        #print (result)
         internal_winners = {}
         for key,val_dict in result.items():
                 winner = max(val_dict,key=val_dict.get)
@@ -701,8 +713,8 @@ def explain(baked_net, netspec, evidence,explain_list, reverse_explain_list = []
                     winner_val = val_dict[winner]
                     before_change[key] = (winner,winner_val)
                     explanation[key] = {}
-        print("before_change")
-        print(before_change)
+        #print("before_change")
+        #print(before_change)
         #print("reverse_explain_list")
         #print(reverse_explain_list)
         #for explaining_var, evidence in evidence_perturbations.items():
