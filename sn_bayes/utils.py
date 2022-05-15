@@ -1,4 +1,5 @@
 from pomegranate import DiscreteDistribution
+
 from pomegranate import BayesianNetwork
 from pomegranate import Node
 from pomegranate import ConditionalProbabilityTable
@@ -11,6 +12,7 @@ import itertools
 import typing
 import numpy as np
 from dateutil.parser import parse
+import time
 
 T = typing.TypeVar("T")
 
@@ -83,7 +85,7 @@ def fillcols(var_dict):
         tree_list.append(next_level)
     return(tree_list)    
 
-def make_tree(bayesianNetwork):
+def make_tree(bayesianNetwork, connections = True):
     variable_dependencies = var_deps(bayesianNetwork)
     #print(variable_dependencies)
     tree = fillcols(variable_dependencies)
@@ -106,6 +108,9 @@ def make_tree(bayesianNetwork):
         key = "level"+ str(i)
         df_dict[key] = l  
     df = pd.DataFrame.from_dict(df_dict, orient='index').T
+    if not connections:
+        df=df.replace(to_replace=r"([0-9a-zA-Z\-_\.]+)(.*)", value=r"\1", regex=True) 
+    #df.str.replace(r'[^0-9a-zA-Z\-_]+', '', regex=True)  
     return df
 
 def complexity_check(bayesianNetwork,
@@ -169,7 +174,8 @@ def get_var_positions(bayesianNetwork):
                     print(f"double instance of {table.name}") 
                 else:
                     check_for_repeats.add(table.name)
-
+        #print("get_var_positions")
+        #print(get_var_positions)
         return var_positions
 
 
@@ -597,7 +603,7 @@ def query(baked_net, netspec, evidence,out_var_list):
         for k,v in evidence.items(): 
                 var_vals = {}
                 for num,val in var_val_names[k].items():
-                        prob = 1.0 if v == val else 0.0
+                        prob = 0.99999 if v == val else 0.00001
                         var_vals[val]= prob
                 answer[k]=var_vals
 
@@ -1107,14 +1113,21 @@ def non_cpt_descriptions(bayesianNetwork):
 
 def get_priors(bayesianNetwork,invars,prevalence,cpt):
         var_positions = get_var_positions(bayesianNetwork)
+        var_val_names = get_var_val_names(bayesianNetwork)
         pomegranate= bayesInitialize(bayesianNetwork)
         #print(bayesianNetwork)
         pomegranate.bake()
         evidence = {}
         if "always_true" in var_positions:
                 evidence["always_true"]="always_true"
-        probs = pomegranate.predict_proba(evidence)
         priors = {}
+        for k,v in evidence.items(): 
+                var_vals = {}
+                for num,val in var_val_names[k].items():
+                        prob = 0.99999 if v == val else 0.00001
+                        var_vals[val]= prob
+                priors[k]=var_vals
+        probs = pomegranate.predict_proba(evidence)
         vdict = dictVarsAndValues(bayesianNetwork, cpt)
         for vardict,numval_dict in invars:
                 numval = numval_dict["relative_risk"] if "relative_risk" in numval_dict else (
@@ -1181,11 +1194,16 @@ def get_frequencies(bayesianNetwork,keylist,cpt,preconditionals = {}):
                         #print ("evidence")
                         #print (evidence)
                         probs = pomegranate.predict_proba(evidence)
+                        #print ("probs")
+                        #print(probs)
                         conditionals[c]={}
                         for val in vdict[keylist[i]]:
+                                if keylist[i] in evidence:
+                                    conditionals[c][val] = 0.99999 if val in evidence[keylist[i]] else 0.00001
                                 try:
                                         conditionals[c][val] = (json.loads(probs[var_positions[keylist[i]]].to_json()))['parameters'][0][val]
                                 except AttributeError as e:
+                                        print (e)
                                         pass
         #print("conditionals")
         #print(conditionals)
@@ -1196,6 +1214,8 @@ def get_frequencies(bayesianNetwork,keylist,cpt,preconditionals = {}):
         #prob (a,b,c) = prob a * prob b|a * prob c|ab  
         asum = 0
         for c in cartesian:
+                #print ("cartesian")
+                #print(cartesian)
                 product = 1
                 for i in range(len(c)):
                         key = tuple(c [:i])
@@ -1733,15 +1753,15 @@ def prob_a_and_not_a_given_b_and_not_b (invars, priors, outvars):
                 prob_not_a_given_not_b[k] = {}
             for dependency_type, var_dict in var_dependency_dict.items():
                 if dependency_type == "relative_risk":
-                    print ("var_dict")
-                    print(var_dict)
-                    print("prior_a")
-                    print (prior_a)
-                    print(f"priors[{k}]")
-                    print (priors[k])
+                    #print ("var_dict")
+                    #print(var_dict)
+                    #print("prior_a")
+                    #print (prior_a)
+                    #print(f"priors[{k}]")
+                    #print (priors[k])
                     prob_dict = rr_prob_a_and_not_a_given_b_and_not_b(var_dict,prior_a,priors[k])
-                    print("prob_dict")
-                    print(prob_dict)
+                    #print("prob_dict")
+                    #print(prob_dict)
                     for v,prob_type_dict in prob_dict.items():
                         for prob_type,val in prob_type_dict.items():
                             if prob_type == 'prob_a_given_b':
@@ -1836,8 +1856,203 @@ def prob_a_and_not_a_given_b_and_not_b1 (invars, priors, outvars):
 
 
 
+def get_good_vars(v,invars,bayesianNetwork,var_val_positions = None, var_val_names = None):
+        if var_val_positions is None:    
+            var_val_positions = get_var_val_positions(bayesianNetwork)
+        if var_val_names is None:
+            var_val_names= get_var_val_names(bayesianNetwork)
+        highest_val = 0
+        for tup in invars:
+            if v in tup[0]:
+                for val in tup[0][v]:
+                    if var_val_positions[v][val]>highest_val:
+                        highest_val = var_val_positions[v][val]
+        #print("highest_val")
+        #print(highest_val)
+        good_vars = [var_val_names[v][i] for i in range (highest_val+1,len(var_val_positions[v]))]
+        return good_vars
 
-def dependency(bayesianNetwork, cpt, invars, outvars):
+
+def get_rr_vals(v,invars):
+        rr_vals = {}
+        for tup in invars:
+            if v in tup[0]:
+                for val in tup[0][v]:
+                    if "relative_risk" in tup[1]:
+                        rr_vals[val]=tup[1]["relative_risk"]
+        return rr_vals
+
+
+def replace_rr(invars,new_rr,v,val):
+        #print("v")
+        #print(v)
+        #print("val")
+        #print(val)
+        for tup in invars:
+            if v in tup[0] and val in tup[0][v] and "relative_risk" in tup[1]:
+                tup[1]["relative_risk"]=new_rr
+
+
+def dependency (bayesianNetwork, cpt, invars,outvars, calibrate = True):
+        #convert all relative risks to relatvie risk direct.  sort the net by the rr invars place in the tree
+        #starting with the highest level in the dag first,
+        #and make a copy of the cpt table without each rr variable, add it to the net and get the value of the outvars
+        #when he rr var is set, and then whem the best var is set.  the new RR val is then CPT(novar) good * RR / CPT(novar)var turned on
+        #add the new RR to the CPT you are constructing , and then compile it
+        #
+        #First get list of variables and sort according to tree level
+        priors = None 
+        print("start timing...")
+        tic = time.perf_counter()
+        varlist=[list(tup[0].keys())[0] for tup in invars if "relative_risk" in tup[1]]
+        varlist = list(set(varlist))
+        #print("varlist")
+        #print(varlist)
+        if len(varlist) > 0 and calibrate:
+            prevalence_condition_regardless = list(outvars.items())[0][1]
+            priors = get_priors(bayesianNetwork,invars,prevalence_condition_regardless,cpt)
+            var_val_positions = get_var_val_positions(bayesianNetwork)
+            var_val_names= get_var_val_names(bayesianNetwork)
+            copyNetwork = copy.deepcopy(bayesianNetwork)
+            copyCPT = copy.deepcopy(cpt)
+            discreteDistribution = copyNetwork.discreteDistributions.add()
+            discreteDistribution.name = "always_true"
+            variable = discreteDistribution.variables.add()
+            variable.name = "always_true"
+            variable.probability = 0.99999
+            variable = discreteDistribution.variables.add()
+            variable.name = "no_always_true"
+            variable.probability = 0.00001
+            #print("copyNetwork")
+            #print(copyNetwork)
+            newInvars = copy.deepcopy(invars)
+            newInvars.append(({'always_true': ['always_true']}, {'relative_risk':1.0}))
+            outvar = list(outvars.items())[0][0]
+            df = make_tree(bayesianNetwork,False)
+            #print("df")
+            #print(df)
+            order_dict = {}
+            
+            for i in range(len(df.columns)):
+                order_dict[i]=[]
+                colname = "level"+str(i)
+                for v in varlist:
+                    #print("df[colname].tolist()")
+                    #print(df[colname].tolist())
+                    if v in df[colname].tolist():
+                        order_dict[i].append(v)
+            #print("order_dict")
+            #print(order_dict)
+            low_rrs =[] 
+            for i in range(len(order_dict)):
+                for v in order_dict[i]:
+                    #print("v")
+                    #print(v)
+                    thisNetwork = copy.deepcopy(copyNetwork)
+                    for  j in range(len(newInvars)):
+                        if v in newInvars[j][0]:
+                            copyInvars = copy.deepcopy(newInvars)
+                            popped = copyInvars.pop(j)
+                            count = 0
+                            for  l in range(len(copyInvars)):
+                                if v in copyInvars[l][0]:
+                                    count += 1
+                            for k in range (count): 
+                                for l in range (len(copyInvars)):
+                                    if v in copyInvars[l][0]:
+                                        copyInvars.pop(l)
+                                        break
+                            #print("copyInvars")
+                            #print(copyInvars)
+                            #print("thisNetwork")
+                            #print(thisNetwork)
+                            copyCPT[outvar]= dependency_direct(thisNetwork,{},copyInvars,outvars)
+
+                            addCpt(thisNetwork,copyCPT)
+                            copied = bayesInitialize(thisNetwork)
+                            copied.bake()
+                            var_val_names_this = get_var_val_names(thisNetwork)
+                            good_vars = get_good_vars(v,invars,bayesianNetwork,var_val_positions,var_val_names) 
+                            chance_of_outvar_given_good = 0.
+                            outvar_chance_dict = {}
+                            for g in good_vars:
+                                #print ("g")
+                                #print (g)
+                                chance_of_outvar = query(copied,thisNetwork,{v:g},[outvar])
+                                #print(chance_of_outvar)
+                                #print ("var_val_names")
+                                #print(var_val_names)
+                                #print ("chance_of_outvar[outvar][var_val_names_this[outvar][0]]")
+                                #print (chance_of_outvar[outvar][var_val_names_this[outvar][0]])
+                                outvar_chance_dict [g]= chance_of_outvar[outvar][var_val_names_this[outvar][0]]#list(chance_of_outvar[outvar].values())[0]
+                            prior_sum = 0
+                            for val,outvar_chance in outvar_chance_dict.items():
+                                chance_of_outvar_given_good += outvar_chance * priors[v][val]
+                                prior_sum += priors[v][val]
+                            chance_of_outvar_given_good /= prior_sum
+                            #print ("chance_of_outvar_given_good")
+                            #print(chance_of_outvar_given_good)
+                            rr = popped [1]["relative_risk"]
+                            chance_of_outvar_given_var = 0.
+                            outvar_chance_dict = {}
+                            for val in newInvars[j][0][v]:
+                                #print("val")
+                                #print(val)
+                                chance_of_outvar = query(copied,thisNetwork,{v:val}, [outvar])
+                                #print ("chance_of_outvar[outvar][var_val_names_this[outvar][0]]")
+                                #print (chance_of_outvar[outvar][var_val_names_this[outvar][0]])
+                                outvar_chance_dict[val] = chance_of_outvar[outvar][var_val_names_this[outvar][0]]#list(chance_of_outvar[outvar].values())[0]
+                            prior_sum = 0
+                            for val,outvar_chance in outvar_chance_dict.items():
+                                chance_of_outvar_given_var += outvar_chance * priors[v][val]
+                                prior_sum += priors[v][val]
+                            #print ("chance_of_outvar_given_var")
+                            #print(chance_of_outvar_given_var)
+                            new_rr = (chance_of_outvar_given_good * rr* prior_sum)/chance_of_outvar_given_var
+                            #print ("rr")
+                            #print (rr)
+                            #print("new_rr")
+                            #print (new_rr)
+                            if new_rr > .9 and new_rr < 1.1:
+                                low_rrs.append(popped)
+                            elif abs(rr-new_rr)>.1:
+                                #print ("newInvars before replace")
+                                #print (newInvars)
+                                replace_rr(newInvars,new_rr,v,val)
+                                #print ("newInvars after replace")
+                                #print (newInvars)
+            for  j in range(len(newInvars)):
+                if "always_true"  in newInvars[j][0]:
+                    newInvars.pop(j)
+                    break
+           # print ("newInvars before removing new ones")
+           # print (newInvars)
+           # print ("low_rrs")
+           # print (low_rrs)
+            for low in low_rrs:
+                try:
+                    newInvars.remove(low)
+                except ValueError as ve:
+                    #print(ve)
+                    pass
+            print ("invars")
+            print(invars)
+            print("newInvars")
+            print(newInvars)
+        else:
+            newInvars = invars
+
+        cpt_rows,keylist,outvars,description= dependency_direct(bayesianNetwork,cpt,newInvars,outvars,priors)
+
+        toc = time.perf_counter()
+        diff = toc - tic
+
+        print (f"{outvars}  wrapper took {diff} seconds")
+        return (cpt_rows,keylist,outvars,description)
+
+
+
+def dependency_direct(bayesianNetwork, cpt, invars, outvars, priors = None):
         
         import itertools
         from scipy.optimize import linprog
@@ -1851,7 +2066,8 @@ def dependency(bayesianNetwork, cpt, invars, outvars):
         frequency_cache = {}
         prevalence_condition_regardless = list(outvars.items())[0][1]
         condition_val = list(outvars.items())[0][0]
-        priors = get_priors(bayesianNetwork,invars,prevalence_condition_regardless,cpt)
+        if priors is None:
+            priors = get_priors(bayesianNetwork,invars,prevalence_condition_regardless,cpt)
         #print("priors")
         #print(priors)
         prob_a_given_b, prob_a_given_not_b, prob_not_a_given_b, prob_not_a_given_not_b =  prob_a_and_not_a_given_b_and_not_b (invars, priors, outvars)
@@ -1876,6 +2092,8 @@ def dependency(bayesianNetwork, cpt, invars, outvars):
                                         phrase = "" if firsttime1 else " or "
                                         description = description + phrase + var
                                         firsttime1 = False
+                                        #print("val var to priors")
+                                        #print (f"{val}  : {var}")
                                         sum_priors += priors[val][var]
                                 description = description + " is " + str(num)
 
@@ -1955,11 +2173,11 @@ def dependency(bayesianNetwork, cpt, invars, outvars):
         for excluded in keylist:
             included_vars[excluded]= keylist[:pos[excluded]] + keylist[pos[excluded]+1:] 
         for i,c in enumerate(cartesian):
-                print ("i:c")
-                print (i)
-                print (c)
-                print ("frequencies[c]")
-                print(frequencies[c])
+                #print ("i:c")
+                #print (i)
+                #print (c)
+                #print ("frequencies[c]")
+                #print(frequencies[c])
                 #equation1  (doesnt have every one in it )
                 #non elderly hbp prevalence  = 
                 #  (prevalence of hbp among adult obese psych) * prevalence of adult obese psych 
@@ -2151,23 +2369,23 @@ def dependency(bayesianNetwork, cpt, invars, outvars):
         lb = np.zeros(size,np.double)
         ub = np.ones(size,np.double)
 
-        print("before norm:")       
-        print("rhs_inequality_equation2") 
-        print(rhs_inequality_equation2) 
-        print("lhs_inequality_equation2")
-        print(lhs_inequality_equation2)
-        print("rhs_inequality_equation4") 
-        print(rhs_inequality_equation4) 
-        print("lhs_inequality_equation4")
-        print(lhs_inequality_equation4)
-        print("rhs_inequality_equation1")
-        print(rhs_inequality_equation1)
-        print("lhs_inequality_equation1")
-        print(lhs_inequality_equation1)
-        print("rhs_inequality_equation3")
-        print(rhs_inequality_equation3)
-        print("lhs_inequality_equation3")
-        print(lhs_inequality_equation3)
+        #print("before norm:")       
+        #print("rhs_inequality_equation2") 
+        #print(rhs_inequality_equation2) 
+        #print("lhs_inequality_equation2")
+        #print(lhs_inequality_equation2)
+        #print("rhs_inequality_equation4") 
+        #print(rhs_inequality_equation4) 
+        #print("lhs_inequality_equation4")
+        #print(lhs_inequality_equation4)
+        #print("rhs_inequality_equation1")
+        #print(rhs_inequality_equation1)
+        #print("lhs_inequality_equation1")
+        #print(lhs_inequality_equation1)
+        #print("rhs_inequality_equation3")
+        #print(rhs_inequality_equation3)
+        #print("lhs_inequality_equation3")
+        #print(lhs_inequality_equation3)
                                                
 
 
@@ -2196,23 +2414,23 @@ def dependency(bayesianNetwork, cpt, invars, outvars):
         lhs_eq.append(prev_a)
         lhs_eq.append(prev_not_a)
 
-        print("after norm:")       
-        print("rhs_inequality_equation2") 
-        print(rhs_inequality_equation2) 
-        print("lhs_inequality_equation2")
-        print(lhs_inequality_equation2)
-        print("rhs_inequality_equation4") 
-        print(rhs_inequality_equation4) 
-        print("lhs_inequality_equation4")
-        print(lhs_inequality_equation4)
-        print("rhs_inequality_equation1")
-        print(rhs_inequality_equation1)
-        print("lhs_inequality_equation1")
-        print(lhs_inequality_equation1)
-        print("rhs_inequality_equation3")
-        print(rhs_inequality_equation3)
-        print("lhs_inequality_equation3")
-        print(lhs_inequality_equation3)
+        #print("after norm:")       
+        #print("rhs_inequality_equation2") 
+        #print(rhs_inequality_equation2) 
+        #print("lhs_inequality_equation2")
+        #print(lhs_inequality_equation2)
+        #print("rhs_inequality_equation4") 
+        #print(rhs_inequality_equation4) 
+        #print("lhs_inequality_equation4")
+        #print(lhs_inequality_equation4)
+        #print("rhs_inequality_equation1")
+        #print(rhs_inequality_equation1)
+        #print("lhs_inequality_equation1")
+        #print(lhs_inequality_equation1)
+        #print("rhs_inequality_equation3")
+        #print(rhs_inequality_equation3)
+        #print("lhs_inequality_equation3")
+        #print(lhs_inequality_equation3)
                                                
 
 
@@ -2309,26 +2527,26 @@ def dependency(bayesianNetwork, cpt, invars, outvars):
                 #opt = linprog(c=obj, A_ub=lhs_ineq, b_ub=rhs_ineq,A_eq=lhs_eq, b_eq=rhs_eq, bounds=bnd,method="revised simplex")
                 #print ("obj")
                 #print (obj)
-                print ("P")
-                print(P)
-                print ("q")
-                print (q)
+                #print ("P")
+                #print(P)
+                #print ("q")
+                #print (q)
 
-                print ("lhs_eq")
-                print(lhs_eq)
-                print("rhs_eq")
-                print (rhs_eq)
+                #print ("lhs_eq")
+                #print(lhs_eq)
+                #print("rhs_eq")
+                #print (rhs_eq)
 
-                print ("lhs_ineq")
-                print(lhs_ineq)
-                print("rhs_ineq")
-                print (rhs_ineq)
+                #print ("lhs_ineq")
+                #print(lhs_ineq)
+                #print("rhs_ineq")
+                #print (rhs_ineq)
                 #print ("bnd")
                 #print(bnd)
-                print ("lb")
-                print (lb)
-                print("ub")
-                print (ub)
+                #print ("lb")
+                #print (lb)
+                #print("ub")
+                #print (ub)
                 lhs_ineq = np.array(lhs_ineq,np.double)
                 rhs_ineq = np.array(rhs_ineq,np.double)
                 lhs_eq = np.array(lhs_eq,np.double)
@@ -2345,8 +2563,8 @@ def dependency(bayesianNetwork, cpt, invars, outvars):
                     err = True
 
                         
-                print("opt")
-                print (opt)
+                #print("opt")
+                #print (opt)
                 if window == 1.0 and (err) or opt is None: # or not opt.success):
                     break
                 cut /= 2
@@ -2380,7 +2598,7 @@ def dependency(bayesianNetwork, cpt, invars, outvars):
         toc = time.perf_counter()
         diff = toc - tic
 
-        print (f"{outvars} took {diff} seconds")
+        print (f"{invars} ==> {outvars} took {diff} seconds")
         return (cpt_rows,keylist,outvars,description)
 
 
