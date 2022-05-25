@@ -565,7 +565,79 @@ def create_query (bayesianNetwork,evidence_dict,outvar_list,explainvars=[],
 
                     
         return query
-                        
+
+def get_template_priors(bayesianNetwork):
+        template_priors = {}
+        for dist in bayesianNetwork.discreteDistributions:
+                template_priors[dist.name]={}
+                for var in dist.variables:
+                        template_priors[dist.name][var.name] = var.probability
+        return template_priors
+
+
+def predict_proba_adjusted ( baked_net,netspec,evidence_list = {},adjust=True):
+    var_val_names = get_var_val_names(netspec)
+    var_positions = get_var_positions(netspec)
+    template_priors = get_template_priors(netspec)
+    prior_var = list(template_priors.keys())[0]
+    #print ("template_priors")
+    #print (template_priors)
+    dist = {}
+    answer = {}
+    if len (evidence_list) < 1 and adjust:
+        for prior_val,prior_prob in template_priors[prior_var].items():
+            evidence = {prior_var:prior_val}
+            description = baked_net.predict_proba(evidence)
+            for dist_name,val_dict in var_val_names.items():
+                if dist_name not in dist:
+                    dist[dist_name]={}
+               
+                try:
+                        answer[dist_name] = (json.loads(description[var_positions[dist_name]].to_json()))['parameters'][0]
+                except AttributeError as e:
+                        #print("AttributeError")
+                        #print(dist_name)
+                        #print(e)
+                        pass
+                for k,v in evidence.items(): 
+                    var_vals = {}
+                    for num,val in var_val_names[k].items():
+                        prob = 0.99999 if v == val else 0.00001
+                        var_vals[val]= prob
+                    answer[k]=var_vals
+
+                for dummy,val in val_dict.items():
+                    if val not in dist[dist_name]:
+                        dist[dist_name][val] = answer[dist_name][val]*prior_prob
+                    else:
+                        dist[dist_name][val] += answer[dist_name][val]*prior_prob
+
+    else:
+            description = baked_net.predict_proba(evidence_list)
+            for dist_name,val_dict in var_val_names.items():
+                if dist_name not in dist:
+                    dist[dist_name]={}
+               
+                try:
+                        answer[dist_name] = (json.loads(description[var_positions[dist_name]].to_json()))['parameters'][0]
+                except AttributeError as e:
+                        #print("AttributeError")
+                        #print(dist_name)
+                        #print(e)
+                        pass
+                for k,v in evidence_list.items(): 
+                    var_vals = {}
+                    for num,val in var_val_names[k].items():
+                        prob = 0.99999 if v == val else 0.00001
+                        var_vals[val]= prob
+                    answer[k]=var_vals
+
+                for dummy,val in val_dict.items():
+                    if val not in dist[dist_name]:
+                        dist[dist_name][val] = answer[dist_name][val]
+    return dist
+
+
 
 
 def batch_query(baked_net, netspec, evidence_list,out_var_list):
@@ -594,6 +666,16 @@ def batch_query(baked_net, netspec, evidence_list,out_var_list):
 
 
 def query(baked_net, netspec, evidence,out_var_list):
+        answer={}
+        probs = predict_proba_adjusted(baked_net,netspec,evidence)
+
+        for dist_name in out_var_list:
+                answer[dist_name] = probs[dist_name]
+        return answer
+
+       
+
+def query1(baked_net, netspec, evidence,out_var_list):
         answer = {}
         var_val_names = get_var_val_names(netspec)
         var_names = get_var_names(netspec)
@@ -1127,7 +1209,9 @@ def get_priors(bayesianNetwork,invars,prevalence,cpt):
                         prob = 0.99999 if v == val else 0.00001
                         var_vals[val]= prob
                 priors[k]=var_vals
-        probs = pomegranate.predict_proba(evidence)
+        probs = predict_proba_adjusted(pomegranate,bayesianNetwork,evidence)#pomegranate.predict_proba(evidence)
+        #print("probs")
+        #print (probs)
         vdict = dictVarsAndValues(bayesianNetwork, cpt)
         for vardict,numval_dict in invars:
                 numval = numval_dict["relative_risk"] if "relative_risk" in numval_dict else (
@@ -1140,10 +1224,10 @@ def get_priors(bayesianNetwork,invars,prevalence,cpt):
                                 try:
                                         #problem="hypertension"
                                         #if k is problem or v is problem:
-                                            #print("k")
-                                            #print(k)
-                                            #print("v")
-                                            #print(v)
+                                        #print("k")
+                                        #print(k)
+                                        #print("v")
+                                        #print(v)
                                             #print("var_positions")
                                             #print(var_positions)
                                             #print ("probs")
@@ -1152,7 +1236,7 @@ def get_priors(bayesianNetwork,invars,prevalence,cpt):
                                             #print(priors)
                                             #print("json.loads(probs[var_positions[k]].to_json())['parameters']")
                                             #print(json.loads(probs[var_positions[k]].to_json())['parameters'])
-                                        priors[k][v]=(json.loads(probs[var_positions[k]].to_json()))['parameters'][0][v]
+                                        priors[k][v]=probs[k][v]#(json.loads(probs[var_positions[k]].to_json()))['parameters'][0][v]
                                         asum += priors[k][v]
                                 except AttributeError as e:
                                         pass
@@ -1193,7 +1277,8 @@ def get_frequencies(bayesianNetwork,keylist,cpt,preconditionals = {}):
                         evidence.update(preconditionals)
                         #print ("evidence")
                         #print (evidence)
-                        probs = pomegranate.predict_proba(evidence)
+                        #probs = pomegranate.predict_proba(evidence)
+                        probs=predict_proba_adjusted(pomegranate,bayesianNetwork,evidence)
                         #print ("probs")
                         #print(probs)
                         conditionals[c]={}
@@ -1201,7 +1286,7 @@ def get_frequencies(bayesianNetwork,keylist,cpt,preconditionals = {}):
                                 if keylist[i] in evidence:
                                     conditionals[c][val] = 0.99999 if val in evidence[keylist[i]] else 0.00001
                                 try:
-                                        conditionals[c][val] = (json.loads(probs[var_positions[keylist[i]]].to_json()))['parameters'][0][val]
+                                        conditionals[c][val] = probs[keylist[i]][val]#(json.loads(probs[var_positions[keylist[i]]].to_json()))['parameters'][0][val]
                                 except AttributeError as e:
                                         print (e)
                                         pass
