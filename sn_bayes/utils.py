@@ -1652,18 +1652,49 @@ def get_window(bayesianNetwork,invars):
                         window[var] = {}
                     for val in vallist:
                         window[var][val]= align_ci(numval_dict["ci"],numval_dict["plus_minus"])
-                    print("window")
-                    print(window)
+                    #print("window")
+                    #print(window)
                     maxi= max(window[var].values())
-                    print("maxi")
-                    print(maxi)
+                    #print("maxi")
+                    #print(maxi)
                     for val,dummy in var_val_positions[var].items():
                         if val not in window[var]:
                             window[var][val] = maxi
                     window[var] = normalize_ci(maxi,window[var])
         return(window)
 
-         
+def get_stat_info (k,v,invars):
+        stattype = stat = ci99 = None
+        for vardict,numval_dict in invars:
+            if "ci" in numval_dict and k in vardict and v in vardict[k]:
+                stattype = "relative_risk" if "relative_risk" in numval_dict else "specificity"
+                stat = numval_dict[stattype]
+                ci99 = align_ci(numval_dict["ci"],numval_dict["plus_minus"])
+                break
+        return stattype,stat,ci99
+
+def validation(k,v,probagivenb,condition_val,invars,final_window,window_factor):
+        #print("k")
+        #print(k)
+        #print("v")
+        #print(v)
+        #print("probagivenb")
+        #print(probagivenb)
+        #print("final_window")
+        #print(final_window)
+    
+        row = {}
+        stattype,stat,ci99 = get_stat_info (k,v,invars)
+        if ci99 is not None:
+            row["condition"]= condition_val
+            row["variable"]=k
+            row["value"] = v
+            row["statistic"] = stattype
+            row["mean"]=stat
+            row["ci99"] = ci99
+            row["score"] = ((probagivenb + (final_window*window_factor[k][v])) * stat/probagivenb)-stat
+        return row
+
 
 def dependency_direct(bayesianNetwork, cpt, invars, outvars, priors = None,adjust=False):
         
@@ -1673,11 +1704,12 @@ def dependency_direct(bayesianNetwork, cpt, invars, outvars, priors = None,adjus
 
         import time
 
+        validation_row = {}
         print("start timing...")
         tic = time.perf_counter()
         window_factor = get_window(bayesianNetwork,invars)
-        print("window_factor")
-        print(window_factor)
+        #print("window_factor")
+        #print(window_factor)
         keyset = OrderedSet([])
         frequency_cache = {}
         prevalence_condition_regardless = list(outvars.items())[0][1]
@@ -2065,6 +2097,8 @@ def dependency_direct(bayesianNetwork, cpt, invars, outvars, priors = None,adjus
                         #relative_risk= numval_dict["relative_risk"] if "relative_risk" in numval_dict else (
                          #           (prevalence_condition_regardless-numval_dict["sensitivity"])/numval_dict["sensitivity"] if "sensitivity" in numval_dict else 1) 
                         for k, varlist in vardict.items():
+                                if k not in validation_row:
+                                    validation_row[k] = {}
                                 for v in varlist:
                                         ci_window = window *window_factor[k][v] if k in window_factor and v in window_factor[k] else window
                                         #equality doesnt work
@@ -2114,6 +2148,11 @@ def dependency_direct(bayesianNetwork, cpt, invars, outvars, priors = None,adjus
                                         lhs_ineq.append(np.multiply(lhs_inequality_equation4[k][v],-1.))
                                         rhs_ineq.append(-rhs_ineq4)
 
+                                        row = validation(k,v,rhs_inequality_equation2[k][v],condition_val,invars,window,window_factor)
+                                        if len(row)  > 0:
+                                            validation_row[k][v] = row
+                                            #print("row")
+                                            #print(row)
 
                                         #UB    
                                         #lhs_ineq.append(np.multiply(lhs_inequality_equation1[k][v],1))
@@ -2188,9 +2227,8 @@ def dependency_direct(bayesianNetwork, cpt, invars, outvars, priors = None,adjus
                 window = window - cut if not err  else window + cut
                 if not err and opt is not None:# and opt.success:
                     lastTrue = opt
-                print("window")
-                print (window)
-
+                #print("window")
+                #print (window)
 
         if lastTrue is not None:
             opt = lastTrue
@@ -2213,6 +2251,15 @@ def dependency_direct(bayesianNetwork, cpt, invars, outvars, priors = None,adjus
         print(cpt_rows)
         toc = time.perf_counter()
         diff = toc - tic
+        #print("validation_row")
+        #print(validation_row)
+        dflist = [valid_dict for k,v_dict in validation_row.items() for v, valid_dict in v_dict.items()]
+        #print("dflist")
+        #print(dflist)
+        if len (dflist) > 0:
+            df = pd.DataFrame(dflist)  
+            #print(df)
+            df.to_csv(f"{condition_val}_validation.csv", index = False)
 
         print (f"{invars} ==> {outvars} took {diff} seconds")
         return (cpt_rows,keylist,outvars,description)
