@@ -2151,8 +2151,8 @@ def dependency_direct(bayesianNetwork, cpt, invars, outvars, priors = None,adjus
                                         row = validation(k,v,rhs_inequality_equation2[k][v],condition_val,invars,window,window_factor)
                                         if len(row)  > 0:
                                             validation_row[k][v] = row
-                                            #print("row")
-                                            #print(row)
+                                            print("row")
+                                            print(row)
 
                                         #UB    
                                         #lhs_ineq.append(np.multiply(lhs_inequality_equation1[k][v],1))
