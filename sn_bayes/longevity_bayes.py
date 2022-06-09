@@ -30,11 +30,19 @@ def longevity_bayes():
 
         anomaly = bayesianNetwork.anomalies.add()
         anomaly.varName = "step_variability_anomaly"
-        anomaly.side = "positive"
-        anomaly.c = 6.0 
+        anomaly.n_steps = 7
+        anomaly.step_size = 1
+        anomaly.c = 3.0 
+        anomaly.n = 2
         anomaly.window = 5
+        anomaly.side = "positive"
+        anomaly.is_all = False 
         detectors = anomaly.detectors.add()
-        detectors.name = "VolatilityShiftAD"
+        detectors.name = "AutoregressionAD"
+        detectors = anomaly.detectors.add()
+        detectors.name = "InterQuartileRangeAD"
+        detectors = anomaly.detectors.add()
+        detectors.name = "LevelShiftAD"
                 
                 #apple mobility measurements
                 
@@ -81,20 +89,36 @@ def longevity_bayes():
                 
         anomaly = bayesianNetwork.anomalies.add()
         anomaly.varName = "stride_variability_anomaly"
-        anomaly.side = "positive"
-        anomaly.c = 6.0 
+        anomaly.n_steps = 7
+        anomaly.step_size = 1
+        anomaly.c = 3.0 
+        anomaly.n = 2
         anomaly.window = 5
+        anomaly.side = "positive"
+        anomaly.is_all = False 
         detectors = anomaly.detectors.add()
-        detectors.name = "VolatilityShiftAD"
+        detectors.name = "AutoregressionAD"
+        detectors = anomaly.detectors.add()
+        detectors.name = "InterQuartileRangeAD"
+        detectors = anomaly.detectors.add()
+        detectors.name = "LevelShiftAD"
                 
                 
         anomaly = bayesianNetwork.anomalies.add()
         anomaly.varName = "walking_speed_variability_anomaly"
-        anomaly.side = "positive"
-        anomaly.c = 6.0 
+        anomaly.n_steps = 7
+        anomaly.step_size = 1
+        anomaly.c = 3.0 
+        anomaly.n = 2
         anomaly.window = 5
+        anomaly.side = "positive"
+        anomaly.is_all = False 
         detectors = anomaly.detectors.add()
-        detectors.name = "VolatilityShiftAD"
+        detectors.name = "AutoregressionAD"
+        detectors = anomaly.detectors.add()
+        detectors.name = "InterQuartileRangeAD"
+        detectors = anomaly.detectors.add()
+        detectors.name = "LevelShiftAD"
                 
                 
                 
@@ -176,7 +200,7 @@ def longevity_bayes():
         anomaly.c = 3.0 
         anomaly.n = 2
         anomaly.window = 5
-        anomaly.side = "positive"
+        anomaly.side = "negative"
         anomaly.is_all = False 
         detectors = anomaly.detectors.add()
         detectors.name = "AutoregressionAD"
@@ -825,17 +849,17 @@ def longevity_bayes():
  
 
  
-        cpt["lack_of_exercise_reported"] = avg(bayesianNetwork,cpt,
-                [
-                        "shortness_of_breath_exertion",
-                        "daily_walk_or_bicycle_travel",
-                        "daily_time_sitting",
-                        "physical_work",
-                        'ten_minutes_daily_workout'
-                ],
-                ["lack_of_exercise_reported","no_lack_of_exercise_reported"]
+        #cpt["lack_of_exercise_reported"] = avg(bayesianNetwork,cpt,
+         #       [
+          #              "shortness_of_breath_exertion",
+           #             "daily_walk_or_bicycle_travel",
+            #            "daily_time_sitting",
+             #           "physical_work",
+              #          'ten_minutes_daily_workout'
+               # ],
+                #["lack_of_exercise_reported","no_lack_of_exercise_reported"]
 
-                )
+                #)
  
         #cpt["lack_of_exercise_signal"] = any_of(bayesianNetwork,cpt,
                 #{
