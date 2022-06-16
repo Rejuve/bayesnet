@@ -416,7 +416,9 @@ def detect_anomalies(anomaly_tuples,bayesianNetwork,anomaly_params):
                     elif detector == "QuantileAD":
                         try:
                             from adtk.detector import QuantileAD
-                            quantile_ad = QuantileAD(high=anomaly_params[var]['high_percent'], low=anomaly_params[var]['low_percent'])
+                            low= None if anomaly_params[var]['side'] == "positive" else anomaly_params[var]['low_percent']
+                            high=None if anomaly_params[var]['side'] == 'negative' else anomaly_params[var]['high_percent']
+                            quantile_ad = QuantileAD(high=high, low=low)
                             anomaly_dict[var][detector] = quantile_ad.fit_detect(s)
                             fitted[var]['low_percent'] = quan(s,anomaly_params[var]['low_percent'])
                             fitted[var]['high_percent'] = quan(s,anomaly_params[var]['high_percent'])
@@ -431,7 +433,9 @@ def detect_anomalies(anomaly_tuples,bayesianNetwork,anomaly_params):
                     elif detector == "ThresholdAD":          
                         try:
                             from adtk.detector import ThresholdAD
-                            threshold_ad = ThresholdAD(high=anomaly_params[var]['high'], low=anomaly_params[var]['low'])
+                            low= None if anomaly_params[var]['side'] == "positive" else anomaly_params[var]['low']
+                            high=None if anomaly_params[var]['side'] == 'negative' else anomaly_params[var]['high']
+                            threshold_ad = ThresholdAD(high=high, low=low)
                             anomaly_dict[var][detector] = threshold_ad.detect(s)
 
                         except RuntimeError as e:
