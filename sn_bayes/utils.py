@@ -475,6 +475,8 @@ def detect_anomalies(anomaly_tuples,bayesianNetwork,anomaly_params):
 
                 is_anomalous = combined_df[['value']].tail(anomaly_params[var]["n"])['value'].any()
                 evidence[var] = var_val_names[var][0] if is_anomalous else var_val_names[var][1]
+                #print("anomaly_dict")
+                #print(anomaly_dict)
                 #print("combined_df")
                 #print(combined_df)
                 temp = combined_df[['value']].to_records()

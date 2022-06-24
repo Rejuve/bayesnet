@@ -51,7 +51,7 @@ def longevity_bayes():
         anomaly.varName = "double_support_stepping_anomaly"
         anomaly.n_steps = 7 
         anomaly.step_size = 1
-        anomaly.c = 0.5
+        anomaly.c = 3.0
         anomaly.n = 2
         anomaly.window = 5
         anomaly.side = "positive"
@@ -69,7 +69,7 @@ def longevity_bayes():
         anomaly.varName = "step_asymmetry_anomaly"
         anomaly.n_steps = 7
         anomaly.step_size = 1
-        anomaly.c = 0.5
+        anomaly.c = 3.0
         anomaly.n = 2
         anomaly.window = 5
         anomaly.side = "positive"
