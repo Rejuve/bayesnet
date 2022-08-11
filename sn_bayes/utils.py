@@ -637,10 +637,18 @@ def predict_proba_adjusted ( baked_net,netspec,evidence_list = {},adjust=False):
                         prob = 0.99999 if v == val else 0.00001
                         var_vals[val]= prob
                     answer[k]=var_vals
-
                 for dummy,val in val_dict.items():
                     if val not in dist[dist_name]:
-                        dist[dist_name][val] = answer[dist_name][val]
+                        try:
+                            dist[dist_name][val] = answer[dist_name][val]
+                        except KeyError as e:
+                            print("KeyError e") 
+                            print(e)
+                            print("answer")
+                            print(answer)
+                            print("description")
+                            print(description)
+
     return dist
 
 
@@ -892,7 +900,7 @@ def any_of(bayesianNetwork, cpt, invars, outvars):
         vlist = [vdict[v] for v in invars.keys()]
         cartesian = list(itertools.product(*vlist))
         klist = [a for a in invars.values()]
-        keylist = invars.keys()
+        keylist = list(invars.keys())
         cpt_rows = []
         for c in cartesian:
                 qany=False
@@ -935,7 +943,7 @@ def all_of(bayesianNetwork, cpt, invars, outvars):
         vlist = [vdict[v] for v in invars.keys()]
         cartesian = list(itertools.product(*vlist))
         klist = [a for a in invars.values()]
-        keylist = invars.keys()
+        keylist = list(invars.keys())
         cpt_rows = []
         for c in cartesian:
                 qall=True
@@ -1050,7 +1058,7 @@ def if_then_else(bayesianNetwork, cpt, invars, outvars):
         #print(cartesian)
         #print('klist')
         #print(klist)
-        keylist = invars.keys()
+        keylist = list(invars.keys())
         cpt_rows = [] 
         for c in cartesian:
                 result = ""
@@ -1370,7 +1378,7 @@ def prob_a_and_not_a_given_b_and_not_b (invars, priors, outvars):
                 
                     #print("priors[k][v]")
                     #print(priors[k][v])
-                    #prior_b = priors[k][v] 
+                    prior_b = priors[k][v] 
                     if "relative_risk" in numval_dict:
                         if "relative_risk" not in dependency_dict[k]:
                             dependency_dict[k]["relative_risk"]={}
@@ -1444,18 +1452,75 @@ def prob_a_and_not_a_given_b_and_not_b (invars, priors, outvars):
 
 
 def get_good_vars(v,invars,bayesianNetwork,var_val_positions = None, var_val_names = None):
+        #print ("v")
+        #print(v)
+        #print("invars")
+        #print(invars)
+    
+    
         if var_val_positions is None:    
             var_val_positions = get_var_val_positions(bayesianNetwork)
         if var_val_names is None:
             var_val_names= get_var_val_names(bayesianNetwork)
+        #print("var_val_positions")
+        #print(var_val_positions)
+        #print("var_val_names")
+        #print(var_val_names)
+
+        numvals = len(var_val_positions[v])
+        # Find out if there are more non stated items to the right or the left, and then send the 
+        # majority .  if there are the same numbe of non stated on the right and left send 
+        # those on the right, because on the right are positive values, and most cases compare to 
+        # a better situation
+
+        lowest_val = numvals
         highest_val = 0
         for tup in invars:
             if v in tup[0]:
                 for val in tup[0][v]:
                     if var_val_positions[v][val]>highest_val:
                         highest_val = var_val_positions[v][val]
+                    if var_val_positions[v][val]<lowest_val:
+                        lowest_val = var_val_positions[v][val]
         #print("highest_val")
         #print(highest_val)
+        #print("lowest_val")
+        #print(lowest_val)
+        right_side_not_included = numvals-1-highest_val
+        left_side_not_included = lowest_val
+        good_vars = []
+        if left_side_not_included > right_side_not_included:
+            good_vars = [var_val_names[v][i] for i in range (0,lowest_val+1)]
+        else:
+            good_vars = [var_val_names[v][i] for i in range (highest_val+1,len(var_val_positions[v]))]
+        return good_vars
+
+
+
+
+def get_good_vars1(v,invars,bayesianNetwork,var_val_positions = None, var_val_names = None):
+        print ("v")
+        print(v)
+        print("invars")
+        print(invars)
+    
+    
+        if var_val_positions is None:    
+            var_val_positions = get_var_val_positions(bayesianNetwork)
+        if var_val_names is None:
+            var_val_names= get_var_val_names(bayesianNetwork)
+        print("var_val_positions")
+        print(var_val_positions)
+        print("var_val_names")
+        print(var_val_names)
+        highest_val = 0
+        for tup in invars:
+            if v in tup[0]:
+                for val in tup[0][v]:
+                    if var_val_positions[v][val]>highest_val:
+                        highest_val = var_val_positions[v][val]
+        print("highest_val")
+        print(highest_val)
         good_vars = [var_val_names[v][i] for i in range (highest_val+1,len(var_val_positions[v]))]
         return good_vars
 
@@ -1495,12 +1560,16 @@ def dependency (bayesianNetwork, cpt, invars,outvars, calibrate = True,adjust=Fa
         varlist = list(set(varlist))
         #print("varlist")
         #print(varlist)
+        #print("outvars")
+        #print(outvars)
         if len(varlist) > 0 and calibrate:
             prevalence_condition_regardless = list(outvars.items())[0][1]
             priors = get_priors(bayesianNetwork,invars,prevalence_condition_regardless,cpt,adjust)
             var_val_positions = get_var_val_positions(bayesianNetwork)
             var_val_names= get_var_val_names(bayesianNetwork)
             copyNetwork = copy.deepcopy(bayesianNetwork)
+            #print("cpt")
+            #print(cpt)
             copyCPT = copy.deepcopy(cpt)
             discreteDistribution = copyNetwork.discreteDistributions.add()
             discreteDistribution.name = "always_true"
@@ -1514,6 +1583,8 @@ def dependency (bayesianNetwork, cpt, invars,outvars, calibrate = True,adjust=Fa
             #print(copyNetwork)
             newInvars = copy.deepcopy(invars)
             newInvars.append(({'always_true': ['always_true']}, {'relative_risk':1.0}))
+            #print ("newInvars")
+            #print(newInvars)
             outvar = list(outvars.items())[0][0]
             df = make_tree(bayesianNetwork,False)
             #print("df")
@@ -1537,6 +1608,8 @@ def dependency (bayesianNetwork, cpt, invars,outvars, calibrate = True,adjust=Fa
                     #print(v)
                     thisNetwork = copy.deepcopy(copyNetwork)
                     for  j in range(len(newInvars)):
+                       # print("newInvars[j][0]")
+                       # print(newInvars[j][0])
                         if v in newInvars[j][0]:
                             copyInvars = copy.deepcopy(newInvars)
                             popped = copyInvars.pop(j)
@@ -1622,10 +1695,10 @@ def dependency (bayesianNetwork, cpt, invars,outvars, calibrate = True,adjust=Fa
                 except ValueError as ve:
                     #print(ve)
                     pass
-            print ("invars")
-            print(invars)
-            print("newInvars")
-            print(newInvars)
+            #print ("invars")
+            #print(invars)
+            #print("newInvars")
+            #print(newInvars)
         else:
             newInvars = invars
 
@@ -1703,7 +1776,6 @@ def validation(k,v,probagivenb,condition_val,invars,final_window,window_factor):
 
 
 def dependency_direct(bayesianNetwork, cpt, invars, outvars, priors = None,adjust=False):
-        
         import itertools
         from scipy.optimize import linprog
         from qpsolvers import solve_qp
@@ -1846,18 +1918,18 @@ def dependency_direct(bayesianNetwork, cpt, invars, outvars, priors = None,adjus
                 #+ (prevalence of hbp among youngadult healthy psych) * prevalence of youngadult healthy psych
                 #+ (prevalence of hbp among teen healthy psych) * prevalence of teen healthy psych
                 #+ (prevalence of hbp among child healthy psych) * prevalence of child healthy psych
-                #+ (prevalence of hbp among adult obese psych) * prevalence of adult obese psych 
-                #+ (prevalence of hbp among youngadult obese psych) * prevalence of youngadult obese psych
-                #+ (prevalence of hbp among teen obese psych) * prevalence of teen obese psych
-                #+ (prevalence of hbp among child obese psych) * prevalence of child obese psych
-                #+ (prevalence of hbp among adult overweight psych) * prevalence of adult overweight psych
-                #+ (prevalence of hbp among youngadult overweight psych) * prevalence of youngadult overweight psych
-                #+ (prevalence of hbp among teen overweight psych) * prevalence of teen overweight psych
-                #+ (prevalence of hbp among child overweight psych) * prevalence of child overweight psych
-                #+ (prevalence of hbp among adult healthy psych) * prevalence of adult healthy psych
-                #+ (prevalence of hbp among youngadult healthy psych) * prevalence of youngadult healthy psych
-                #+ (prevalence of hbp among teen healthy psych) * prevalence of teen healthy psych
-                #+ (prevalence of hbp among child healthy psych) * prevalence of child healthy psych
+                #+ (prevalence of hbp among adult obese nonpsych) * prevalence of adult obese nonpsych 
+                #+ (prevalence of hbp among youngadult obese nonpsych) * prevalence of youngadult obese nonpsych
+                #+ (prevalence of hbp among teen obese nonpsych) * prevalence of teen obese nonpsych
+                #+ (prevalence of hbp among child obese nonpsych) * prevalence of child obese nonpsych
+                #+ (prevalence of hbp among adult overweight nonpsych) * prevalence of adult overweight nonpsych
+                #+ (prevalence of hbp among youngadult overweight nonpsych) * prevalence of youngadult overweight nonpsych
+                #+ (prevalence of hbp among teen overweight nonpsych) * prevalence of teen overweight nonpsych
+                #+ (prevalence of hbp among child overweight nonpsych) * prevalence of child overweight nonpsych
+                #+ (prevalence of hbp among adult healthy nonpsych) * prevalence of adult healthy nonpsych
+                #+ (prevalence of hbp among youngadult healthy nonpsych) * prevalence of youngadult healthy nonpsych
+                #+ (prevalence of hbp among teen healthy nonpsych) * prevalence of teen healthy nonpsych
+                #+ (prevalence of hbp among child healthy nonpsych) * prevalence of child healthy nonpsych
                          
                          
                 #equation2 (has the balance)         
@@ -1865,9 +1937,9 @@ def dependency_direct(bayesianNetwork, cpt, invars, outvars, priors = None,adjus
                 #  (prevalence of hbp among elderly obese psych) * prevalence of elderly obese psych 
                 #+ (prevalence of hbp among elderly overweight psych) * prevalence of elderly overweight psych
                 #+ (prevalence of hbp among elderly healthy psych) * prevalence of elderly healthy psych
-                #+ (prevalence of hbp among elderly obese psych) * prevalence of elderly obese psych 
-                #+ (prevalence of hbp among elderly overweight psych) * prevalence of elderly overweight psych
-                #+ (prevalence of hbp among elderly healthy psych) * prevalence of elderly healthy psych
+                #+ (prevalence of hbp among elderly obese nonpsych) * prevalence of elderly obese nonpsych 
+                #+ (prevalence of hbp among elderly overweight nonpsych) * prevalence of elderly overweight nonpsych
+                #+ (prevalence of hbp among elderly healthy nonpsych) * prevalence of elderly healthy nonpsych
                 
                  
                 #equation3  (doesnt have every one in it )
@@ -1884,18 +1956,18 @@ def dependency_direct(bayesianNetwork, cpt, invars, outvars, priors = None,adjus
                 #+ (prevalence of non hbp among youngadult healthy psych) * prevalence of youngadult healthy psych
                 #+ (prevalence of non hbp among teen healthy psych) * prevalence of teen healthy psych
                 #+ (prevalence of non hbp among child healthy psych) * prevalence of child healthy psych
-                #+ (prevalence of non hbp among adult obese psych) * prevalence of adult obese psych 
-                #+ (prevalence of non hbp among youngadult obese psych) * prevalence of youngadult obese psych
-                #+ (prevalence of non hbp among teen obese psych) * prevalence of teen obese psych
-                #+ (prevalence of non hbp among child obese psych) * prevalence of child obese psych
-                #+ (prevalence of non hbp among adult overweight psych) * prevalence of adult overweight psych
-                #+ (prevalence of non hbp among youngadult overweight psych) * prevalence of youngadult overweight psych
-                #+ (prevalence of non hbp among teen overweight psych) * prevalence of teen overweight psych
-                #+ (prevalence of non hbp among child overweight psych) * prevalence of child overweight psych
-                #+ (prevalence of non hbp among adult healthy psych) * prevalence of adult healthy psych
-                #+ (prevalence of non hbp among youngadult healthy psych) * prevalence of youngadult healthy psych
-                #+ (prevalence of non hbp among teen healthy psych) * prevalence of teen healthy psych
-                #+ (prevalence of non hbp among child healthy psych) * prevalence of child healthy psych
+                #+ (prevalence of non hbp among adult obese nonpsych) * prevalence of adult obese nonpsych 
+                #+ (prevalence of non hbp among youngadult obese nonpsych) * prevalence of youngadult obese nonpsych
+                #+ (prevalence of non hbp among teen obese nonpsych) * prevalence of teen obese nonpsych
+                #+ (prevalence of non hbp among child obese nonpsych) * prevalence of child obese nonpsych
+                #+ (prevalence of non hbp among adult overweight nonpsych) * prevalence of adult overweight nonpsych
+                #+ (prevalence of non hbp among youngadult overweight nonpsych) * prevalence of youngadult overweight nonpsych
+                #+ (prevalence of non hbp among teen overweight nonpsych) * prevalence of teen overweight nonpsych
+                #+ (prevalence of non hbp among child overweight nonpsych) * prevalence of child overweight nonpsych
+                #+ (prevalence of non hbp among adult healthy nonpsych) * prevalence of adult healthy nonpsych
+                #+ (prevalence of non hbp among youngadult healthy nonpsych) * prevalence of youngadult healthy nonpsych
+                #+ (prevalence of non hbp among teen healthy nonpsych) * prevalence of teen healthy nonpsych
+                #+ (prevalence of non hbp among child healthy nonpsych) * prevalence of child healthy nonpsych
                          
                          
                 #equation4 (has the balance)         
@@ -1903,9 +1975,9 @@ def dependency_direct(bayesianNetwork, cpt, invars, outvars, priors = None,adjus
                 #  (prevalence of non hbp among elderly obese psych) * prevalence of elderly obese psych 
                 #+ (prevalence of non hbp among elderly overweight psych) * prevalence of elderly overweight psych
                 #+ (prevalence of non hbp among elderly healthy psych) * prevalence of elderly healthy psych
-                #+ (prevalence of non hbp among elderly obese psych) * prevalence of elderly obese psych 
-                #+ (prevalence of non hbp among elderly overweight psych) * prevalence of elderly overweight psych
-                #+ (prevalence of non hbp among elderly healthy psych) * prevalence of elderly healthy psych
+                #+ (prevalence of non hbp among elderly obese nonpsych) * prevalence of elderly obese nonpsych 
+                #+ (prevalence of non hbp among elderly overweight nonpsych) * prevalence of elderly overweight nonpsych
+                #+ (prevalence of non hbp among elderly healthy nonpsych) * prevalence of elderly healthy nonpsych
                 
                 #equations 1-4 are inequalities, but then there are c equalities , equations that say prob a + ~prob a == 1
 
@@ -2098,7 +2170,11 @@ def dependency_direct(bayesianNetwork, cpt, invars, outvars, priors = None,adjus
         while cut > 0.0005:                                
                 lhs_ineq = []
                 rhs_ineq = []
-                                
+               # ls_R=np.zeros((size,size),np.double) 
+               # ls_s=np.zeros (size,np.double)	
+                ls_R=[]
+                ls_s=[]
+                    
                 for vardict,numval_dict in invars:
                         #relative_risk= numval_dict["relative_risk"] if "relative_risk" in numval_dict else (
                          #           (prevalence_condition_regardless-numval_dict["sensitivity"])/numval_dict["sensitivity"] if "sensitivity" in numval_dict else 1) 
@@ -2154,36 +2230,23 @@ def dependency_direct(bayesianNetwork, cpt, invars, outvars, priors = None,adjus
                                         lhs_ineq.append(np.multiply(lhs_inequality_equation4[k][v],-1.))
                                         rhs_ineq.append(-rhs_ineq4)
 
+
+                                        #Objectie Function
+                                        ls_R.append(np.multiply(lhs_inequality_equation1[k][v],1.))
+                                        ls_s.append(rhs_inequality_equation1[k][v])
+                                        ls_R.append(np.multiply(lhs_inequality_equation2[k][v],1.))
+                                        ls_s.append(rhs_inequality_equation2[k][v])
+                                        ls_R.append(np.multiply(lhs_inequality_equation3[k][v],1.))
+                                        ls_s.append(rhs_inequality_equation3[k][v])
+                                        ls_R.append(np.multiply(lhs_inequality_equation4[k][v],1.))
+                                        ls_s.append(rhs_inequality_equation4[k][v])
+
+
                                         row = validation(k,v,rhs_inequality_equation2[k][v],condition_val,invars,window,window_factor)
                                         if len(row)  > 0:
                                             validation_row[k][v] = row
-                                            print("row")
-                                            print(row)
-
-                                        #UB    
-                                        #lhs_ineq.append(np.multiply(lhs_inequality_equation1[k][v],1))
-                                        #rhs_ineq.append(rhs_inequality_equation1[k][v]*(1+window))
-                                        #lhs_ineq.append(np.multiply(lhs_inequality_equation2[k][v],1))
-                                        #rhs_ineq.append(rhs_inequality_equation2[k][v]*(1+window))
-                                        #lhs_ineq.append(np.multiply(lhs_inequality_equation3[k][v],1))
-                                        #rhs_ineq.append(rhs_inequality_equation3[k][v]*(1+window))
-                                        #lhs_ineq.append(np.multiply(lhs_inequality_equation4[k][v],1))
-                                        #rhs_ineq.append(rhs_inequality_equation4[k][v]*(1+window))
-
-
-                                        #LB
-                                        #lhs_ineq.append(np.multiply(lhs_inequality_equation1[k][v],-1))
-                                        #rhs_ineq.append(rhs_inequality_equation1[k][v]*(-1+window))
-                                        #lhs_ineq.append(np.multiply(lhs_inequality_equation2[k][v],-1))
-                                        #rhs_ineq.append(rhs_inequality_equation2[k][v]*(-1+window))
-                                        #lhs_ineq.append(np.multiply(lhs_inequality_equation3[k][v],-1))
-                                        #rhs_ineq.append(rhs_inequality_equation3[k][v]*(-1+window))
-                                        #lhs_ineq.append(np.multiply(lhs_inequality_equation4[k][v],-1))
-                                        #rhs_ineq.append(rhs_inequality_equation4[k][v]*(-1+window))
-
-
-
-                               
+                                            #print("row")
+                                            #print(row)
                 
                 #opt = linprog(c=obj, A_ub=lhs_ineq, b_ub=rhs_ineq,A_eq=lhs_eq, b_eq=rhs_eq, bounds=bnd,method="revised simplex")
                 #print ("obj")
@@ -2212,6 +2275,40 @@ def dependency_direct(bayesianNetwork, cpt, invars, outvars, priors = None,adjus
                 rhs_ineq = np.array(rhs_ineq,np.double)
                 lhs_eq = np.array(lhs_eq,np.double)
                 rhs_eq = np.array(rhs_eq,np.double)
+                ls_s = np.array(ls_s,np.double)
+                ls_R = np.array(ls_R,np.double)
+
+                #print ("lhs_ineq.shape")
+                #print (lhs_ineq.shape)
+                #print ("rhs_ineq.shape")
+                #print (rhs_ineq.shape)
+                #print ("lhs_eq.shape")
+                #print (lhs_eq.shape)
+                #print ("rhs_eq.shape")
+                #print (rhs_eq.shape)
+
+                #print ("ls_s.shape")
+                #print (ls_s.shape)
+                #print ("ls_R.shape")
+                #print (ls_R.shape)
+
+
+                #P = np.add(np.dot(ls_R.T, ls_R), np.multiply(np.identity(size,np.double),1.)) 
+
+                P = np.dot(ls_R.T, ls_R) 
+                q = -np.dot(ls_R.T,ls_s )
+
+                #print ("P.shape")
+                #print (P.shape)
+                #print ("q.shape")
+                #print (q.shape)
+
+                #print ("P")
+                #print (P)
+                #print ("q")
+                #print (q)
+
+
                 #opt = linprog(c=obj, A_eq=lhs_eq, b_eq=rhs_eq, bounds=bnd,method="revised simplex")
                 err = False
                 opt = None
@@ -2220,6 +2317,7 @@ def dependency_direct(bayesianNetwork, cpt, invars, outvars, priors = None,adjus
                     #opt = solve_qp(P, q, lhs_ineq, rhs_ineq, lhs_eq, rhs_eq,lb,ub)
                     #opt = linprog(c=obj, A_ub=lhs_ineq, b_ub=rhs_ineq,A_eq=lhs_eq, b_eq=rhs_eq,  bounds=bnd,method="revised simplex")
                 except ValueError as ve:
+                    print ("ValueError")
                     print(ve)
                     err = True
 
@@ -2233,28 +2331,31 @@ def dependency_direct(bayesianNetwork, cpt, invars, outvars, priors = None,adjus
                 window = window - cut if not err  else window + cut
                 if not err and opt is not None:# and opt.success:
                     lastTrue = opt
+                    #print("lastTrue")
+                    #print(lastTrue)
                 #print("window")
                 #print (window)
 
         if lastTrue is not None:
             opt = lastTrue
-        for i,c in enumerate(cartesian):
-                #there are only two values of outvars for relative risk
-                cpt_row = []
-                cpt_row.extend(c)
-                cpt_row.append(list(outvars.items())[0][0])
-                val = opt[i] #opt.x[i] 
-                cpt_row.append(val)
-                cpt_rows.append(cpt_row)
-                
-                cpt_row = []
-                cpt_row.extend(c)
-                cpt_row.append(list(outvars.items())[1][0])
-                val =  1.0-opt[i]#opt.x[i]
-                cpt_row.append(val)
-                cpt_rows.append(cpt_row)
-        print ("cpt_rows")
-        print(cpt_rows)
+        if opt is not None:
+            for i,c in enumerate(cartesian):
+                    #there are only two values of outvars for relative risk
+                    cpt_row = []
+                    cpt_row.extend(c)
+                    cpt_row.append(list(outvars.items())[0][0])
+                    val = opt[i] #opt.x[i] 
+                    cpt_row.append(val)
+                    cpt_rows.append(cpt_row)
+                    
+                    cpt_row = []
+                    cpt_row.extend(c)
+                    cpt_row.append(list(outvars.items())[1][0])
+                    val =  1.0-opt[i]#opt.x[i]
+                    cpt_row.append(val)
+                    cpt_rows.append(cpt_row)
+        #print ("cpt_rows")
+        #print(cpt_rows)
         toc = time.perf_counter()
         diff = toc - tic
         #print("validation_row")
