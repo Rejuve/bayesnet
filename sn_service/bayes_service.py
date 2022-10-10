@@ -281,14 +281,16 @@ class BayesNetServicer(grpc_bt_grpc.BayesNetServicer):
   
 
   def StatelessNet(self, request, context):
+    #print ("entered Statelessnet")
     answer = Answer()
     not_too_complex,error_msg = complexity_check(request.bayesianNetwork)
+    #print(not_too_complex)
     if not_too_complex:
       bayesianNetwork= bayesInitialize(request.bayesianNetwork)
       bayesianNetwork.bake()
  
       evidence,outvars,explainvars, reverse_explain_list, reverse_evidence,anomaly_tuples, anomaly_params_dict,include_list,baseline,switch = parse_net(
-              request.query, bayesianNetwork)
+              request.query, request.bayesianNetwork)
       #print  ("evidence,outvars,explainvars, reverse_explain_list, reverse_evidence,anomaly_tuples, anomaly_params_dict,include_list,baseline,switch")
       #print  (evidence)
       #print  (outvars)
@@ -303,27 +305,25 @@ class BayesNetServicer(grpc_bt_grpc.BayesNetServicer):
       anomaly_out = {}
       answer_dict = {}
       if not switch or switch == "query" or switch == "internal_query":  
-        anomaly_out = detect_anomalies(anomaly_tuples,bayesianNetwork,anomaly_params_dict)
+        anomaly_out = detect_anomalies(anomaly_tuples,request.bayesianNetwork,anomaly_params_dict)
         #print ("anomaly_out")
         #print (anomaly_out)
         evidence.update(anomaly_out['evidence'])   
-        answer_dict =  internal_query(self.baked[request.id], self.spec[request.id], evidence
-                        ) if switch is "internal_query" else query(self.baked[request.id], self.spec[request.id], evidence,outvars)
+        answer_dict =  internal_query(bayesianNetwork, request.bayesianNetwork, evidence
+                        ) if switch is "internal_query" else query(bayesianNetwork, request.bayesianNetwork, evidence,outvars)
         #answer.error_msg = answer.error_msg + f",anomaly_out:{anomaly_out},answer_dict:{answer_dict}"
-      explain_dict= explain(self.baked[request.id],self.spec[request.id],evidence,explainvars,reverse_explain_list, reverse_evidence,
+      explain_dict= explain(bayesianNetwork,request.bayesianNetwork,evidence,explainvars,reverse_explain_list, reverse_evidence,
               internal_query_result = baseline,include_list = include_list)if not switch or switch == "explain" else (  
-              explain_why_bad(self.baked[request.id],self.spec[request.id],evidence,explainvars,
+              explain_why_bad(bayesianNetwork,request.bayesianNetwork,evidence,explainvars,
               internal_query_result = baseline,include_list = include_list)if switch == "explain_why_bad" else (  
-              explain_why_good(self.baked[request.id],self.spec[request.id],evidence,explainvars,
+              explain_why_good(bayesianNetwork,request.bayesianNetwork,evidence,explainvars,
               internal_query_result = baseline,include_list = include_list)if switch =="explain_why_good" else {}))  
       
-      #print("readable(baseline)")
-      #print(readable(bayesianNetwork,baseline))
       #print("explain_dict")
       #print(explain_dict)
       #answer.error_msg = answer.error_msg + f",explain_dict:{explain_dict}"
-      var_positions = get_var_positions(self.spec[request.id])
-      var_val_positions = get_var_val_positions(self.spec[request.id])
+      var_positions = get_var_positions(request.bayesianNetwork)
+      var_val_positions = get_var_val_positions(request.bayesianNetwork)
 
       for var, val_dict in answer_dict.items():
         var_answer = answer.varAnswers.add()
