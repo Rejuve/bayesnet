@@ -1545,7 +1545,7 @@ def replace_rr(invars,new_rr,v,val):
                 tup[1]["relative_risk"]=new_rr
 
 
-def dependency (bayesianNetwork, cpt, invars,outvars, calibrate = True,adjust=False):
+def dependency (bayesianNetwork, cpt, invars,outvars, calibrate = False,adjust=False):
         #convert all relative risks to relatvie risk direct.  sort the net by the rr invars place in the tree
         #starting with the highest level in the dag first,
         #and make a copy of the cpt table without each rr variable, add it to the net and get the value of the outvars
