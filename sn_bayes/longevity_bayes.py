@@ -212,6 +212,26 @@ def longevity_bayes():
 
 
         discreteDistribution = bayesianNetwork.discreteDistributions.add()
+        discreteDistribution.name = "fake_variable"
+        variable = discreteDistribution.variables.add()
+        variable.name = "fake_variable_1"
+        variable.probability = 0.05
+        variable = discreteDistribution.variables.add()
+        variable.name = "fake_variable_2"
+        variable.probability = 0.25
+        variable = discreteDistribution.variables.add()
+        variable.name = "fake_variable_3"
+        variable.probability = 0.3
+        variable = discreteDistribution.variables.add()
+        variable.name = "fake_variable_4"
+        variable.probability = 0.2
+        variable = discreteDistribution.variables.add()
+        variable.name = "fake_variable_5"
+        variable.probability = 0.2
+
+
+
+        discreteDistribution = bayesianNetwork.discreteDistributions.add()
         discreteDistribution.name = "age"
         variable = discreteDistribution.variables.add()
         variable.name = "elderly"
@@ -4398,7 +4418,7 @@ def longevity_bayes():
                             ({"c_reactive_protein":["c_reactive_protein_high_above_2"]},{"sensitivity":0.85, "specificity":0.9}),
                             ({"inflammation_from_behavior":["inflammation_from_behavior"]},{"sensitivity":.35, "specificity":0.9}),
                             ({"inflammation_from_diet":["inflammation_from_diet"]},{"sensitivity":0.35, "specificity":0.9}),
-                            ({"age":["elderly"]},{"sensitivity":0.4, "specificity":0.6})
+                            ({"fake_variable":["fake_variable_5"]},{"sensitivity":0.4, "specificity":0.6})
                         ],
                         {"inflammation":0.07,"no_inflammation":0.93}
                         )
