@@ -1,4 +1,8 @@
-FROM python:3.7.17-slim-bullseye
+ARG AWS_ACCOUNT
+ARG REGION
+ARG REPO
+ARG STAGE
+FROM ${AWS_ACCOUNT}.dkr.ecr.${REGION}.amazonaws.com/{REPO}:{STAGE}
 
 WORKDIR /workspace
 COPY . /workspace
