@@ -1,0 +1,30 @@
+{
+	"containerDefinitions": [{
+		"name": "<CONTAINER_NAME>",
+		"image": "<IMAGE1_NAME>",
+		"essential": true,
+		"cpu": "<CONTAINER_CPU>",
+        "memory": "<CONTAINER_MEM>",
+		"portMappings": [{
+			"protocol": "tcp",
+			"containerPort": "<CONTAINER_PORT>"
+		}],
+		"logConfiguration": {
+			"logDriver": "awslogs",
+			"options": {
+				"awslogs-group": "<LOGS_GROUP>",
+				"awslogs-region": "<AWS_DEFAULT_REGION>",
+				"awslogs-stream-prefix": "terraform"
+			}
+		}
+	}],
+	"cpu": "<CONTAINER_CPU>",
+	"memory": "<CONTAINER_MEM>",
+	"taskRoleArn": "arn:aws:iam::<AWS_ACCOUNT_ID>:role/<TASK_ROLE_NAME>",
+	"executionRoleArn": "arn:aws:iam::<AWS_ACCOUNT_ID>:role/<EXECUTION_ROLE_NAME>",
+	"family": "<TASK_FAMILY>",
+	"networkMode": "awsvpc",
+	"requiresCompatibilities": [
+		"FARGATE"
+	]
+}
