@@ -1,0 +1,3 @@
+condition,variable,value,statistic,mean,ci99,score
+hallmark_2_telomere_attrition,smoking,no_smoking,relative_risk,0.8194679424,0.12469384794518877,0.00847642512769553
+hallmark_2_telomere_attrition,gender,male,relative_risk,1.176918992,0.2510477438902041,0.01061221003678936

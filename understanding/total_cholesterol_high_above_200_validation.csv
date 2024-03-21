@@ -1,0 +1,2 @@
+condition,variable,value,statistic,mean,ci99,score
+total_cholesterol_high_above_200,garlic_supplementation,garlic_supplementation_yes,relative_risk,0.1022228546,0.22526416372743366,0.1027638899279302

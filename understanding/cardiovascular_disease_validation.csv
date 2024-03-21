@@ -1,0 +1,2 @@
+condition,variable,value,statistic,mean,ci99,score
+cardiovascular_disease,micro_nucleus_frequency,micro_nucleus_frequency_above_6,relative_risk,1.96,0.7723775510204082,0.4305261922476027

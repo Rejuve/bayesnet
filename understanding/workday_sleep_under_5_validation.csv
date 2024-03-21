@@ -1,0 +1,2 @@
+condition,variable,value,statistic,mean,ci99,score
+workday_sleep_under_5,ten_minutes_daily_workout,ten_minutes_daily_workout_no,relative_risk,2.341285178,1.454383325262245,0.029374529863194887

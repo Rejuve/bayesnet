@@ -1,0 +1,6 @@
+condition,variable,value,statistic,mean,ci99,score
+obesity_factors,daily_time_sitting,daily_time_sitting_12_or_more_hours,relative_risk,2.5,0.25186224489795916,0.0028814044921019466
+obesity_factors,workday_sleep_hours_per_night,workday_sleep_under_5,relative_risk,1.38,0.21828061224489795,0.0026284953772284236
+obesity_factors,cumin_supplementation,cumin_supplementation_yes,relative_risk,0.2973932327,0.35997688299765307,0.0025518450158035777
+obesity_factors,dietary_energy,dietary_energy_above_3939.00,specificity,0.95,0.016790816326530615,0.00244140625
+obesity_factors,dietary_energy,dietary_energy_above_2612.00_to_3939.00_and_below,specificity,0.7,0.016790816326530615,3.0205518679493615e-05

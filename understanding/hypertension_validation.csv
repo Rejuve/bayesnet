@@ -1,0 +1,2 @@
+condition,variable,value,statistic,mean,ci99,score
+hypertension,dna_methylation,dna_methylation_above_.3_no,relative_risk,0.07,0.016790816326530615,0.3113235305290385

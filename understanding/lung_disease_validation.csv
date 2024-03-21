@@ -1,0 +1,4 @@
+condition,variable,value,statistic,mean,ci99,score
+lung_disease,soy_isoflavones_supplementation,soy_isoflavones_supplementation_yes,relative_risk,0.85,0.21828061224489795,0.008864524148148978
+lung_disease,daily_plant_protein_servings,daily_plant_protein_servings_over_6,relative_risk,0.88,0.13432653061224492,0.008824573862247331
+lung_disease,micro_nucleus_frequency,micro_nucleus_frequency_above_6,relative_risk,1.5,1.0074489795918367,0.009987256814873335

@@ -1,0 +1,4 @@
+condition,variable,value,statistic,mean,ci99,score
+obesity,bmi,bmi_over_40_high_risk,specificity,0.99,0.016790816326530615,0.1312280701754387
+obesity,bmi,bmi_35_to_39_moderate_risk,specificity,0.99,0.016790816326530615,0.002203426423200816
+obesity,obesity_factors,obesity_factors,specificity,0.95,0.16790816326530614,0.12894736842105248

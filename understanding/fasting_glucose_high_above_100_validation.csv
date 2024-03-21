@@ -1,0 +1,2 @@
+condition,variable,value,statistic,mean,ci99,score
+fasting_glucose_high_above_100,ginger_supplementation,ginger_supplementation_yes,relative_risk,0.2920588371,0.545978349047449,0.03595134022319052
