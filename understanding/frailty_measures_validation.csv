@@ -1,3 +1,3 @@
 condition,variable,value,statistic,mean,ci99,score
-frailty_measures,micro_nucleus_frequency,micro_nucleus_frequency_above_6,relative_risk,1.22,0.3358163265306123,0.4395752586087751
-frailty_measures,hallmark_2_telomere_attrition,no_hallmark_2_telomere_attrition,relative_risk,0.4761130276,0.48935818339285714,0.22020179791164446
+frailty_measures,micro_nucleus_frequency,micro_nucleus_frequency_above_6,relative_risk,1.22,0.3358163265306123,0.4395750188259717
+frailty_measures,hallmark_2_telomere_attrition,no_hallmark_2_telomere_attrition,relative_risk,0.4761130276,0.48935818339285714,0.22020180199340827
