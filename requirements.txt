@@ -1,6 +1,6 @@
 grpcio>=1.14.2
 grpcio-tools>=1.14.1
-pomegranate>=1.0.0
+pomegranate==0.14.0
 pandas
 adtk
 qpsolvers
