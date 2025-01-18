@@ -1,3 +1,68 @@
+# Bayesian Network Implementation
+
+A Bayesian network implementation for causal and probabilistic inference, developed by Rejuve.ai.
+
+## Installation
+
+1. Clone the repository:
+git clone <repository-url>
+cd bayesnet
+Copy
+2. Create and activate a virtual environment:
+python3 -m venv .venv
+source .venv/bin/activate  # On Windows, use .venv\Scripts\activate
+Copy
+3. Install dependencies:
+pip install -r requirements.txt
+Copy
+4. Install the protobuf compiler:
+
+On Ubuntu/Debian:
+sudo apt update
+wget https://github.com/protocolbuffers/protobuf/releases/download/v24.4/protoc-24.4-linux-x86_64.zip
+unzip protoc-24.4-linux-x86_64.zip -d $HOME/.local
+export PATH="$PATH:$HOME/.local/bin"
+Copy
+On macOS:
+brew install protobuf
+Copy
+On Windows:
+Download protoc from https://github.com/protocolbuffers/protobuf/releases and add to PATH
+
+5. Generate protobuf files:
+./buildproto.sh
+
+6. Install the package in development mode:
+pip install -e .
+
+## Development
+
+This project uses Protocol Buffers for service definitions and data structures.
+- Generated files (`*_pb2.py`, `*_pb2_grpc.py`) should not be committed
+- After any changes to `.proto` files, regenerate using `./buildproto.sh`
+
+## Required Dependencies
+- Python 3.7
+- protoc 24.4
+- All Python dependencies are listed in requirements.txt
+
+## License
+
+Copyright 2024 Rejuve.ai
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+
 # Bayesian Network and Anomaly Detection Service
 
 ## Introduction

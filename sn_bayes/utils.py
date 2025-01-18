@@ -7,7 +7,7 @@ import json
 import copy
 import pandas as pd
 import sn_service.service_spec.bayesian_pb2
-from sn_service.service_spec.bayesian_pb2 import Query
+from sn_service.service_spec.bayesian_pb2 import Query # type: ignore
 import itertools
 import typing
 import numpy as np

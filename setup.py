@@ -1,6 +1,11 @@
-from distutils.core import setup
+from setuptools import setup, find_packages
 
-setup(name='covid-bayes',
-      version='1.0',
-      packages=['sn_bayes','sn_service']
-      )
+with open('requirements.txt') as f:
+    requirements = f.read().splitlines()
+
+setup(
+    name='longevity-bayes',
+    version='1.0',
+    packages=find_packages(),
+    install_requires=requirements
+)
