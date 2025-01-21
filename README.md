@@ -4,35 +4,32 @@ A Bayesian network implementation for causal and probabilistic inference, develo
 
 ## Installation
 
-1. Clone the repository:
-git clone <repository-url>
-cd bayesnet
-Copy
-2. Create and activate a virtual environment:
-python3 -m venv .venv
-source .venv/bin/activate  # On Windows, use .venv\Scripts\activate
-Copy
-3. Install dependencies:
-pip install -r requirements.txt
-Copy
-4. Install the protobuf compiler:
+1. Install the protobuf compiler:
 
 On Ubuntu/Debian:
 sudo apt update
 wget https://github.com/protocolbuffers/protobuf/releases/download/v24.4/protoc-24.4-linux-x86_64.zip
 unzip protoc-24.4-linux-x86_64.zip -d $HOME/.local
 export PATH="$PATH:$HOME/.local/bin"
-Copy
+
 On macOS:
 brew install protobuf
-Copy
+
 On Windows:
 Download protoc from https://github.com/protocolbuffers/protobuf/releases and add to PATH
 
-5. Generate protobuf files:
+2. Clone the repository:
+git clone <repository-url>
+cd bayesnet
+
+3. Create and activate a virtual environment:
+python3 -m venv .venv
+source .venv/bin/activate  # On Windows, use .venv\Scripts\activate
+
+4. Generate protobuf files:
 ./buildproto.sh
 
-6. Install the package in development mode:
+5. Install the package in development mode:
 pip install -e .
 
 ## Development
