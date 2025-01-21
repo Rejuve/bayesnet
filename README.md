@@ -26,11 +26,17 @@ cd bayesnet
 python3 -m venv .venv
 source .venv/bin/activate  # On Windows, use .venv\Scripts\activate
 
-4. Generate protobuf files:
+4. Install dependencies:
+pip install -r requirements.txt
+
+5. Generate protobuf files:
 ./buildproto.sh
 
-5. Install the package in development mode:
+6. Install the package in development mode:
 pip install -e .
+
+7. Before running notebook, create kernel from your venv and then set kernel in notebook:
+(venv) $ python -m ipykernel install --user --name my-venv-kernel --display-name "My Venv Kernel"
 
 ## Development
 
