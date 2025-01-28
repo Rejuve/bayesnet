@@ -1496,35 +1496,6 @@ def get_good_vars(v,invars,bayesianNetwork,var_val_positions = None, var_val_nam
         return good_vars
 
 
-
-
-def get_good_vars1(v,invars,bayesianNetwork,var_val_positions = None, var_val_names = None):
-        print ("v")
-        print(v)
-        print("invars")
-        print(invars)
-    
-    
-        if var_val_positions is None:    
-            var_val_positions = get_var_val_positions(bayesianNetwork)
-        if var_val_names is None:
-            var_val_names= get_var_val_names(bayesianNetwork)
-        print("var_val_positions")
-        print(var_val_positions)
-        print("var_val_names")
-        print(var_val_names)
-        highest_val = 0
-        for tup in invars:
-            if v in tup[0]:
-                for val in tup[0][v]:
-                    if var_val_positions[v][val]>highest_val:
-                        highest_val = var_val_positions[v][val]
-        print("highest_val")
-        print(highest_val)
-        good_vars = [var_val_names[v][i] for i in range (highest_val+1,len(var_val_positions[v]))]
-        return good_vars
-
-
 def get_rr_vals(v,invars):
         rr_vals = {}
         for tup in invars:
