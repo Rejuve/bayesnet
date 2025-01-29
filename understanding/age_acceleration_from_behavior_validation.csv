@@ -1,8 +1,0 @@
-condition,variable,value,statistic,mean,ci99,score
-age_acceleration_from_behavior,psychological_disorders,psychological_disorders,relative_risk,1.8,0.13432653061224492,0.002093750001466166
-age_acceleration_from_behavior,smoking,smoking,relative_risk,2.03,0.5540969387755103,0.0024937744212709667
-age_acceleration_from_behavior,alcohol_consumption_last_year,alcohol_daily,relative_risk,1.28,0.16790816326530614,0.0019862689369902764
-age_acceleration_from_behavior,marital_status,widowed,relative_risk,1.16,0.1175357142857143,0.002063671877977624
-age_acceleration_from_behavior,marital_status,separated,relative_risk,1.16,0.1175357142857143,0.002063671877977624
-age_acceleration_from_behavior,marital_status,divorced,relative_risk,1.16,0.1175357142857143,0.002063671877977624
-age_acceleration_from_behavior,marital_status,never_married,relative_risk,1.11,0.05037244897959184,0.00010395220638415026

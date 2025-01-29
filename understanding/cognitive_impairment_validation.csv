@@ -1,3 +1,0 @@
-condition,variable,value,statistic,mean,ci99,score
-cognitive_impairment,micro_nucleus_frequency,micro_nucleus_frequency_above_6,relative_risk,1.25,0.25186224489795916,0.012969754677212064
-cognitive_impairment,workday_sleep_hours_per_night,workday_sleep_under_5,relative_risk,1.4,0.26865306122448984,0.012500000834764657

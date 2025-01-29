@@ -1,5 +1,0 @@
-condition,variable,value,statistic,mean,ci99,score
-micro_nucleus_frequency_above_6,daily_fruit_vegetable_servings,daily_fruit_vegetable_servings_over_4_no,relative_risk,1.37,0.5708877551020408,0.0052359375043073975
-micro_nucleus_frequency_above_6,smoking,no_smoking,relative_risk,0.68,0.30223469387755103,0.0029921875007276055
-micro_nucleus_frequency_above_6,age,elderly,relative_risk,2.0,0.1175357142857143,0.0045898437422149385
-micro_nucleus_frequency_above_6,age,adult,relative_risk,1.5,0.08395408163265307,0.0003853361162151625

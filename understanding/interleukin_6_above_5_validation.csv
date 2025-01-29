@@ -1,3 +1,0 @@
-condition,variable,value,statistic,mean,ci99,score
-interleukin_6_above_5,ten_minutes_daily_workout,ten_minutes_daily_workout_yes,relative_risk,0.71,0.7891683673469387,0.010791015316627517
-interleukin_6_above_5,coq10_supplementation,coq10_supplementation_yes,relative_risk,0.05425283662,0.2708613935854592,0.011872233074461204

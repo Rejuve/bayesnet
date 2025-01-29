@@ -1,4 +1,0 @@
-condition,variable,value,statistic,mean,ci99,score
-LDL_above_160,garlic_supplementation,garlic_supplementation_yes,relative_risk,0.1441789561,0.31772104293352044,0.002835370763036249
-LDL_above_160,nigella_sativa_supplementation,nigella_sativa_supplementation_yes,relative_risk,0.1022228546,0.22526416360989798,0.002846456366891001
-LDL_above_160,dna_methylation,dna_methylation_above_.3_no,relative_risk,0.13,0.15111734693877552,0.0013229549577881416

@@ -1,3 +1,0 @@
-condition,variable,value,statistic,mean,ci99,score
-tnf_alpha_above_9,ten_minutes_daily_workout,ten_minutes_daily_workout_yes,relative_risk,0.75,0.7387959183673469,0.01098632785916176
-tnf_alpha_above_9,coq10_supplementation,coq10_supplementation_yes,relative_risk,0.4119307608,0.5943414677346428,0.011998852451270137

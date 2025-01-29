@@ -1,5 +1,0 @@
-condition,variable,value,statistic,mean,ci99,score
-a1c_diabetes_5.7_and_above,micro_nucleus_frequency,micro_nucleus_frequency_above_6,relative_risk,2.13,1.343265306122449,0.060720644362585396
-a1c_diabetes_5.7_and_above,nigella_sativa_supplementation,nigella_sativa_supplementation_yes,relative_risk,0.27662292,0.3880971703288775,0.047005976772209135
-a1c_diabetes_5.7_and_above,ginger_supplementation,ginger_supplementation_yes,relative_risk,0.04955857379,0.05998771644702551,0.04667345545642813
-a1c_diabetes_5.7_and_above,dna_methylation,dna_methylation_above_.3_no,relative_risk,0.11,0.03358163265306123,0.021221590804273535

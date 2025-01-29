@@ -1,3 +1,0 @@
-condition,variable,value,statistic,mean,ci99,score
-cancer,micro_nucleus_frequency,micro_nucleus_frequency_above_6,relative_risk,1.82,0.41977040816326533,0.17115420356805644
-cancer,hallmark_2_telomere_attrition,hallmark_2_telomere_attrition,relative_risk,1.95,0.520515306122449,0.1555352898737159
